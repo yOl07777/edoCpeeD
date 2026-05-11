@@ -1,0 +1,17 @@
+"""
+Python migration draft for `src/hooks/notifs/useFastModeNotification.tsx`.
+
+This file was generated from the TypeScript source to preserve the
+module boundary while the runtime implementation is migrated.
+Claude/Anthropic model calls should be routed through `deepseek_code`.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+async def useFastModeNotification(*args: Any, **kwargs: Any) -> Any:
+    """Migrated placeholder for TypeScript function `useFastModeNotification`."""
+    raise NotImplementedError(
+        "hooks.notifs.useFastModeNotification.useFastModeNotification still needs business-logic migration"
+    )

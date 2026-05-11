@@ -1,0 +1,29 @@
+"""
+Python migration draft for `src/tools/ConfigTool/UI.tsx`.
+
+This file was generated from the TypeScript source to preserve the
+module boundary while the runtime implementation is migrated.
+Claude/Anthropic model calls should be routed through `deepseek_code`.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
+    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
+    raise NotImplementedError(
+        "tools.ConfigTool.UI.renderToolResultMessage still needs business-logic migration"
+    )
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
+    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
+    raise NotImplementedError(
+        "tools.ConfigTool.UI.renderToolUseMessage still needs business-logic migration"
+    )
+
+async def renderToolUseRejectedMessage(*args: Any, **kwargs: Any) -> Any:
+    """Migrated placeholder for TypeScript function `renderToolUseRejectedMessage`."""
+    raise NotImplementedError(
+        "tools.ConfigTool.UI.renderToolUseRejectedMessage still needs business-logic migration"
+    )
