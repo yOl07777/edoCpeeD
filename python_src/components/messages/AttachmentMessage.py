@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/messages/AttachmentMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload, normalize_attachment
+
+
 async def AttachmentMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AttachmentMessage`."""
-    raise NotImplementedError(
-        "components.messages.AttachmentMessage.AttachmentMessage still needs business-logic migration"
-    )
+    attachments = kwargs.get("attachments") or (args[0] if args else []) or []
+    if not isinstance(attachments, list):
+        attachments = [attachments]
+    rows = [normalize_attachment(item, index) for index, item in enumerate(attachments)]
+    return message_payload("attachment_message", attachments=rows, count=len(rows))
+
+
+__all__ = ["AttachmentMessage"]

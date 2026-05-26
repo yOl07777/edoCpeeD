@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/NativeAutoUpdater.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def NativeAutoUpdater(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `NativeAutoUpdater`."""
-    raise NotImplementedError(
-        "components.NativeAutoUpdater.NativeAutoUpdater still needs business-logic migration"
-    )
+    current = str(option(args, kwargs, "currentVersion", option(args, kwargs, "current", "unknown")))
+    latest = str(option(args, kwargs, "latestVersion", option(args, kwargs, "latest", current)))
+    return component_payload("native_auto_updater", currentVersion=current, latestVersion=latest, updateAvailable=current != latest, native=True, dryRun=True)
+
+
+__all__ = ["NativeAutoUpdater"]

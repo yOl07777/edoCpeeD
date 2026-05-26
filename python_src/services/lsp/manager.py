@@ -1,59 +1,62 @@
-"""
-Python migration draft for `src/services/lsp/manager.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Singleton local LSP server manager."""
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-async def _resetLspManagerForTesting(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `_resetLspManagerForTesting`."""
-    raise NotImplementedError(
-        "services.lsp.manager._resetLspManagerForTesting still needs business-logic migration"
-    )
+from .LSPServerManager import LocalLSPServerManager, createLSPServerManager
 
-async def getInitializationStatus(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInitializationStatus`."""
-    raise NotImplementedError(
-        "services.lsp.manager.getInitializationStatus still needs business-logic migration"
-    )
+_MANAGER: LocalLSPServerManager | None = None
+_STATUS: dict[str, Any] = {"initialized": False, "connected": False}
 
-async def getLspServerManager(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLspServerManager`."""
-    raise NotImplementedError(
-        "services.lsp.manager.getLspServerManager still needs business-logic migration"
-    )
 
-async def initializeLspServerManager(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `initializeLspServerManager`."""
-    raise NotImplementedError(
-        "services.lsp.manager.initializeLspServerManager still needs business-logic migration"
-    )
+async def initializeLspServerManager(root: str | Path = ".", servers: list[dict[str, Any]] | None = None) -> LocalLSPServerManager:
+    global _MANAGER, _STATUS
+    _MANAGER = await createLSPServerManager(root, servers)
+    _STATUS = await _MANAGER.status()
+    return _MANAGER
 
-async def isLspConnected(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isLspConnected`."""
-    raise NotImplementedError(
-        "services.lsp.manager.isLspConnected still needs business-logic migration"
-    )
 
-async def reinitializeLspServerManager(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `reinitializeLspServerManager`."""
-    raise NotImplementedError(
-        "services.lsp.manager.reinitializeLspServerManager still needs business-logic migration"
-    )
+async def getLspServerManager() -> LocalLSPServerManager:
+    global _MANAGER
+    if _MANAGER is None:
+        _MANAGER = await initializeLspServerManager()
+    return _MANAGER
 
-async def shutdownLspServerManager(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shutdownLspServerManager`."""
-    raise NotImplementedError(
-        "services.lsp.manager.shutdownLspServerManager still needs business-logic migration"
-    )
 
-async def waitForInitialization(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `waitForInitialization`."""
-    raise NotImplementedError(
-        "services.lsp.manager.waitForInitialization still needs business-logic migration"
-    )
+async def getInitializationStatus() -> dict[str, Any]:
+    if _MANAGER is not None:
+        return await _MANAGER.status()
+    return dict(_STATUS)
+
+
+async def isLspConnected() -> bool:
+    status = await getInitializationStatus()
+    return bool(status.get("connected"))
+
+
+async def waitForInitialization(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+    return await getInitializationStatus()
+
+
+async def shutdownLspServerManager() -> dict[str, Any]:
+    global _MANAGER, _STATUS
+    if _MANAGER is None:
+        _STATUS = {"initialized": False, "connected": False}
+        return dict(_STATUS)
+    status = await _MANAGER.shutdown()
+    _MANAGER = None
+    _STATUS = {"initialized": False, "connected": False, "last": status}
+    return dict(_STATUS)
+
+
+async def reinitializeLspServerManager(root: str | Path = ".", servers: list[dict[str, Any]] | None = None) -> LocalLSPServerManager:
+    await shutdownLspServerManager()
+    return await initializeLspServerManager(root, servers)
+
+
+async def _resetLspManagerForTesting() -> None:
+    global _MANAGER, _STATUS
+    _MANAGER = None
+    _STATUS = {"initialized": False, "connected": False}

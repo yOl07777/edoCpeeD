@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/Stats.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, first_options, option, scalar_arg
+
+
 async def Stats(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Stats`."""
-    raise NotImplementedError(
-        "components.Stats.Stats still needs business-logic migration"
-    )
+    stats = option(args, kwargs, "stats", scalar_arg(args, first_options(args)))
+    return component_payload("stats", stats=stats, keys=sorted(stats.keys()) if isinstance(stats, dict) else [])
+
+
+__all__ = ["Stats"]

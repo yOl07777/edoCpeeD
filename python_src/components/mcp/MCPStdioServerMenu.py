@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/mcp/MCPStdioServerMenu.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.mcp._shared import mcp_payload, normalize_server
+
+
 async def MCPStdioServerMenu(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MCPStdioServerMenu`."""
-    raise NotImplementedError(
-        "components.mcp.MCPStdioServerMenu.MCPStdioServerMenu still needs business-logic migration"
-    )
+    server = normalize_server(kwargs.get("server") or (args[0] if args else {}))
+    command = kwargs.get("command") or ""
+    server["transport"] = "stdio"
+    return mcp_payload("mcp_stdio_server_menu", server=server, command=str(command), actions=["start", "stop", "restart"])
+
+
+__all__ = ["MCPStdioServerMenu"]

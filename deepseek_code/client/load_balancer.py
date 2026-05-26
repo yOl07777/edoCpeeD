@@ -64,7 +64,7 @@ class DeepSeekLoadBalancer:
             return target
 
     def mark_failure(self, target: DeepSeekTarget, status_code: int | None) -> None:
-        if status_code in {401, 429} or (status_code is not None and status_code >= 500):
+        if status_code is None or status_code in {401, 429} or (status_code is not None and status_code >= 500):
             self._cooldowns[target] = time.monotonic() + self._cooldown_seconds
 
     def mark_success(self, target: DeepSeekTarget) -> None:

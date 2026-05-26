@@ -1,33 +1,60 @@
-"""
-Python migration draft for `src/types/hooks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-hookJSONOutputSchema: Any = None
-promptRequestSchema: Any = None
-syncHookResponseSchema: Any = None
+HOOK_EVENTS = {
+    "PreToolUse",
+    "PostToolUse",
+    "PostToolUseFailure",
+    "UserPromptSubmit",
+    "SessionStart",
+    "Setup",
+    "SubagentStart",
+    "SubagentStop",
+    "Stop",
+    "Notification",
+    "PermissionRequest",
+    "PermissionDenied",
+    "Elicitation",
+    "ElicitationResult",
+    "CwdChanged",
+    "FileChanged",
+    "WorktreeCreate",
+    "TaskCompleted",
+    "TeammateIdle",
+}
 
-async def isAsyncHookJSONOutput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isAsyncHookJSONOutput`."""
-    raise NotImplementedError(
-        "types.hooks.isAsyncHookJSONOutput still needs business-logic migration"
-    )
+promptRequestSchema = {
+    "type": "object",
+    "required": ["prompt", "message", "options"],
+    "properties": {
+        "prompt": {"type": "string"},
+        "message": {"type": "string"},
+        "options": {"type": "array"},
+    },
+}
+syncHookResponseSchema = {"type": "object"}
+hookJSONOutputSchema = {"oneOf": [{"required": ["async"]}, syncHookResponseSchema]}
 
-async def isHookEvent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isHookEvent`."""
-    raise NotImplementedError(
-        "types.hooks.isHookEvent still needs business-logic migration"
-    )
 
-async def isSyncHookJSONOutput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSyncHookJSONOutput`."""
-    raise NotImplementedError(
-        "types.hooks.isSyncHookJSONOutput still needs business-logic migration"
-    )
+def isHookEvent(value: str) -> bool:
+    return value in HOOK_EVENTS
+
+
+def isSyncHookJSONOutput(json_value: dict[str, Any]) -> bool:
+    return not (isinstance(json_value, dict) and json_value.get("async") is True)
+
+
+def isAsyncHookJSONOutput(json_value: dict[str, Any]) -> bool:
+    return isinstance(json_value, dict) and json_value.get("async") is True
+
+
+__all__ = [
+    "HOOK_EVENTS",
+    "hookJSONOutputSchema",
+    "isAsyncHookJSONOutput",
+    "isHookEvent",
+    "isSyncHookJSONOutput",
+    "promptRequestSchema",
+    "syncHookResponseSchema",
+]

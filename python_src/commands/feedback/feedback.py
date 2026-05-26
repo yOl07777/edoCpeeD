@@ -1,23 +1,41 @@
-"""
-Python migration draft for `src/commands/feedback/feedback.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Feedback command shim for the Python migration."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Awaitable, Callable
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.feedback.feedback.call still needs business-logic migration"
-    )
+DoneCallback = Callable[[Any], Any | Awaitable[Any]]
 
-async def renderFeedbackComponent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderFeedbackComponent`."""
-    raise NotImplementedError(
-        "commands.feedback.feedback.renderFeedbackComponent still needs business-logic migration"
-    )
+
+def renderFeedbackComponent(
+    onDone: DoneCallback | None,
+    abortSignal: Any = None,
+    messages: list[dict[str, Any]] | None = None,
+    initialDescription: str = "",
+    backgroundTasks: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return {
+        "type": "feedback",
+        "initialDescription": initialDescription,
+        "messages": list(messages or []),
+        "backgroundTasks": dict(backgroundTasks or {}),
+        "abortSignal": abortSignal,
+        "onDone": onDone,
+    }
+
+
+async def call(onDone: DoneCallback | None = None, context: dict[str, Any] | Any = None, args: str | None = None) -> dict[str, Any]:
+    initial = args or ""
+    if isinstance(context, dict):
+        controller = context.get("abortController")
+        abort_signal = context.get("abortSignal")
+        if abort_signal is None and isinstance(controller, dict):
+            abort_signal = controller.get("signal")
+        messages = context.get("messages", [])
+        background_tasks = context.get("backgroundTasks", {})
+    else:
+        controller = getattr(context, "abortController", None)
+        abort_signal = getattr(controller, "signal", None)
+        messages = getattr(context, "messages", [])
+        background_tasks = getattr(context, "backgroundTasks", {})
+    return renderFeedbackComponent(onDone, abort_signal, messages, initial, background_tasks)

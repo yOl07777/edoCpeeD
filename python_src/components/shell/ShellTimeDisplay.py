@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/shell/ShellTimeDisplay.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.shell._shared import format_duration, shell_payload
+
+
 async def ShellTimeDisplay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShellTimeDisplay`."""
-    raise NotImplementedError(
-        "components.shell.ShellTimeDisplay.ShellTimeDisplay still needs business-logic migration"
-    )
+    seconds = float(kwargs.get("seconds", kwargs.get("duration", args[0] if args else 0)) or 0)
+    return shell_payload("shell_time_display", seconds=seconds, text=format_duration(seconds))
+
+
+__all__ = ["ShellTimeDisplay"]

@@ -1,19 +1,14 @@
-"""
-Python migration draft for `src/tools/SendMessageTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for SendMessageTool."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.tools.SendMessageTool.constants import SEND_MESSAGE_TOOL_NAME
 
-DESCRIPTION: Any = None
+DESCRIPTION = "Send a message to a local in-process agent or team."
 
-async def getPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrompt`."""
-    raise NotImplementedError(
-        "tools.SendMessageTool.prompt.getPrompt still needs business-logic migration"
-    )
+
+async def getPrompt(*args, **kwargs) -> str:
+    return f"Use {SEND_MESSAGE_TOOL_NAME} with target_id, content, and optional sender."
+
+
+__all__ = ["DESCRIPTION", "getPrompt"]

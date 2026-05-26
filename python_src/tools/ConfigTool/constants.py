@@ -8,6 +8,6 @@ Claude/Anthropic model calls should be routed through `deepseek_code`.
 
 from __future__ import annotations
 
-from typing import Any
+CONFIG_TOOL_NAME = "config"
 
-CONFIG_TOOL_NAME: Any = None
+__all__ = ["CONFIG_TOOL_NAME"]

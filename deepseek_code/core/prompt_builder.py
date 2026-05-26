@@ -61,6 +61,8 @@ class PromptAdapter:
         wire: dict[str, Any] = {"role": message.role}
         if message.content is not None:
             wire["content"] = message.content
+        if message.reasoning_content and message.role == "assistant" and message.tool_calls:
+            wire["reasoning_content"] = message.reasoning_content
         if message.name:
             wire["name"] = message.name
         if message.tool_call_id:

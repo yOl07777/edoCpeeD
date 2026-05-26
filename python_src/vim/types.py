@@ -1,42 +1,27 @@
-"""
-Python migration draft for `src/vim/types.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-FIND_KEYS: Any = None
-MAX_VIM_COUNT: Any = None
-OPERATORS: Any = None
-SIMPLE_MOTIONS: Any = None
-TEXT_OBJ_SCOPES: Any = None
-TEXT_OBJ_TYPES: Any = None
 
-async def createInitialPersistentState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createInitialPersistentState`."""
-    raise NotImplementedError(
-        "vim.types.createInitialPersistentState still needs business-logic migration"
-    )
+OPERATORS = {"d": "delete", "c": "change", "y": "yank"}
+SIMPLE_MOTIONS = {"h", "l", "j", "k", "w", "b", "e", "W", "B", "E", "0", "^", "$"}
+FIND_KEYS = {"f", "F", "t", "T"}
+TEXT_OBJ_SCOPES = {"i": "inner", "a": "around"}
+TEXT_OBJ_TYPES = {"w", "W", '"', "'", "`", "(", ")", "b", "[", "]", "{", "}", "B", "<", ">"}
+MAX_VIM_COUNT = 10000
 
-async def createInitialVimState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createInitialVimState`."""
-    raise NotImplementedError(
-        "vim.types.createInitialVimState still needs business-logic migration"
-    )
 
-async def isOperatorKey(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isOperatorKey`."""
-    raise NotImplementedError(
-        "vim.types.isOperatorKey still needs business-logic migration"
-    )
+def isOperatorKey(key: str) -> bool:
+    return key in OPERATORS
 
-async def isTextObjScopeKey(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isTextObjScopeKey`."""
-    raise NotImplementedError(
-        "vim.types.isTextObjScopeKey still needs business-logic migration"
-    )
+
+def isTextObjScopeKey(key: str) -> bool:
+    return key in TEXT_OBJ_SCOPES
+
+
+def createInitialVimState() -> dict[str, Any]:
+    return {"mode": "INSERT", "insertedText": ""}
+
+
+def createInitialPersistentState() -> dict[str, Any]:
+    return {"lastChange": None, "lastFind": None, "register": "", "registerIsLinewise": False}

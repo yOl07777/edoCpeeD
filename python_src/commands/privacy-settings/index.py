@@ -1,16 +1,24 @@
-"""
-Python migration draft for `src/commands/privacy-settings/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/privacy-settings`."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib.util
+from pathlib import Path
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.privacy-settings.index still needs business-logic migration"
-    )
+_path = Path(__file__).with_name("privacy-settings.py")
+_spec = importlib.util.spec_from_file_location("privacy_settings_command_impl", _path)
+_module = importlib.util.module_from_spec(_spec)
+assert _spec and _spec.loader
+_spec.loader.exec_module(_module)
+call = _module.call
+
+privacySettings = {
+    "type": "local",
+    "name": "privacy-settings",
+    "description": "Review and manage local privacy settings",
+    "progressMessage": "opening privacy settings",
+    "source": "builtin",
+    "call": call,
+}
+
+default = privacySettings

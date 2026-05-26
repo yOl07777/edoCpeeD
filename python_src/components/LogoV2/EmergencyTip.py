@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/LogoV2/EmergencyTip.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.LogoV2._shared import logo_payload, notice_text, option, scalar_arg
+
+
 async def EmergencyTip(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `EmergencyTip`."""
-    raise NotImplementedError(
-        "components.LogoV2.EmergencyTip.EmergencyTip still needs business-logic migration"
-    )
+    text = notice_text(args, kwargs, str(scalar_arg(args, "Use /help, /status, or /exit if the terminal feels stuck.")))
+    return logo_payload("emergency_tip", text=text, severity=str(option(args, kwargs, "severity", "info")))
+
+
+__all__ = ["EmergencyTip"]

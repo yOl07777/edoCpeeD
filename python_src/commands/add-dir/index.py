@@ -1,16 +1,20 @@
-"""
-Python migration draft for `src/commands/add-dir/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+import importlib.util
+from pathlib import Path
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.add-dir.index still needs business-logic migration"
-    )
+_spec = importlib.util.spec_from_file_location("_add_dir_command", Path(__file__).with_name("add-dir.py"))
+_module = importlib.util.module_from_spec(_spec)
+assert _spec and _spec.loader
+_spec.loader.exec_module(_module)
+call = _module.call
+
+addDir = {
+    "type": "local-jsx",
+    "name": "add-dir",
+    "description": "Add a new working directory",
+    "argumentHint": "<path>",
+    "call": call,
+}
+
+default = addDir

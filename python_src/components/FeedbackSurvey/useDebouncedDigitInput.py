@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/FeedbackSurvey/useDebouncedDigitInput.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.FeedbackSurvey._shared import normalize_rating, survey_payload
+
+
 async def useDebouncedDigitInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useDebouncedDigitInput`."""
-    raise NotImplementedError(
-        "components.FeedbackSurvey.useDebouncedDigitInput.useDebouncedDigitInput still needs business-logic migration"
-    )
+    value = kwargs.get("value") or (args[0] if args else None)
+    delay_ms = int(kwargs.get("delayMs", kwargs.get("delay_ms", 250)) or 250)
+    rating = normalize_rating(value)
+    return survey_payload("debounced_digit_input", value=value, rating=rating, valid=rating is not None, delayMs=delay_ms)
+
+
+__all__ = ["useDebouncedDigitInput"]

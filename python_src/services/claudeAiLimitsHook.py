@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/services/claudeAiLimitsHook.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Hook-style compatibility wrapper for quota status."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def useClaudeAiLimits(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useClaudeAiLimits`."""
-    raise NotImplementedError(
-        "services.claudeAiLimitsHook.useClaudeAiLimits still needs business-logic migration"
-    )
+from .claudeAiLimits import checkQuotaStatus, getRawUtilization
+
+
+async def useClaudeAiLimits(headers: dict[str, Any] | None = None, error: Any = None) -> dict[str, Any]:
+    if headers is not None or error is not None:
+        return await checkQuotaStatus(headers, error)
+    return await getRawUtilization()

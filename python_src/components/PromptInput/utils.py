@@ -1,29 +1,23 @@
-"""
-Python migration draft for `src/components/PromptInput/utils.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def getNewlineInstructions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getNewlineInstructions`."""
-    raise NotImplementedError(
-        "components.PromptInput.utils.getNewlineInstructions still needs business-logic migration"
-    )
+from python_src.components.PromptInput._shared import vim_enabled
+
+
+async def getNewlineInstructions(*_args: Any, **kwargs: Any) -> Any:
+    if kwargs.get("pasteMode", False):
+        return "End multiline input with .end on its own line."
+    return "Use a trailing backslash to continue on the next line."
+
 
 async def isNonSpacePrintable(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isNonSpacePrintable`."""
-    raise NotImplementedError(
-        "components.PromptInput.utils.isNonSpacePrintable still needs business-logic migration"
-    )
+    char = str(kwargs.get("char") or (args[0] if args else "") or "")
+    return len(char) == 1 and char.isprintable() and not char.isspace()
 
-async def isVimModeEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isVimModeEnabled`."""
-    raise NotImplementedError(
-        "components.PromptInput.utils.isVimModeEnabled still needs business-logic migration"
-    )
+
+async def isVimModeEnabled(*_args: Any, **_kwargs: Any) -> Any:
+    return vim_enabled()
+
+
+__all__ = ["getNewlineInstructions", "isNonSpacePrintable", "isVimModeEnabled"]

@@ -1,14 +1,30 @@
-"""
-Python migration draft for `src/tools/FileEditTool/types.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""FileEditTool schema compatibility constants."""
 
 from __future__ import annotations
 
-from typing import Any
+hunkSchema = {
+    "type": "object",
+    "properties": {
+        "oldStart": {"type": "integer"},
+        "oldLines": {"type": "integer"},
+        "newStart": {"type": "integer"},
+        "newLines": {"type": "integer"},
+        "lines": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["lines"],
+    "additionalProperties": True,
+}
 
-gitDiffSchema: Any = None
-hunkSchema: Any = None
+gitDiffSchema = {
+    "type": "object",
+    "properties": {
+        "path": {"type": "string"},
+        "oldPath": {"type": "string"},
+        "newPath": {"type": "string"},
+        "hunks": {"type": "array", "items": hunkSchema},
+    },
+    "required": ["hunks"],
+    "additionalProperties": True,
+}
+
+__all__ = ["gitDiffSchema", "hunkSchema"]

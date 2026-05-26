@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/components/Spinner/useShimmerAnimation.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useShimmerAnimation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useShimmerAnimation`."""
-    raise NotImplementedError(
-        "components.Spinner.useShimmerAnimation.useShimmerAnimation still needs business-logic migration"
-    )
+
+async def useShimmerAnimation(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    frame = int(kwargs.get("frame", 0) or 0)
+    width = int(kwargs.get("width", 8) or 8)
+    return {"type": "shimmer_animation", "provider": "deepseek", "frame": frame, "position": frame % max(1, width)}
+
+
+__all__ = ["useShimmerAnimation"]

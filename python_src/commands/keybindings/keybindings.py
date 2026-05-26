@@ -1,17 +1,23 @@
-"""
-Python migration draft for `src/commands/keybindings/keybindings.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Open or create the keybindings configuration file."""
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.keybindings.keybindings.call still needs business-logic migration"
-    )
+from python_src.keybindings.loadUserBindings import getKeybindingsPath, isKeybindingCustomizationEnabled
+from python_src.keybindings.template import generateKeybindingsTemplate
+
+
+async def call(*_args: Any, **_kwargs: Any) -> dict[str, str]:
+    if not isKeybindingCustomizationEnabled():
+        return {"type": "text", "value": "Keybinding customization is not enabled. This feature is currently in preview."}
+    path = Path(getKeybindingsPath())
+    existed = path.exists()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not existed:
+        path.write_text(generateKeybindingsTemplate(), encoding="utf-8")
+    return {
+        "type": "text",
+        "value": f"{'Opened' if existed else 'Created'} {path}." + ("" if existed else " Template written."),
+    }

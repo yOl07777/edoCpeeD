@@ -1,16 +1,19 @@
-"""
-Python migration draft for `src/commands/btw/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/btw`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .btw import call
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.btw.index still needs business-logic migration"
-    )
+btw = {
+    "type": "local-jsx",
+    "name": "btw",
+    "description": "Ask a quick side question without interrupting the main conversation",
+    "isEnabled": lambda: True,
+    "isHidden": lambda: False,
+    "argumentHint": "<question>",
+    "progressMessage": "Asking side question",
+    "userFacingName": lambda: "btw",
+    "call": call,
+}
+
+default = btw

@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/hooks/useVirtualScroll.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, listify, pick
+
+
 async def useVirtualScroll(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useVirtualScroll`."""
-    raise NotImplementedError(
-        "hooks.useVirtualScroll.useVirtualScroll still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    items = listify(pick(options, "items", default=[]))
+    offset = max(0, int(pick(options, "offset", default=0)))
+    height = max(0, int(pick(options, "height", "window", default=10)))
+    visible = items[offset : offset + height]
+    return {"provider": "deepseek", "offset": offset, "height": height, "visible": visible, "total": len(items)}

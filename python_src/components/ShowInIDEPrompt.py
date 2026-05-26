@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/ShowInIDEPrompt.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, path_label, scalar_arg
+
+
 async def ShowInIDEPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShowInIDEPrompt`."""
-    raise NotImplementedError(
-        "components.ShowInIDEPrompt.ShowInIDEPrompt still needs business-logic migration"
-    )
+    path = path_label(option(args, kwargs, "path", scalar_arg(args, "")))
+    ide = str(option(args, kwargs, "ide", "IDE"))
+    return component_payload("show_in_ide_prompt", path=path, ide=ide, command=f"open {path}" if path else "")
+
+
+__all__ = ["ShowInIDEPrompt"]

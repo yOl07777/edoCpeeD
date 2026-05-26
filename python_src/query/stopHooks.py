@@ -1,16 +1,38 @@
-"""
-Python migration draft for `src/query/stopHooks.ts`.
+"""Stop-hook shim for the Python query loop.
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
+The full TypeScript implementation coordinates UI progress messages, teammate
+hooks, analytics, prompt suggestions, and background memory extraction.  The
+DeepSeek Python migration keeps a safe no-op async-iterable surface so query
+orchestration can call it without pulling Claude-specific runtime graphs.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "query.stopHooks still needs business-logic migration"
-    )
+
+@dataclass
+class StopHookResult:
+    blockingErrors: list[Any] = field(default_factory=list)
+    preventContinuation: bool = False
+
+
+class StopHookIterator:
+    def __init__(self, result: StopHookResult | None = None) -> None:
+        self.result = result or StopHookResult()
+
+    def __aiter__(self) -> "StopHookIterator":
+        return self
+
+    async def __anext__(self) -> Any:
+        raise StopAsyncIteration
+
+
+def handleStopHooks(*_args: Any, **_kwargs: Any) -> StopHookIterator:
+    """Return an empty async iterator with a DeepSeek-safe stop-hook result."""
+
+    return StopHookIterator()
+
+
+__all__ = ["StopHookIterator", "StopHookResult", "handleStopHooks"]

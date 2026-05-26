@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/hooks/useTeammateViewAutoExit.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def useTeammateViewAutoExit(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useTeammateViewAutoExit`."""
-    raise NotImplementedError(
-        "hooks.useTeammateViewAutoExit.useTeammateViewAutoExit still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    active = bool(pick(options, "active", default=False))
+    teammate_count = int(pick(options, "teammateCount", "count", default=0))
+    should_exit = active and teammate_count == 0
+    return {"provider": "deepseek", "shouldExit": should_exit, "active": active, "teammateCount": teammate_count}

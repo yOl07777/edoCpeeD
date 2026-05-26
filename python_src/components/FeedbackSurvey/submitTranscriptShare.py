@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/components/FeedbackSurvey/submitTranscriptShare.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.FeedbackSurvey._shared import survey_payload, timestamp
+
+
 async def submitTranscriptShare(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `submitTranscriptShare`."""
-    raise NotImplementedError(
-        "components.FeedbackSurvey.submitTranscriptShare.submitTranscriptShare still needs business-logic migration"
+    consent = bool(kwargs.get("consent", args[0] if args else False))
+    transcript = kwargs.get("transcript") or ""
+    return survey_payload(
+        "transcript_share_submission",
+        accepted=consent,
+        uploaded=False,
+        bytes=len(str(transcript).encode("utf-8")) if consent else 0,
+        createdAt=timestamp(),
+        message="Transcript share recorded locally; no network upload was performed.",
     )
+
+
+__all__ = ["submitTranscriptShare"]

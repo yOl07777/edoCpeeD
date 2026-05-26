@@ -1,19 +1,20 @@
-"""
-Python migration draft for `src/tools/ConfigTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for ConfigTool."""
 
 from __future__ import annotations
 
 from typing import Any
 
-DESCRIPTION: Any = None
+from .supportedSettings import SUPPORTED_SETTINGS
 
-async def generatePrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generatePrompt`."""
-    raise NotImplementedError(
-        "tools.ConfigTool.prompt.generatePrompt still needs business-logic migration"
+DESCRIPTION = "Read or update local DeepSeek Code configuration."
+
+
+async def generatePrompt(*args: Any, **kwargs: Any) -> str:
+    keys = ", ".join(sorted(SUPPORTED_SETTINGS))
+    return (
+        f"{DESCRIPTION} Supported settings: {keys}. "
+        "Use get/list for inspection and set/delete for local workspace configuration changes."
     )
+
+
+__all__ = ["DESCRIPTION", "generatePrompt"]

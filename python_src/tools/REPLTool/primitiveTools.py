@@ -1,17 +1,22 @@
-"""
-Python migration draft for `src/tools/REPLTool/primitiveTools.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Primitive tools exposed only in local REPL/test contexts."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def getReplPrimitiveTools(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getReplPrimitiveTools`."""
-    raise NotImplementedError(
-        "tools.REPLTool.primitiveTools.getReplPrimitiveTools still needs business-logic migration"
-    )
+from python_src.tools.REPLTool.constants import REPL_ONLY_TOOLS
+from python_src.tools.SyntheticOutputTool.SyntheticOutputTool import SyntheticOutputTool
+from python_src.tools.testing.TestingPermissionTool import TestingPermissionTool
+
+
+async def getReplPrimitiveTools(*args: Any, **kwargs: Any) -> list[Any]:
+    include = set(kwargs.get("include") or REPL_ONLY_TOOLS)
+    tools = []
+    if "synthetic_output" in include:
+        tools.append(SyntheticOutputTool)
+    if "testing_permission" in include:
+        tools.append(TestingPermissionTool)
+    return tools
+
+
+__all__ = ["getReplPrimitiveTools"]

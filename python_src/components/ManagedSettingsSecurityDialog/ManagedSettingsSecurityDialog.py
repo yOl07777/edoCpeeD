@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/components/ManagedSettingsSecurityDialog/ManagedSettingsSecurityDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.ManagedSettingsSecurityDialog.utils import extractDangerousSettings, formatDangerousSettingsList
+
+
 async def ManagedSettingsSecurityDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ManagedSettingsSecurityDialog`."""
-    raise NotImplementedError(
-        "components.ManagedSettingsSecurityDialog.ManagedSettingsSecurityDialog.ManagedSettingsSecurityDialog still needs business-logic migration"
-    )
+    settings = kwargs.get("settings") if "settings" in kwargs else (args[0] if args else {})
+    dangerous = await extractDangerousSettings(settings)
+    return {
+        "type": "managed_settings_security_dialog",
+        "provider": "deepseek",
+        "dangerousSettings": dangerous,
+        "hasDangerousSettings": bool(dangerous),
+        "formatted": await formatDangerousSettingsList(dangerous),
+        "actions": ["review", "accept", "cancel"],
+    }
+
+
+__all__ = ["ManagedSettingsSecurityDialog"]

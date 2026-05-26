@@ -1,108 +1,131 @@
-"""
-Python migration draft for `src/entrypoints/agentSdkTypes.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import time
+import uuid
 from typing import Any
 
-class AbortError:
-    """Migrated placeholder for TypeScript class `AbortError`."""
+from python_src.entrypoints.sdk.coreSchemas import prompt_response, validate_prompt_request
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
 
-async def buildMissedTaskNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `buildMissedTaskNotification`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.buildMissedTaskNotification still needs business-logic migration"
+class AbortError(Exception):
+    """Raised when a local SDK operation is cancelled."""
+
+
+_SESSIONS: dict[str, dict[str, Any]] = {}
+
+
+def _session(session_id: Any = None) -> dict[str, Any]:
+    sid = str(session_id or uuid.uuid4())
+    return _SESSIONS.setdefault(
+        sid,
+        {"id": sid, "provider": "deepseek", "title": "DeepSeek Code session", "tags": [], "messages": [], "createdAt": time.time()},
     )
 
-async def connectRemoteControl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `connectRemoteControl`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.connectRemoteControl still needs business-logic migration"
-    )
 
-async def createSdkMcpServer(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createSdkMcpServer`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.createSdkMcpServer still needs business-logic migration"
-    )
+async def unstable_v2_createSession(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    session = _session(kwargs.get("id"))
+    session.update({key: value for key, value in kwargs.items() if key in {"title", "cwd", "model"}})
+    return dict(session)
 
-async def forkSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `forkSession`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.forkSession still needs business-logic migration"
-    )
 
-async def getSessionInfo(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionInfo`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.getSessionInfo still needs business-logic migration"
-    )
+async def unstable_v2_resumeSession(session_id: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return dict(_session(kwargs.get("session_id") or session_id))
 
-async def getSessionMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionMessages`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.getSessionMessages still needs business-logic migration"
-    )
 
-async def listSessions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `listSessions`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.listSessions still needs business-logic migration"
-    )
+async def getSessionInfo(session_id: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    session = _session(kwargs.get("session_id") or session_id)
+    return {key: value for key, value in session.items() if key != "messages"} | {"messageCount": len(session["messages"])}
 
-async def query(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `query`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.query still needs business-logic migration"
-    )
 
-async def renameSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renameSession`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.renameSession still needs business-logic migration"
-    )
+async def getSessionMessages(session_id: Any = None, *_args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    return list(_session(kwargs.get("session_id") or session_id)["messages"])
 
-async def tagSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `tagSession`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.tagSession still needs business-logic migration"
-    )
 
-async def tool(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `tool`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.tool still needs business-logic migration"
-    )
+async def listSessions(*_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+    return [await getSessionInfo(session_id) for session_id in sorted(_SESSIONS)]
 
-async def unstable_v2_createSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `unstable_v2_createSession`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.unstable_v2_createSession still needs business-logic migration"
-    )
 
-async def unstable_v2_prompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `unstable_v2_prompt`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.unstable_v2_prompt still needs business-logic migration"
-    )
+async def query(prompt: Any = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    session = _session(kwargs.get("session_id"))
+    request = validate_prompt_request({"prompt": kwargs.get("prompt", prompt), "session_id": session["id"], "options": kwargs.get("options", {})})
+    text = request["prompt"]
+    user = {"role": "user", "content": text}
+    assistant = {"role": "assistant", "content": f"DeepSeek local SDK dry-run response for: {text}"}
+    session["messages"].extend([user, assistant])
+    return {"type": "query_result", **prompt_response(assistant, session_id=session["id"])}
 
-async def unstable_v2_resumeSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `unstable_v2_resumeSession`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.unstable_v2_resumeSession still needs business-logic migration"
-    )
 
-async def watchScheduledTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `watchScheduledTasks`."""
-    raise NotImplementedError(
-        "entrypoints.agentSdkTypes.watchScheduledTasks still needs business-logic migration"
-    )
+async def unstable_v2_prompt(prompt: Any = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return await query(prompt, **kwargs)
+
+
+async def renameSession(session_id: Any = None, title: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    session = _session(kwargs.get("session_id") or session_id)
+    session["title"] = str(kwargs.get("title") or title or session.get("title") or "")
+    return await getSessionInfo(session["id"])
+
+
+async def tagSession(session_id: Any = None, tags: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    session = _session(kwargs.get("session_id") or session_id)
+    values = kwargs.get("tags", tags if tags is not None else [])
+    if isinstance(values, str):
+        values = [values]
+    session["tags"] = sorted({str(tag) for tag in values or []})
+    return await getSessionInfo(session["id"])
+
+
+async def forkSession(session_id: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    source = _session(kwargs.get("session_id") or session_id)
+    fork = _session(kwargs.get("new_session_id"))
+    fork.update({key: value for key, value in source.items() if key not in {"id", "createdAt"}})
+    fork["forkedFrom"] = source["id"]
+    fork["messages"] = list(source.get("messages", []))
+    return dict(fork)
+
+
+async def tool(name: Any = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {
+        "type": "function",
+        "function": {
+            "name": str(kwargs.get("name") or name or "tool"),
+            "description": str(kwargs.get("description") or "DeepSeek SDK tool"),
+            "parameters": kwargs.get("parameters") or {"type": "object", "properties": {}},
+        },
+    }
+
+
+async def buildMissedTaskNotification(task: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = dict(task) if isinstance(task, dict) else {"id": str(task or kwargs.get("task_id", ""))}
+    return {"type": "task_notification", "provider": "deepseek", "task": data, "missed": True}
+
+
+async def connectRemoteControl(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"type": "remote_control", "provider": "deepseek", "connected": False, "dryRun": True, "endpoint": kwargs.get("endpoint", "")}
+
+
+async def createSdkMcpServer(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"type": "sdk_mcp_server", "provider": "deepseek", "transport": kwargs.get("transport", "stdio"), "dryRun": True}
+
+
+async def watchScheduledTasks(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"type": "scheduled_tasks_watch", "provider": "deepseek", "tasks": list(kwargs.get("tasks", []) or []), "active": False}
+
+
+__all__ = [
+    "AbortError",
+    "buildMissedTaskNotification",
+    "connectRemoteControl",
+    "createSdkMcpServer",
+    "forkSession",
+    "getSessionInfo",
+    "getSessionMessages",
+    "listSessions",
+    "query",
+    "renameSession",
+    "tagSession",
+    "tool",
+    "unstable_v2_createSession",
+    "unstable_v2_prompt",
+    "unstable_v2_resumeSession",
+    "watchScheduledTasks",
+]

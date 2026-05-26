@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/components/agents/ModelSelector.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.agents._shared import AGENT_MODELS, component_result
+
+
 async def ModelSelector(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ModelSelector`."""
-    raise NotImplementedError(
-        "components.agents.ModelSelector.ModelSelector still needs business-logic migration"
+    selected = str(kwargs.get("selected") or (args[0] if args else "") or "deepseek-chat")
+    models = kwargs.get("models") or AGENT_MODELS
+    return component_result(
+        "model_selector",
+        models=[{"id": model, "selected": model == selected} for model in models],
+        selected=selected,
     )
+
+
+__all__ = ["ModelSelector"]

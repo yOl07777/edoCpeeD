@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/SandboxViolationExpandedView.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, first_options, normalize_items, option, scalar_arg
+
+
 async def SandboxViolationExpandedView(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SandboxViolationExpandedView`."""
-    raise NotImplementedError(
-        "components.SandboxViolationExpandedView.SandboxViolationExpandedView still needs business-logic migration"
-    )
+    violation = option(args, kwargs, "violation", scalar_arg(args, first_options(args)))
+    details = normalize_items(option(args, kwargs, "details", violation.get("details", []) if isinstance(violation, dict) else []))
+    return component_payload("sandbox_violation_expanded_view", violation=violation, details=details, blocked=True)
+
+
+__all__ = ["SandboxViolationExpandedView"]

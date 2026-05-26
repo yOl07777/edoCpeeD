@@ -1,13 +1,15 @@
-"""
-Python migration draft for `src/components/HighlightedCode.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-HighlightedCode: Any = None
+from python_src.components._shared import component_payload, option, scalar_arg
+
+
+async def HighlightedCode(*args: Any, **kwargs: Any) -> Any:
+    code = str(option(args, kwargs, "code", scalar_arg(args, "")))
+    language = str(option(args, kwargs, "language", option(args, kwargs, "lang", "")))
+    lines = code.splitlines()
+    return component_payload("highlighted_code", code=code, language=language, lines=lines, lineCount=len(lines))
+
+
+__all__ = ["HighlightedCode"]

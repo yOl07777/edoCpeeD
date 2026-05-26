@@ -1,16 +1,13 @@
-"""
-Python migration draft for `src/components/PromptInput/PromptInputFooter.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.PromptInput.PromptInputFooter still needs business-logic migration"
-    )
+from python_src.components.PromptInput._shared import prompt_payload
+
+
+async def PromptInputFooter(*args: Any, **kwargs: Any) -> Any:
+    mode = str(kwargs.get("mode") or (args[0] if args else "prompt"))
+    return prompt_payload("prompt_input_footer", mode=mode, hints=kwargs.get("hints") or ["Enter to send", "Shift+Enter for newline"], status=kwargs.get("status"))
+
+
+__all__ = ["PromptInputFooter"]

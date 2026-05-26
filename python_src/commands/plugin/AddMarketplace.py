@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/commands/plugin/AddMarketplace.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def AddMarketplace(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AddMarketplace`."""
-    raise NotImplementedError(
-        "commands.plugin.AddMarketplace.AddMarketplace still needs business-logic migration"
-    )
+from python_src.cli.handlers.plugins import marketplaceAddHandler
+from python_src.commands.plugin._shared import command_result
+
+
+async def AddMarketplace(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    source = kwargs.get("source") or (args[0] if args else None)
+    if not source:
+        return command_result("Specify a marketplace source to add.")
+    result = await marketplaceAddHandler(str(source), kwargs)
+    return command_result(f"Added marketplace: {source}", result=result)
+
+
+__all__ = ["AddMarketplace"]

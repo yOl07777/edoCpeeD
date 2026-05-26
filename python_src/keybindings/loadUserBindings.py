@@ -1,67 +1,115 @@
-"""
-Python migration draft for `src/keybindings/loadUserBindings.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""User keybinding configuration loader."""
 
 from __future__ import annotations
 
-from typing import Any
+import json
+import os
+from pathlib import Path
+from typing import Any, Callable
 
-subscribeToKeybindingChanges: Any = None
+from .defaultBindings import DEFAULT_BINDINGS
+from .parser import parseBindings
+from .validate import validateBindings
 
-async def disposeKeybindingWatcher(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `disposeKeybindingWatcher`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.disposeKeybindingWatcher still needs business-logic migration"
-    )
+_cached_bindings: list[dict[str, Any]] | None = None
+_cached_warnings: list[dict[str, Any]] = []
+_subscribers: list[Callable[[dict[str, Any]], Any]] = []
+_initialized = False
 
-async def getCachedKeybindingWarnings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCachedKeybindingWarnings`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.getCachedKeybindingWarnings still needs business-logic migration"
-    )
 
-async def getKeybindingsPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getKeybindingsPath`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.getKeybindingsPath still needs business-logic migration"
-    )
+def _truthy(value: Any) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
-async def initializeKeybindingWatcher(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `initializeKeybindingWatcher`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.initializeKeybindingWatcher still needs business-logic migration"
-    )
 
-async def isKeybindingCustomizationEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isKeybindingCustomizationEnabled`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.isKeybindingCustomizationEnabled still needs business-logic migration"
-    )
+def _config_home() -> Path:
+    return Path(os.getenv("DEEPCODE_CONFIG_HOME") or os.getenv("CLAUDE_CONFIG_DIR") or Path.home() / ".deepcode")
 
-async def loadKeybindings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `loadKeybindings`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.loadKeybindings still needs business-logic migration"
-    )
 
-async def loadKeybindingsSync(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `loadKeybindingsSync`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.loadKeybindingsSync still needs business-logic migration"
-    )
+def isKeybindingCustomizationEnabled() -> bool:
+    return _truthy(os.getenv("DEEPSEEK_KEYBINDINGS_ENABLED") or os.getenv("TENGU_KEYBINDING_CUSTOMIZATION_RELEASE"))
 
-async def loadKeybindingsSyncWithWarnings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `loadKeybindingsSyncWithWarnings`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.loadKeybindingsSyncWithWarnings still needs business-logic migration"
-    )
 
-async def resetKeybindingLoaderForTesting(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetKeybindingLoaderForTesting`."""
-    raise NotImplementedError(
-        "keybindings.loadUserBindings.resetKeybindingLoaderForTesting still needs business-logic migration"
-    )
+def getKeybindingsPath() -> str:
+    return str(_config_home() / "keybindings.json")
+
+
+def _parse_bindings(blocks: Any) -> list[dict[str, Any]]:
+    if not isinstance(blocks, list):
+        raise ValueError('"bindings" must be an array')
+    warnings = validateBindings(blocks)
+    if any(warning.get("severity") == "error" for warning in warnings):
+        raise ValueError("; ".join(str(warning.get("message")) for warning in warnings if warning.get("severity") == "error"))
+    return parseBindings(blocks)
+
+
+def _default_bindings() -> list[dict[str, Any]]:
+    return parseBindings(DEFAULT_BINDINGS)
+
+
+async def loadKeybindings() -> dict[str, Any]:
+    return loadKeybindingsSyncWithWarnings()
+
+
+def loadKeybindingsSync() -> list[dict[str, Any]]:
+    return loadKeybindingsSyncWithWarnings()["bindings"]
+
+
+def loadKeybindingsSyncWithWarnings() -> dict[str, Any]:
+    global _cached_bindings, _cached_warnings
+    if _cached_bindings is not None:
+        return {"bindings": list(_cached_bindings), "warnings": list(_cached_warnings)}
+    defaults = _default_bindings()
+    if not isKeybindingCustomizationEnabled():
+        _cached_bindings = defaults
+        _cached_warnings = []
+        return {"bindings": list(defaults), "warnings": []}
+    path = Path(getKeybindingsPath())
+    if not path.exists():
+        _cached_bindings = defaults
+        _cached_warnings = []
+        return {"bindings": list(defaults), "warnings": []}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or "bindings" not in data:
+            raise ValueError('keybindings.json must have a "bindings" array')
+        warnings = validateBindings(data["bindings"])
+        user = parseBindings(data["bindings"]) if isinstance(data["bindings"], list) else []
+        _cached_bindings = defaults + user
+        _cached_warnings = warnings
+    except Exception as exc:
+        _cached_bindings = defaults
+        _cached_warnings = [{"type": "parse_error", "severity": "error", "message": str(exc)}]
+    return {"bindings": list(_cached_bindings), "warnings": list(_cached_warnings)}
+
+
+async def initializeKeybindingWatcher() -> None:
+    global _initialized
+    _initialized = True
+
+
+def disposeKeybindingWatcher() -> None:
+    global _initialized
+    _initialized = False
+    _subscribers.clear()
+
+
+def subscribeToKeybindingChanges(callback: Callable[[dict[str, Any]], Any]) -> Callable[[], None]:
+    _subscribers.append(callback)
+
+    def unsubscribe() -> None:
+        if callback in _subscribers:
+            _subscribers.remove(callback)
+
+    return unsubscribe
+
+
+def getCachedKeybindingWarnings() -> list[dict[str, Any]]:
+    return list(_cached_warnings)
+
+
+def resetKeybindingLoaderForTesting() -> None:
+    global _cached_bindings, _cached_warnings, _initialized
+    _cached_bindings = None
+    _cached_warnings = []
+    _initialized = False
+    _subscribers.clear()

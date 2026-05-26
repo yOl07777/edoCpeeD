@@ -1,1 +1,1 @@
-"""Migrated Python package."""
+"""Task display shims for the DeepSeek Python runtime."""

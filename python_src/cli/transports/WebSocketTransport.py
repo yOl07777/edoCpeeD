@@ -1,18 +1,48 @@
-"""
-Python migration draft for `src/cli/transports/WebSocketTransport.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""In-memory WebSocket transport shim for the Python migration."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
+
 
 class WebSocketTransport:
-    """Migrated placeholder for TypeScript class `WebSocketTransport`."""
+    kind = "websocket"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+    def __init__(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+        sessionId: str | None = None,
+        refreshHeaders: Callable[[], dict[str, str]] | None = None,
+    ) -> None:
+        self.url = str(url)
+        self.headers = headers or {}
+        self.sessionId = sessionId
+        self.refreshHeaders = refreshHeaders
+        self.connected = False
+        self.closed = False
+        self.sent: list[Any] = []
+        self.on_data: Callable[[str], Any] | None = None
+        self.on_close: Callable[[], Any] | None = None
+
+    def setOnData(self, callback: Callable[[str], Any]) -> None:
+        self.on_data = callback
+
+    def setOnClose(self, callback: Callable[[], Any]) -> None:
+        self.on_close = callback
+
+    async def connect(self) -> None:
+        self.connected = True
+
+    async def write(self, message: Any) -> None:
+        self.sent.append(message)
+
+    def feed(self, data: str) -> None:
+        if self.on_data:
+            self.on_data(data)
+
+    def close(self) -> None:
+        self.closed = True
+        self.connected = False
+        if self.on_close:
+            self.on_close()

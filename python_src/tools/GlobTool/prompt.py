@@ -1,14 +1,11 @@
-"""
-Python migration draft for `src/tools/GlobTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt constants for GlobTool."""
 
 from __future__ import annotations
 
-from typing import Any
+GLOB_TOOL_NAME = "glob_files"
+DESCRIPTION = (
+    "Find files by glob pattern inside the current workspace. Use a narrow path and pattern "
+    "when possible, and use limit to keep results readable."
+)
 
-DESCRIPTION: Any = None
-GLOB_TOOL_NAME: Any = None
+__all__ = ["DESCRIPTION", "GLOB_TOOL_NAME"]

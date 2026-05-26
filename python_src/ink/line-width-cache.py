@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/ink/line-width-cache.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import importlib
 from typing import Any
 
+measureText = importlib.import_module("python_src.ink.measure-text").measureText
+
+_CACHE: dict[str, int] = {}
+
+
 async def lineWidth(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `lineWidth`."""
-    raise NotImplementedError(
-        "ink.line-width-cache.lineWidth still needs business-logic migration"
-    )
+    line = str(args[0] if args else kwargs.get("line", ""))
+    if line not in _CACHE:
+        _CACHE[line] = measureText(line)
+    return _CACHE[line]

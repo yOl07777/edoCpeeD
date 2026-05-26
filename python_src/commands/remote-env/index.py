@@ -1,16 +1,24 @@
-"""
-Python migration draft for `src/commands/remote-env/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/remote-env`."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib.util
+from pathlib import Path
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.remote-env.index still needs business-logic migration"
-    )
+_path = Path(__file__).with_name("remote-env.py")
+_spec = importlib.util.spec_from_file_location("remote_env_command_impl", _path)
+_module = importlib.util.module_from_spec(_spec)
+assert _spec and _spec.loader
+_spec.loader.exec_module(_module)
+call = _module.call
+
+remoteEnv = {
+    "type": "local",
+    "name": "remote-env",
+    "description": "Show safe remote environment details",
+    "progressMessage": "reading remote environment",
+    "source": "builtin",
+    "call": call,
+}
+
+default = remoteEnv

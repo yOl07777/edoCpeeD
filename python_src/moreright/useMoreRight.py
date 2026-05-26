@@ -1,17 +1,55 @@
 """
-Python migration draft for `src/moreright/useMoreRight.tsx`.
+External-build shim for ``src/moreright/useMoreRight.tsx``.
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
+The upstream file is intentionally a no-op outside Anthropic's internal build.
+This Python port preserves the same public shape: callers receive three async
+callbacks and a render function, all of which are safe to call.
 """
 
 from __future__ import annotations
 
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Awaitable, Callable, Iterable
 
-async def useMoreRight(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useMoreRight`."""
-    raise NotImplementedError(
-        "moreright.useMoreRight.useMoreRight still needs business-logic migration"
-    )
+
+@dataclass
+class MoreRightHooks:
+    """Callable hook object matching the TypeScript return contract."""
+
+    enabled: bool = False
+
+    async def onBeforeQuery(
+        self, input: str = "", all: Iterable[Any] | None = None, n: int = 0
+    ) -> bool:
+        return True
+
+    async def onTurnComplete(
+        self, all: Iterable[Any] | None = None, aborted: bool = False
+    ) -> None:
+        return None
+
+    def render(self) -> None:
+        return None
+
+    def as_dict(self) -> dict[str, Callable[..., Any] | Callable[..., Awaitable[Any]]]:
+        return {
+            "onBeforeQuery": self.onBeforeQuery,
+            "onTurnComplete": self.onTurnComplete,
+            "render": self.render,
+        }
+
+
+def useMoreRight(args: dict[str, Any] | None = None, **kwargs: Any) -> MoreRightHooks:
+    """Return no-op MoreRight callbacks.
+
+    ``args`` mirrors the TS hook input object; values are accepted for API
+    compatibility but the external implementation does not mutate messages,
+    input state, or JSX/tool state.
+    """
+
+    merged = dict(args or {})
+    merged.update(kwargs)
+    return MoreRightHooks(enabled=bool(merged.get("enabled", False)))
+
+
+__all__ = ["MoreRightHooks", "useMoreRight"]

@@ -1,18 +1,9 @@
-"""
-Python migration draft for `src/cli/transports/HybridTransport.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Hybrid transport shim: WebSocket-style reads with HTTP-style writes."""
 
 from __future__ import annotations
 
-from typing import Any
+from .WebSocketTransport import WebSocketTransport
 
-class HybridTransport:
-    """Migrated placeholder for TypeScript class `HybridTransport`."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+class HybridTransport(WebSocketTransport):
+    kind = "hybrid"

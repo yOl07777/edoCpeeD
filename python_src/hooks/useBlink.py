@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/hooks/useBlink.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import time
 from typing import Any
 
-async def useBlink(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useBlink`."""
-    raise NotImplementedError(
-        "hooks.useBlink.useBlink still needs business-logic migration"
-    )
+
+async def useBlink(*_args: Any, **kwargs: Any) -> bool:
+    interval = float(kwargs.get("interval", 0.5) or 0.5)
+    now = float(kwargs.get("now", time.monotonic()))
+    return int(now / max(interval, 0.001)) % 2 == 0
+
+
+__all__ = ["useBlink"]

@@ -1,14 +1,15 @@
-"""
-Python migration draft for `src/tools/AgentTool/built-in/exploreAgent.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Built-in explore agent definition."""
 
 from __future__ import annotations
 
 from typing import Any
 
-EXPLORE_AGENT: Any = None
-EXPLORE_AGENT_MIN_QUERIES: Any = None
+EXPLORE_AGENT_MIN_QUERIES = 2
+EXPLORE_AGENT: dict[str, Any] = {
+    "agentType": "explore",
+    "name": "Explore",
+    "description": "Investigates the workspace before implementation.",
+    "source": "built-in",
+}
+
+__all__ = ["EXPLORE_AGENT", "EXPLORE_AGENT_MIN_QUERIES"]

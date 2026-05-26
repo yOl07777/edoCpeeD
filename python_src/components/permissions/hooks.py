@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/hooks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def usePermissionRequestLogging(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `usePermissionRequestLogging`."""
-    raise NotImplementedError(
-        "components.permissions.hooks.usePermissionRequestLogging still needs business-logic migration"
-    )
+from python_src.hooks.toolPermission.permissionLogging import getPermissionLog, logPermissionDecision
+
+
+async def usePermissionRequestLogging(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    request = kwargs.get("request") or (args[0] if args else {}) or {}
+    decision = kwargs.get("decision") or {"behavior": "pending"}
+    logPermissionDecision(request if isinstance(request, dict) else {"request": str(request)}, decision)
+    return {
+        "type": "permission_request_logging",
+        "provider": "deepseek",
+        "logged": True,
+        "logSize": len(getPermissionLog()),
+    }
+
+
+__all__ = ["usePermissionRequestLogging"]

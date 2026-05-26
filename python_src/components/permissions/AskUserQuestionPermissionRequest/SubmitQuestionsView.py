@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/AskUserQuestionPermissionRequest/SubmitQuestionsView.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def SubmitQuestionsView(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SubmitQuestionsView`."""
-    raise NotImplementedError(
-        "components.permissions.AskUserQuestionPermissionRequest.SubmitQuestionsView.SubmitQuestionsView still needs business-logic migration"
-    )
+from python_src.components.permissions.AskUserQuestionPermissionRequest._shared import question_state
+
+
+async def SubmitQuestionsView(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    state = question_state(*args, **kwargs)
+    answers = kwargs.get("answers") or {}
+    return {
+        "type": "submit_questions_view",
+        "provider": "deepseek",
+        "questions": state["questions"],
+        "answers": answers,
+        "ready": len(answers) >= state["total"] if isinstance(answers, dict) else bool(answers),
+    }
+
+
+__all__ = ["SubmitQuestionsView"]

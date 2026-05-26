@@ -1,17 +1,26 @@
-"""
-Python migration draft for `src/hooks/unifiedSuggestions.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def generateUnifiedSuggestions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateUnifiedSuggestions`."""
-    raise NotImplementedError(
-        "hooks.unifiedSuggestions.generateUnifiedSuggestions still needs business-logic migration"
-    )
+from python_src.hooks.fileSuggestions import generateFileSuggestions
+
+
+async def generateUnifiedSuggestions(query: Any = "", *_args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    text = str(kwargs.get("query", query) or "")
+    commands = kwargs.get("commands", ["help", "status", "review", "commit"])
+    suggestions: list[dict[str, Any]] = []
+    if text.startswith("/"):
+        needle = text[1:].lower()
+        suggestions.extend(
+            {"type": "command", "value": f"/{command}", "label": f"/{command}"}
+            for command in commands
+            if not needle or needle in str(command).lower()
+        )
+    elif text.startswith("@"):
+        suggestions.extend(await generateFileSuggestions(text[1:], cwd=kwargs.get("cwd"), paths=kwargs.get("paths")))
+    else:
+        suggestions.extend({"type": "text", "value": item, "label": item} for item in kwargs.get("static", []) or [])
+    return suggestions[: int(kwargs.get("limit", 20) or 20)]
+
+
+__all__ = ["generateUnifiedSuggestions"]

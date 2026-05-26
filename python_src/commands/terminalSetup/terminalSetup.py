@@ -1,53 +1,71 @@
-"""
-Python migration draft for `src/commands/terminalSetup/terminalSetup.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Terminal setup command shim."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
+from typing import Any, Callable
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.call still needs business-logic migration"
-    )
+from python_src.utils.config import getGlobalConfig, saveGlobalConfig
 
-async def getNativeCSIuTerminalDisplayName(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getNativeCSIuTerminalDisplayName`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.getNativeCSIuTerminalDisplayName still needs business-logic migration"
-    )
 
-async def hasUsedBackslashReturn(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasUsedBackslashReturn`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.hasUsedBackslashReturn still needs business-logic migration"
-    )
+def _emit(onDone: Callable[..., Any] | None, message: str, options: dict[str, Any] | None = None) -> None:
+    if not callable(onDone):
+        return
+    try:
+        onDone(message, options) if options is not None else onDone(message)
+    except TypeError:
+        onDone(message)
 
-async def isShiftEnterKeyBindingInstalled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isShiftEnterKeyBindingInstalled`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.isShiftEnterKeyBindingInstalled still needs business-logic migration"
-    )
 
-async def markBackslashReturnUsed(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markBackslashReturnUsed`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.markBackslashReturnUsed still needs business-logic migration"
-    )
+async def getNativeCSIuTerminalDisplayName(term_program: str | None = None) -> str | None:
+    program = (term_program or os.getenv("TERM_PROGRAM") or "").lower()
+    if "iterm" in program:
+        return "iTerm2"
+    if "vscode" in program:
+        return "VS Code"
+    if "wezterm" in program:
+        return "WezTerm"
+    if "windows_terminal" in program or os.getenv("WT_SESSION"):
+        return "Windows Terminal"
+    return None
 
-async def setupTerminal(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setupTerminal`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.setupTerminal still needs business-logic migration"
-    )
 
-async def shouldOfferTerminalSetup(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldOfferTerminalSetup`."""
-    raise NotImplementedError(
-        "commands.terminalSetup.terminalSetup.shouldOfferTerminalSetup still needs business-logic migration"
-    )
+async def hasUsedBackslashReturn() -> bool:
+    return bool((await getGlobalConfig()).get("hasUsedBackslashReturn"))
+
+
+async def markBackslashReturnUsed() -> dict[str, Any]:
+    return await saveGlobalConfig({"hasUsedBackslashReturn": True})
+
+
+async def isShiftEnterKeyBindingInstalled() -> bool:
+    return bool((await getGlobalConfig()).get("shiftEnterKeyBindingInstalled"))
+
+
+async def setupTerminal() -> dict[str, Any]:
+    display = await getNativeCSIuTerminalDisplayName()
+    config = await saveGlobalConfig({"shiftEnterKeyBindingInstalled": True, "terminalSetupDisplayName": display})
+    return {"installed": True, "displayName": display, "config": config}
+
+
+async def shouldOfferTerminalSetup() -> bool:
+    return not await isShiftEnterKeyBindingInstalled()
+
+
+async def call(onDone: Callable[..., Any] | None = None, _context: Any | None = None, args: str | None = None) -> dict[str, Any]:
+    action = (args or "status").strip().lower() or "status"
+    if action in {"install", "setup", "enable"}:
+        result = await setupTerminal()
+        _emit(onDone, "Terminal key binding setup recorded.", {"display": "system"})
+        return {"type": "terminal_setup", "action": "install", **result}
+    if action in {"mark-backslash-return", "backslash-return"}:
+        config = await markBackslashReturnUsed()
+        return {"type": "terminal_setup", "action": "mark-backslash-return", "config": config}
+    return {
+        "type": "terminal_setup",
+        "action": "status",
+        "displayName": await getNativeCSIuTerminalDisplayName(),
+        "installed": await isShiftEnterKeyBindingInstalled(),
+        "shouldOffer": await shouldOfferTerminalSetup(),
+        "hasUsedBackslashReturn": await hasUsedBackslashReturn(),
+    }

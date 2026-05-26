@@ -1,35 +1,31 @@
-"""
-Python migration draft for `src/components/IdeAutoConnectDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def IdeAutoConnectDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `IdeAutoConnectDialog`."""
-    raise NotImplementedError(
-        "components.IdeAutoConnectDialog.IdeAutoConnectDialog still needs business-logic migration"
-    )
+    ide = str(option(args, kwargs, "ide", "VS Code"))
+    return component_payload("ide_auto_connect_dialog", ide=ide, visible=await shouldShowAutoConnectDialog(*args, **kwargs), action="enable_auto_connect")
+
 
 async def IdeDisableAutoConnectDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `IdeDisableAutoConnectDialog`."""
-    raise NotImplementedError(
-        "components.IdeAutoConnectDialog.IdeDisableAutoConnectDialog still needs business-logic migration"
-    )
+    ide = str(option(args, kwargs, "ide", "VS Code"))
+    return component_payload("ide_disable_auto_connect_dialog", ide=ide, visible=await shouldShowDisableAutoConnectDialog(*args, **kwargs), action="disable_auto_connect")
+
 
 async def shouldShowAutoConnectDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldShowAutoConnectDialog`."""
-    raise NotImplementedError(
-        "components.IdeAutoConnectDialog.shouldShowAutoConnectDialog still needs business-logic migration"
-    )
+    return bool(option(args, kwargs, "detected", True)) and not bool(option(args, kwargs, "autoConnect", option(args, kwargs, "auto_connect", False))) and not bool(option(args, kwargs, "dismissed", False))
+
 
 async def shouldShowDisableAutoConnectDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldShowDisableAutoConnectDialog`."""
-    raise NotImplementedError(
-        "components.IdeAutoConnectDialog.shouldShowDisableAutoConnectDialog still needs business-logic migration"
-    )
+    return bool(option(args, kwargs, "autoConnect", option(args, kwargs, "auto_connect", False))) and bool(option(args, kwargs, "requestedDisable", option(args, kwargs, "requested_disable", False)))
+
+
+__all__ = [
+    "IdeAutoConnectDialog",
+    "IdeDisableAutoConnectDialog",
+    "shouldShowAutoConnectDialog",
+    "shouldShowDisableAutoConnectDialog",
+]

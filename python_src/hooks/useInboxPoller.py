@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/hooks/useInboxPoller.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useInboxPoller(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useInboxPoller`."""
-    raise NotImplementedError(
-        "hooks.useInboxPoller.useInboxPoller still needs business-logic migration"
-    )
+
+async def useInboxPoller(messages: list[dict[str, Any]] | None = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    rows = list(kwargs.get("messages", messages or []))
+    unread = [item for item in rows if not item.get("read")]
+    return {"provider": "deepseek", "messages": rows, "unread": unread, "unreadCount": len(unread), "polling": bool(kwargs.get("polling", False))}
+
+
+__all__ = ["useInboxPoller"]

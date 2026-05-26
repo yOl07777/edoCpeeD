@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/hooks/useRemoteSession.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def useRemoteSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useRemoteSession`."""
-    raise NotImplementedError(
-        "hooks.useRemoteSession.useRemoteSession still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    session_id = pick(options, "sessionId", "id", default=None)
+    connected = bool(pick(options, "connected", default=False))
+    return {
+        "provider": "deepseek",
+        "sessionId": session_id,
+        "connected": connected,
+        "mode": pick(options, "mode", default="local"),
+        "readOnly": bool(pick(options, "readOnly", default=True)),
+        "status": "connected" if connected else "offline",
+    }

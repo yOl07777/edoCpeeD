@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/hooks/useSearchInput.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, listify, pick, text_filter
+
+
 async def useSearchInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSearchInput`."""
-    raise NotImplementedError(
-        "hooks.useSearchInput.useSearchInput still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    query = str(pick(options, "query", "value", default=""))
+    items = listify(pick(options, "items", default=[]))
+    key = pick(options, "key", default=None)
+    results = text_filter(items, query, key=key)
+    return {"provider": "deepseek", "query": query, "results": results, "count": len(results)}

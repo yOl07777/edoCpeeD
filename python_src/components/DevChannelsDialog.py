@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/DevChannelsDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option
+
+
 async def DevChannelsDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `DevChannelsDialog`."""
-    raise NotImplementedError(
-        "components.DevChannelsDialog.DevChannelsDialog still needs business-logic migration"
-    )
+    current = str(option(args, kwargs, "current", option(args, kwargs, "channel", "stable")))
+    channels = normalize_items(option(args, kwargs, "channels", ["stable", "beta", "nightly"]), text_key="name")
+    for channel in channels:
+        channel["selected"] = channel["name"] == current
+    return component_payload("dev_channels_dialog", current=current, channels=channels, count=len(channels))
+
+
+__all__ = ["DevChannelsDialog"]

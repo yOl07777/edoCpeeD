@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/hooks/notifs/useStartupNotification.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, notification, pick
+
+
 async def useStartupNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useStartupNotification`."""
-    raise NotImplementedError(
-        "hooks.notifs.useStartupNotification.useStartupNotification still needs business-logic migration"
+    options = first_mapping(*args, kwargs)
+    model = str(pick(options, "model", default="deepseek-chat"))
+    workspace = str(pick(options, "workspace", default="current workspace"))
+    return notification(
+        visible=bool(pick(options, "visible", default=True)),
+        title="DeepSeek Code ready",
+        message=f"Using {model} in {workspace}.",
+        model=model,
+        workspace=workspace,
     )

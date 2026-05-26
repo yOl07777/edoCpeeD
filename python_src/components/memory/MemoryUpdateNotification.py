@@ -1,23 +1,32 @@
-"""
-Python migration draft for `src/components/memory/MemoryUpdateNotification.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-async def MemoryUpdateNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MemoryUpdateNotification`."""
-    raise NotImplementedError(
-        "components.memory.MemoryUpdateNotification.MemoryUpdateNotification still needs business-logic migration"
-    )
+from python_src.components.memory._shared import memory_payload
+
 
 async def getRelativeMemoryPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getRelativeMemoryPath`."""
-    raise NotImplementedError(
-        "components.memory.MemoryUpdateNotification.getRelativeMemoryPath still needs business-logic migration"
+    path = Path(str(kwargs.get("path") or (args[0] if args else ".deepseek/memory.md")))
+    try:
+        return str(path.resolve().relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(path)
+
+
+async def MemoryUpdateNotification(*args: Any, **kwargs: Any) -> Any:
+    path = str(kwargs.get("path") or (args[0] if args else ".deepseek/memory.md"))
+    changes = kwargs.get("changes") or kwargs.get("updates") or []
+    if isinstance(changes, str):
+        changes = [changes]
+    return memory_payload(
+        "memory_update_notification",
+        path=path,
+        relativePath=await getRelativeMemoryPath(path),
+        changes=[str(change) for change in changes],
+        count=len(changes),
+        message=f"Updated memory at {await getRelativeMemoryPath(path)}",
     )
+
+
+__all__ = ["MemoryUpdateNotification", "getRelativeMemoryPath"]

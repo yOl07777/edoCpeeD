@@ -1,47 +1,50 @@
-"""
-Python migration draft for `src/tools/BashTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable BashTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def BackgroundHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `BackgroundHint`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.BackgroundHint still needs business-logic migration"
-    )
 
-async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.renderToolResultMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {**(args[0] if args and isinstance(args[0], dict) else {}), **kwargs}
 
-async def renderToolUseErrorMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseErrorMessage`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.renderToolUseErrorMessage still needs business-logic migration"
-    )
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+async def BackgroundHint(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "bash-background-hint", "command": data.get("command", ""), "visible": data.get("visible", True)}
 
-async def renderToolUseProgressMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseProgressMessage`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.renderToolUseProgressMessage still needs business-logic migration"
-    )
 
-async def renderToolUseQueuedMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseQueuedMessage`."""
-    raise NotImplementedError(
-        "tools.BashTool.UI.renderToolUseQueuedMessage still needs business-logic migration"
-    )
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "bash-use", "command": data.get("command", ""), "cwd": data.get("cwd")}
+
+
+async def renderToolUseQueuedMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "bash-queued", "command": data.get("command", ""), "queuePosition": data.get("queuePosition")}
+
+
+async def renderToolUseProgressMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "bash-progress", "command": data.get("command", ""), "elapsedMs": data.get("elapsedMs")}
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    exit_code = data.get("exit_code", data.get("exitCode", 0))
+    return {"type": "bash-result", "exitCode": exit_code, "stdout": data.get("stdout", ""), "stderr": data.get("stderr", "")}
+
+
+async def renderToolUseErrorMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "bash-error", "command": data.get("command", ""), "error": data.get("error") or data.get("message", "")}
+
+
+__all__ = [
+    "BackgroundHint",
+    "renderToolResultMessage",
+    "renderToolUseErrorMessage",
+    "renderToolUseMessage",
+    "renderToolUseProgressMessage",
+    "renderToolUseQueuedMessage",
+]

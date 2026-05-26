@@ -1,16 +1,9 @@
-"""
-Python migration draft for `src/bridge/bridgePermissionCallbacks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Permission callback payload helpers for bridge control requests."""
 
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "bridge.bridgePermissionCallbacks still needs business-logic migration"
-    )
+
+def isBridgePermissionResponse(value: Any) -> bool:
+    return isinstance(value, dict) and value.get("behavior") in {"allow", "deny"}

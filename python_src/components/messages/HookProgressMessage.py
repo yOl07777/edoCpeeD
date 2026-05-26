@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/messages/HookProgressMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload
+
+
 async def HookProgressMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `HookProgressMessage`."""
-    raise NotImplementedError(
-        "components.messages.HookProgressMessage.HookProgressMessage still needs business-logic migration"
-    )
+    hook = str(kwargs.get("hook") or kwargs.get("name") or (args[0] if args else "hook"))
+    status = str(kwargs.get("status") or "running")
+    return message_payload("hook_progress_message", hook=hook, status=status, message=f"{hook}: {status}")
+
+
+__all__ = ["HookProgressMessage"]

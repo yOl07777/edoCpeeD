@@ -1,23 +1,18 @@
-"""
-Python migration draft for `src/components/tasks/ShellProgress.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def ShellProgress(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShellProgress`."""
-    raise NotImplementedError(
-        "components.tasks.ShellProgress.ShellProgress still needs business-logic migration"
-    )
+from python_src.components.tasks._shared import normalize_task, task_payload
+
 
 async def TaskStatusText(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TaskStatusText`."""
-    raise NotImplementedError(
-        "components.tasks.ShellProgress.TaskStatusText still needs business-logic migration"
-    )
+    task = normalize_task(args[0] if args else kwargs.get("task"), **kwargs)
+    return f"{task['title']}: {task['status']}"
+
+
+async def ShellProgress(*args: Any, **kwargs: Any) -> Any:
+    task = normalize_task(args[0] if args else kwargs.get("task"), **kwargs)
+    return task_payload("shell_progress", task=task, text=await TaskStatusText(task))
+
+
+__all__ = ["ShellProgress", "TaskStatusText"]

@@ -1,25 +1,21 @@
-"""
-Python migration draft for `src/utils/workloadContext.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+from contextvars import ContextVar
+from typing import Any, Callable, TypeVar
 
-WORKLOAD_CRON: Any = None
 
-async def getWorkload(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getWorkload`."""
-    raise NotImplementedError(
-        "utils.workloadContext.getWorkload still needs business-logic migration"
-    )
+WORKLOAD_CRON = "cron"
+_workload: ContextVar[str | None] = ContextVar("deepseek_workload", default=None)
+T = TypeVar("T")
 
-async def runWithWorkload(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `runWithWorkload`."""
-    raise NotImplementedError(
-        "utils.workloadContext.runWithWorkload still needs business-logic migration"
-    )
+
+def getWorkload() -> str | None:
+    return _workload.get()
+
+
+def runWithWorkload(workload: str | None, fn: Callable[[], T]) -> T:
+    token = _workload.set(workload)
+    try:
+        return fn()
+    finally:
+        _workload.reset(token)

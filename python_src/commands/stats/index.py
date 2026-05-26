@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/commands/stats/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/stats`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .stats import call, formatStats, getStats
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.stats.index still needs business-logic migration"
-    )
+
+stats = {
+    "type": "local-jsx",
+    "name": "stats",
+    "description": "Show local session statistics",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = stats
+
+__all__ = ["call", "default", "formatStats", "getStats", "stats"]

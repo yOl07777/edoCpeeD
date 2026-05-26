@@ -1,14 +1,11 @@
-"""
-Python migration draft for `src/tools/LSPTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt constants for LSPTool."""
 
 from __future__ import annotations
 
-from typing import Any
+LSP_TOOL_NAME = "lsp_symbol_search"
+DESCRIPTION = (
+    "Search Python, TypeScript, TSX, and JavaScript files for function and class symbols. "
+    "This Python migration is a local symbol index shim, not a live language server."
+)
 
-DESCRIPTION: Any = None
-LSP_TOOL_NAME: Any = None
+__all__ = ["DESCRIPTION", "LSP_TOOL_NAME"]

@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/useClaudeCodeHintRecommendation.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useClaudeCodeHintRecommendation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useClaudeCodeHintRecommendation`."""
-    raise NotImplementedError(
-        "hooks.useClaudeCodeHintRecommendation.useClaudeCodeHintRecommendation still needs business-logic migration"
-    )
+
+async def useClaudeCodeHintRecommendation(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    shown = bool(kwargs.get("shown", False))
+    command_count = int(kwargs.get("commandCount", kwargs.get("command_count", 0)) or 0)
+    recommend = command_count >= int(kwargs.get("threshold", 3) or 3) and not shown
+    return {
+        "provider": "deepseek",
+        "recommend": recommend,
+        "message": "Tip: use DeepSeek Code slash commands for repeat workflows." if recommend else "",
+    }
+
+
+__all__ = ["useClaudeCodeHintRecommendation"]

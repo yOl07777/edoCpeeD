@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/VirtualMessageList.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def VirtualMessageList(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `VirtualMessageList`."""
-    raise NotImplementedError(
-        "components.VirtualMessageList.VirtualMessageList still needs business-logic migration"
-    )
+from python_src.components._shared import component_payload, normalize_items, option, safe_int, scalar_arg
+
+
+async def VirtualMessageList(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    messages = normalize_items(option(args, kwargs, "messages", scalar_arg(args, [])))
+    offset = max(0, safe_int(option(args, kwargs, "offset", 0)))
+    limit = max(0, safe_int(option(args, kwargs, "limit", len(messages)), len(messages)))
+    window = messages[offset : offset + limit] if limit else []
+    return component_payload("virtual_message_list", messages=window, count=len(messages), offset=offset, limit=limit)
+
+
+__all__ = ["VirtualMessageList"]

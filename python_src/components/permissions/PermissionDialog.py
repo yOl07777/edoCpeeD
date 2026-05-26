@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/components/permissions/PermissionDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def PermissionDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PermissionDialog`."""
-    raise NotImplementedError(
-        "components.permissions.PermissionDialog.PermissionDialog still needs business-logic migration"
-    )
+from python_src.components.permissions._shared import format_permission_explanation, permission_request
+
+
+async def PermissionDialog(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    request = permission_request("PermissionDialog", *args, **kwargs)
+    request["dialog"] = {
+        "title": request["title"],
+        "body": format_permission_explanation(request),
+        "options": request["options"],
+    }
+    return request
+
+
+__all__ = ["PermissionDialog"]

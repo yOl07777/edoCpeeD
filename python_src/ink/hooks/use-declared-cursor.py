@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/ink/hooks/use-declared-cursor.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
 async def useDeclaredCursor(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useDeclaredCursor`."""
-    raise NotImplementedError(
-        "ink.hooks.use-declared-cursor.useDeclaredCursor still needs business-logic migration"
-    )
+    row = int(kwargs.get("row", args[0] if args else 0))
+    col = int(kwargs.get("col", args[1] if len(args) > 1 else 0))
+    visible = bool(kwargs.get("visible", True))
+    setter = kwargs.get("setCursor")
+    cursor = {"provider": "deepseek", "row": row, "col": col, "visible": visible}
+    if callable(setter):
+        setter(cursor)
+    return cursor

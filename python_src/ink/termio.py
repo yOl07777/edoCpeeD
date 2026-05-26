@@ -1,16 +1,11 @@
-"""
-Python migration draft for `src/ink/termio.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.termio still needs business-logic migration"
-    )
+
+def createTermioState(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"provider": "deepseek", "input": kwargs.get("input"), "output": kwargs.get("output"), "rawMode": bool(kwargs.get("rawMode", False))}
+
+
+default = createTermioState
+_module_migration_placeholder = createTermioState

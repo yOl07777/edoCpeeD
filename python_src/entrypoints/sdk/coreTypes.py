@@ -1,14 +1,16 @@
-"""
-Python migration draft for `src/entrypoints/sdk/coreTypes.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
 
-EXIT_REASONS: Any = None
-HOOK_EVENTS: Any = None
+EXIT_REASONS = ["success", "error", "cancelled", "interrupted"]
+HOOK_EVENTS = [
+    "PreToolUse",
+    "PostToolUse",
+    "Notification",
+    "UserPromptSubmit",
+    "SessionStart",
+    "SessionEnd",
+    "Stop",
+]
+
+
+__all__ = ["EXIT_REASONS", "HOOK_EVENTS"]

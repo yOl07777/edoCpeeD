@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/hooks/useIdeSelection.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useIdeSelection(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIdeSelection`."""
-    raise NotImplementedError(
-        "hooks.useIdeSelection.useIdeSelection still needs business-logic migration"
-    )
+
+async def useIdeSelection(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    selection = str(kwargs.get("selection", "") or "")
+    path = str(kwargs.get("path", "") or "")
+    return {"provider": "deepseek", "path": path, "selection": selection, "hasSelection": bool(selection)}
+
+
+__all__ = ["useIdeSelection"]

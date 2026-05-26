@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/agents/new-agent-creation/wizard-steps/MethodStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.agents._shared import component_result
+
+
 async def MethodStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MethodStep`."""
-    raise NotImplementedError(
-        "components.agents.new-agent-creation.wizard-steps.MethodStep.MethodStep still needs business-logic migration"
-    )
+    selected = str(kwargs.get("method") or (args[0] if args else "manual"))
+    options = ["manual", "generate"]
+    return component_result("agent_wizard_method_step", field="method", selected=selected, options=[{"id": option, "selected": option == selected} for option in options], complete=selected in options)
+
+
+__all__ = ["MethodStep"]

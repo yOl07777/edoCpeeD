@@ -1,23 +1,25 @@
-"""
-Python migration draft for `src/hooks/useDiffInIDE.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def computeEditsFromContents(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `computeEditsFromContents`."""
-    raise NotImplementedError(
-        "hooks.useDiffInIDE.computeEditsFromContents still needs business-logic migration"
-    )
+from python_src.hooks.useDiffData import useDiffData
 
-async def useDiffInIDE(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useDiffInIDE`."""
-    raise NotImplementedError(
-        "hooks.useDiffInIDE.useDiffInIDE still needs business-logic migration"
-    )
+
+async def computeEditsFromContents(old: Any = "", new: Any = "", *_args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    data = await useDiffData(old, new, **kwargs)
+    return [{"type": "replace", "old": str(old), "new": str(new), "diff": data["diff"]}] if data["diff"] else []
+
+
+async def useDiffInIDE(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    edits = await computeEditsFromContents(kwargs.get("old", ""), kwargs.get("new", ""))
+    return {
+        "provider": "deepseek",
+        "path": str(kwargs.get("path", "")),
+        "ide": str(kwargs.get("ide", "default")),
+        "edits": edits,
+        "openCommand": None,
+        "dryRun": True,
+    }
+
+
+__all__ = ["computeEditsFromContents", "useDiffInIDE"]

@@ -1,20 +1,9 @@
-"""
-Python migration draft for `src/ink/useTerminalNotification.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-TerminalWriteContext: Any = None
-TerminalWriteProvider: Any = None
 
 async def useTerminalNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useTerminalNotification`."""
-    raise NotImplementedError(
-        "ink.useTerminalNotification.useTerminalNotification still needs business-logic migration"
-    )
+    title = str(args[0] if args else kwargs.get("title", "DeepSeek Code"))
+    message = str(args[1] if len(args) > 1 else kwargs.get("message", ""))
+    return {"provider": "deepseek", "title": title, "message": message, "visible": bool(message or title)}

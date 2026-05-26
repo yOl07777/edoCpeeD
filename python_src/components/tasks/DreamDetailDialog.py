@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/tasks/DreamDetailDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.tasks._shared import normalize_task, task_payload
+
+
 async def DreamDetailDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `DreamDetailDialog`."""
-    raise NotImplementedError(
-        "components.tasks.DreamDetailDialog.DreamDetailDialog still needs business-logic migration"
-    )
+    task = normalize_task(kwargs.get("task") or (args[0] if args else None), **kwargs)
+    return task_payload("dream_detail_dialog", task=task, notes=kwargs.get("notes") or [])
+
+
+__all__ = ["DreamDetailDialog"]

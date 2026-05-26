@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/commands/install-github-app/CreatingStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured creation-progress step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def CreatingStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `CreatingStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.CreatingStep.CreatingStep still needs business-logic migration"
+from ._shared import step_payload
+
+
+async def CreatingStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    current = int(kwargs.get("currentWorkflowInstallStep") or 0)
+    return step_payload(
+        "creating",
+        currentWorkflowInstallStep=current,
+        message="Dry-run only: no branch, workflow, secret, or pull request is created by this shim.",
     )
+
+
+__all__ = ["CreatingStep"]

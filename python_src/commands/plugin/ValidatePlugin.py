@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/commands/plugin/ValidatePlugin.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def ValidatePlugin(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ValidatePlugin`."""
-    raise NotImplementedError(
-        "commands.plugin.ValidatePlugin.ValidatePlugin still needs business-logic migration"
+from python_src.cli.handlers.plugins import pluginValidateHandler
+from python_src.commands.plugin._shared import command_result
+
+
+async def ValidatePlugin(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    path = kwargs.get("path") or (args[0] if args else None)
+    if not path:
+        return command_result("Specify a plugin manifest path.")
+    result = await pluginValidateHandler(str(path), kwargs)
+    return command_result(
+        "Plugin manifest is valid." if result.get("success") else "Plugin manifest has errors.",
+        result=result,
     )
+
+
+__all__ = ["ValidatePlugin"]

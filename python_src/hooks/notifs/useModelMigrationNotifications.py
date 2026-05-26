@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/hooks/notifs/useModelMigrationNotifications.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, notification, pick
+
+
 async def useModelMigrationNotifications(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useModelMigrationNotifications`."""
-    raise NotImplementedError(
-        "hooks.notifs.useModelMigrationNotifications.useModelMigrationNotifications still needs business-logic migration"
+    options = first_mapping(*args, kwargs)
+    old_model = str(pick(options, "oldModel", "fromModel", default=""))
+    new_model = str(pick(options, "newModel", "toModel", default=pick(options, "model", default="deepseek-chat")))
+    visible = bool(old_model and old_model != new_model)
+    return notification(
+        visible=visible,
+        title="Model migrated",
+        message=f"Model setting was migrated from {old_model} to {new_model}.",
+        oldModel=old_model,
+        newModel=new_model,
     )

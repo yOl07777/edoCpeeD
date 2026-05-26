@@ -1,14 +1,8 @@
-"""
-Python migration draft for `src/tools/TaskGetTool/prompt.ts`.
+"""Prompt text for TaskGetTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+from python_src.tools.TaskGetTool.constants import TASK_GET_TOOL_NAME
 
-from __future__ import annotations
+DESCRIPTION = "Get a local in-memory task by id."
+PROMPT = f"Use {TASK_GET_TOOL_NAME} with an exact task_id returned by task_create or task_list."
 
-from typing import Any
-
-DESCRIPTION: Any = None
-PROMPT: Any = None
+__all__ = ["DESCRIPTION", "PROMPT"]

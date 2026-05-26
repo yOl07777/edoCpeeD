@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/ConfigurableShortcutHint.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, scalar_arg
+
+
 async def ConfigurableShortcutHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ConfigurableShortcutHint`."""
-    raise NotImplementedError(
-        "components.ConfigurableShortcutHint.ConfigurableShortcutHint still needs business-logic migration"
-    )
+    shortcut = str(option(args, kwargs, "shortcut", scalar_arg(args, "")))
+    action = str(option(args, kwargs, "action", option(args, kwargs, "label", "")))
+    return component_payload("configurable_shortcut_hint", shortcut=shortcut, action=action, text=f"{shortcut} {action}".strip())
+
+
+__all__ = ["ConfigurableShortcutHint"]

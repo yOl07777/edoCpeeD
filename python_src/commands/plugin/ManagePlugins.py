@@ -1,23 +1,26 @@
-"""
-Python migration draft for `src/commands/plugin/ManagePlugins.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def ManagePlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ManagePlugins`."""
-    raise NotImplementedError(
-        "commands.plugin.ManagePlugins.ManagePlugins still needs business-logic migration"
+from python_src.commands.plugin._shared import command_result, list_plugins
+
+
+async def filterManagedDisabledPlugins(plugins: list[dict[str, Any]] | dict[str, Any] | None = None, *args: Any, **kwargs: Any) -> list[Any]:
+    if isinstance(plugins, dict):
+        iterable = plugins.values()
+    else:
+        iterable = plugins or []
+    return [plugin for plugin in iterable if isinstance(plugin, dict) and not plugin.get("enabled", True)]
+
+
+async def ManagePlugins(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    plugins = await list_plugins()
+    return command_result(
+        f"Installed plugins: {len(plugins['items'])}.",
+        plugins=plugins["items"],
+        disabled=await filterManagedDisabledPlugins(plugins["items"]),
+        path=plugins.get("path"),
     )
 
-async def filterManagedDisabledPlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `filterManagedDisabledPlugins`."""
-    raise NotImplementedError(
-        "commands.plugin.ManagePlugins.filterManagedDisabledPlugins still needs business-logic migration"
-    )
+
+__all__ = ["ManagePlugins", "filterManagedDisabledPlugins"]

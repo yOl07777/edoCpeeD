@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/services/lsp/config.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""LSP server configuration for the local Python migration."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def getAllLspServers(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAllLspServers`."""
-    raise NotImplementedError(
-        "services.lsp.config.getAllLspServers still needs business-logic migration"
-    )
+_DEFAULT_SERVERS = [
+    {"id": "python", "extensions": [".py"], "command": "python-lsp-server", "enabled": True},
+    {"id": "typescript", "extensions": [".ts", ".tsx", ".js", ".jsx"], "command": "typescript-language-server", "enabled": True},
+]
+
+
+async def getAllLspServers(config: dict[str, Any] | list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    if config is None:
+        return [dict(server) for server in _DEFAULT_SERVERS]
+    if isinstance(config, list):
+        return [dict(server) for server in config]
+    servers = config.get("servers") if isinstance(config, dict) else None
+    if isinstance(servers, list):
+        return [dict(server) for server in servers]
+    return [dict(server) for server in _DEFAULT_SERVERS]

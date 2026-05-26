@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/TaskListV2.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def TaskListV2(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TaskListV2`."""
-    raise NotImplementedError(
-        "components.TaskListV2.TaskListV2 still needs business-logic migration"
-    )
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
+async def TaskListV2(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    tasks = normalize_items(option(args, kwargs, "tasks", scalar_arg(args, [])), text_key="title")
+    active_statuses = {"active", "running", "pending", "in_progress"}
+    active = [task for task in tasks if str(task.get("status", "pending")).lower() in active_statuses]
+    completed = [task for task in tasks if str(task.get("status", "")).lower() in {"done", "completed", "success"}]
+    return component_payload("task_list_v2", tasks=tasks, count=len(tasks), active=len(active), completed=len(completed))
+
+
+__all__ = ["TaskListV2"]

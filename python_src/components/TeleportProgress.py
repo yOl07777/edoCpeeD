@@ -1,23 +1,21 @@
-"""
-Python migration draft for `src/components/TeleportProgress.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def TeleportProgress(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TeleportProgress`."""
-    raise NotImplementedError(
-        "components.TeleportProgress.TeleportProgress still needs business-logic migration"
-    )
+from python_src.components._shared import component_payload, option, percent, safe_int, scalar_arg
 
-async def teleportWithProgress(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `teleportWithProgress`."""
-    raise NotImplementedError(
-        "components.TeleportProgress.teleportWithProgress still needs business-logic migration"
-    )
+
+async def TeleportProgress(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    current = safe_int(option(args, kwargs, "current", option(args, kwargs, "completed", scalar_arg(args, 0))))
+    total = safe_int(option(args, kwargs, "total", 0))
+    status = str(option(args, kwargs, "status", "running" if total and current < total else "ready") or "ready")
+    return component_payload("teleport_progress", current=current, total=total, percent=percent(current, total), status=status)
+
+
+async def teleportWithProgress(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    files = list(option(args, kwargs, "files", scalar_arg(args, [])) or [])
+    progress = await TeleportProgress(current=len(files), total=len(files), status=option(args, kwargs, "status", "planned"))
+    return component_payload("teleport_with_progress", files=files, progress=progress, dryRun=bool(option(args, kwargs, "dryRun", True)))
+
+
+__all__ = ["TeleportProgress", "teleportWithProgress"]

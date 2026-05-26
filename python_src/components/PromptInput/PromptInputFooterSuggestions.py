@@ -1,19 +1,18 @@
-"""
-Python migration draft for `src/components/PromptInput/PromptInputFooterSuggestions.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-OVERLAY_MAX_ITEMS: Any = None
+from python_src.components.PromptInput._shared import prompt_payload
+
+
+OVERLAY_MAX_ITEMS = 8
+
 
 async def PromptInputFooterSuggestions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PromptInputFooterSuggestions`."""
-    raise NotImplementedError(
-        "components.PromptInput.PromptInputFooterSuggestions.PromptInputFooterSuggestions still needs business-logic migration"
-    )
+    suggestions = kwargs.get("suggestions") or (args[0] if args else []) or []
+    query = str(kwargs.get("query") or "")
+    rows = [str(item) for item in suggestions if not query or query.lower() in str(item).lower()]
+    return prompt_payload("prompt_input_footer_suggestions", suggestions=rows[:OVERLAY_MAX_ITEMS], count=len(rows), maxItems=OVERLAY_MAX_ITEMS)
+
+
+__all__ = ["OVERLAY_MAX_ITEMS", "PromptInputFooterSuggestions"]

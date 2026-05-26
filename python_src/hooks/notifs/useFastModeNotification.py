@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/notifs/useFastModeNotification.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, notification, pick, truthy
+
+
 async def useFastModeNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useFastModeNotification`."""
-    raise NotImplementedError(
-        "hooks.notifs.useFastModeNotification.useFastModeNotification still needs business-logic migration"
+    options = first_mapping(*args, kwargs)
+    enabled = truthy(pick(options, "enabled", "fastMode", default=False))
+    model = str(pick(options, "model", default="deepseek-chat"))
+    return notification(
+        visible=enabled,
+        title="Fast mode enabled",
+        message=f"DeepSeek Code is using {model} for faster responses.",
+        model=model,
     )

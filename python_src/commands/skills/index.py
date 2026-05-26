@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/commands/skills/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/skills`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .skills import call, formatSkillSummary, getSkillSummary
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.skills.index still needs business-logic migration"
-    )
+
+skills = {
+    "type": "local-jsx",
+    "name": "skills",
+    "description": "Show loaded project and plugin skills",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = skills
+
+__all__ = ["call", "default", "formatSkillSummary", "getSkillSummary", "skills"]

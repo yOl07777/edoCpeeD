@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/commands/clear/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/clear`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .clear import call
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.clear.index still needs business-logic migration"
-    )
+clear_command = {
+    "type": "local",
+    "name": "clear",
+    "description": "Clear conversation history and free up context",
+    "aliases": ["reset", "new"],
+    "isEnabled": lambda: True,
+    "isHidden": lambda: False,
+    "supportsNonInteractive": False,
+    "call": call,
+}
+
+default = clear_command

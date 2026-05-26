@@ -1,16 +1,19 @@
-"""
-Python migration draft for `src/commands/session/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/session`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .session import call, session_command
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.session.index still needs business-logic migration"
-    )
+
+session = {
+    "type": "local",
+    "name": "session",
+    "description": "Manage the lightweight in-process conversation session",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+session_command_metadata = session
+default = session
+
+__all__ = ["call", "default", "session", "session_command", "session_command_metadata"]

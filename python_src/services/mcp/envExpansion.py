@@ -1,17 +1,29 @@
-"""
-Python migration draft for `src/services/mcp/envExpansion.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Environment expansion helpers for migrated MCP configuration."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
+import re
+from typing import Mapping
 
-async def expandEnvVarsInString(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `expandEnvVarsInString`."""
-    raise NotImplementedError(
-        "services.mcp.envExpansion.expandEnvVarsInString still needs business-logic migration"
-    )
+_ENV_RE = re.compile(r"\$(\w+)|\$\{([^}:]+)(?::-(.*?))?\}|%([^%]+)%")
+
+
+async def expandEnvVarsInString(value: str, env: Mapping[str, str] | None = None) -> str:
+    """Expand shell-style and Windows-style environment references.
+
+    Supported forms are ``$NAME``, ``${NAME}``, ``${NAME:-fallback}``, and
+    ``%NAME%``. Unknown variables expand to an empty string unless a fallback
+    is supplied.
+    """
+
+    source = env or os.environ
+
+    def replace(match: re.Match[str]) -> str:
+        key = match.group(1) or match.group(2) or match.group(4) or ""
+        default = match.group(3)
+        if key in source:
+            return str(source[key])
+        return "" if default is None else default
+
+    return _ENV_RE.sub(replace, value or "")

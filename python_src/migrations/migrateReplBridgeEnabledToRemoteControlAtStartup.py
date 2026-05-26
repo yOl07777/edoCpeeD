@@ -1,17 +1,23 @@
-"""
-Python migration draft for `src/migrations/migrateReplBridgeEnabledToRemoteControlAtStartup.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def migrateReplBridgeEnabledToRemoteControlAtStartup(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `migrateReplBridgeEnabledToRemoteControlAtStartup`."""
-    raise NotImplementedError(
-        "migrations.migrateReplBridgeEnabledToRemoteControlAtStartup.migrateReplBridgeEnabledToRemoteControlAtStartup still needs business-logic migration"
-    )
+from ._shared import mutate_global_config
+
+
+async def migrateReplBridgeEnabledToRemoteControlAtStartup(*_args: Any, **_kwargs: Any) -> bool:
+    """Rename legacy replBridgeEnabled config to remoteControlAtStartup."""
+
+    changed = False
+
+    def migrate(current: dict[str, Any]) -> dict[str, Any]:
+        nonlocal changed
+        if "replBridgeEnabled" not in current or current.get("remoteControlAtStartup") is not None:
+            return current
+        next_config = dict(current)
+        next_config["remoteControlAtStartup"] = bool(next_config.pop("replBridgeEnabled"))
+        changed = True
+        return next_config
+
+    await mutate_global_config(migrate)
+    return changed

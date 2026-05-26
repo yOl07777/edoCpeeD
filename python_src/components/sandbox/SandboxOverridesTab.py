@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/sandbox/SandboxOverridesTab.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.sandbox._shared import sandbox_payload
+
+
 async def SandboxOverridesTab(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SandboxOverridesTab`."""
-    raise NotImplementedError(
-        "components.sandbox.SandboxOverridesTab.SandboxOverridesTab still needs business-logic migration"
-    )
+    overrides = kwargs.get("overrides") or (args[0] if args else []) or []
+    if isinstance(overrides, dict):
+        overrides = [{"name": key, "value": value} for key, value in overrides.items()]
+    return sandbox_payload("sandbox_overrides_tab", overrides=overrides, count=len(overrides))
+
+
+__all__ = ["SandboxOverridesTab"]

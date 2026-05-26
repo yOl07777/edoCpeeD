@@ -1,47 +1,44 @@
-"""
-Python migration draft for `src/services/PromptSuggestion/speculation.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
+import uuid
 from typing import Any
 
-async def abortSpeculation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `abortSpeculation`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.abortSpeculation still needs business-logic migration"
-    )
 
-async def acceptSpeculation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `acceptSpeculation`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.acceptSpeculation still needs business-logic migration"
-    )
+_SPECULATIONS: dict[str, dict[str, Any]] = {}
 
-async def handleSpeculationAccept(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `handleSpeculationAccept`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.handleSpeculationAccept still needs business-logic migration"
-    )
 
-async def isSpeculationEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSpeculationEnabled`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.isSpeculationEnabled still needs business-logic migration"
-    )
+async def isSpeculationEnabled() -> bool:
+    return os.getenv("DEEPSEEK_PROMPT_SPECULATION", "1").lower() not in {"0", "false", "no"}
 
-async def prepareMessagesForInjection(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `prepareMessagesForInjection`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.prepareMessagesForInjection still needs business-logic migration"
-    )
 
-async def startSpeculation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `startSpeculation`."""
-    raise NotImplementedError(
-        "services.PromptSuggestion.speculation.startSpeculation still needs business-logic migration"
-    )
+async def prepareMessagesForInjection(messages: list[dict[str, Any]], suggestion: str) -> list[dict[str, Any]]:
+    return [*messages, {"role": "assistant", "content": suggestion, "speculative": True}]
+
+
+async def startSpeculation(suggestion: str, *, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    item = {"id": f"spec_{uuid.uuid4().hex[:8]}", "suggestion": suggestion, "metadata": metadata or {}, "status": "pending"}
+    _SPECULATIONS[item["id"]] = item
+    return dict(item)
+
+
+async def acceptSpeculation(speculation_id: str) -> dict[str, Any] | None:
+    item = _SPECULATIONS.get(speculation_id)
+    if item:
+        item["status"] = "accepted"
+    return dict(item) if item else None
+
+
+async def abortSpeculation(speculation_id: str | None = None) -> dict[str, Any]:
+    if speculation_id:
+        item = _SPECULATIONS.get(speculation_id)
+        if item:
+            item["status"] = "aborted"
+        return dict(item) if item else {"status": "missing"}
+    for item in _SPECULATIONS.values():
+        item["status"] = "aborted"
+    return {"status": "aborted", "count": len(_SPECULATIONS)}
+
+
+async def handleSpeculationAccept(speculation_id: str) -> dict[str, Any] | None:
+    return await acceptSpeculation(speculation_id)

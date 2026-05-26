@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/mcp/MCPToolDetailView.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.mcp._shared import mcp_payload, normalize_tool
+
+
 async def MCPToolDetailView(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MCPToolDetailView`."""
-    raise NotImplementedError(
-        "components.mcp.MCPToolDetailView.MCPToolDetailView still needs business-logic migration"
-    )
+    tool = normalize_tool(kwargs.get("tool") or (args[0] if args else None))
+    return mcp_payload("mcp_tool_detail_view", tool=tool, hasSchema=bool(tool["schema"]))
+
+
+__all__ = ["MCPToolDetailView"]

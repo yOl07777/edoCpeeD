@@ -1,43 +1,41 @@
-"""
-Python migration draft for `src/services/SessionMemory/prompts.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-DEFAULT_SESSION_MEMORY_TEMPLATE: Any = None
 
-async def buildSessionMemoryUpdatePrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `buildSessionMemoryUpdatePrompt`."""
-    raise NotImplementedError(
-        "services.SessionMemory.prompts.buildSessionMemoryUpdatePrompt still needs business-logic migration"
-    )
+DEFAULT_SESSION_MEMORY_TEMPLATE = """Session memory:
+{memory}
 
-async def isSessionMemoryEmpty(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSessionMemoryEmpty`."""
-    raise NotImplementedError(
-        "services.SessionMemory.prompts.isSessionMemoryEmpty still needs business-logic migration"
-    )
+Recent conversation:
+{recent}
+"""
 
-async def loadSessionMemoryPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `loadSessionMemoryPrompt`."""
-    raise NotImplementedError(
-        "services.SessionMemory.prompts.loadSessionMemoryPrompt still needs business-logic migration"
-    )
 
-async def loadSessionMemoryTemplate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `loadSessionMemoryTemplate`."""
-    raise NotImplementedError(
-        "services.SessionMemory.prompts.loadSessionMemoryTemplate still needs business-logic migration"
-    )
+async def isSessionMemoryEmpty(content: str | None) -> bool:
+    return not (content or "").strip()
 
-async def truncateSessionMemoryForCompact(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `truncateSessionMemoryForCompact`."""
-    raise NotImplementedError(
-        "services.SessionMemory.prompts.truncateSessionMemoryForCompact still needs business-logic migration"
-    )
+
+async def truncateSessionMemoryForCompact(content: str, max_chars: int = 8_000) -> str:
+    text = content.strip()
+    if len(text) <= max_chars:
+        return text
+    return text[-max_chars:]
+
+
+async def loadSessionMemoryTemplate(template: str | None = None) -> str:
+    return template or DEFAULT_SESSION_MEMORY_TEMPLATE
+
+
+async def buildSessionMemoryUpdatePrompt(
+    memory: str,
+    messages: list[dict[str, Any]],
+    *,
+    max_recent_chars: int = 4_000,
+) -> str:
+    recent = "\n".join(f"{m.get('role', 'user')}: {m.get('content', '')}" for m in messages)[-max_recent_chars:]
+    template = await loadSessionMemoryTemplate()
+    return template.format(memory=memory or "(empty)", recent=recent)
+
+
+async def loadSessionMemoryPrompt(memory: str = "", messages: list[dict[str, Any]] | None = None) -> str:
+    return await buildSessionMemoryUpdatePrompt(memory, messages or [])

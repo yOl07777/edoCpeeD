@@ -1,17 +1,11 @@
-"""
-Python migration draft for `src/ink/widest-line.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import importlib
 from typing import Any
 
+measureText = importlib.import_module("python_src.ink.measure-text").measureText
+
+
 async def widestLine(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `widestLine`."""
-    raise NotImplementedError(
-        "ink.widest-line.widestLine still needs business-logic migration"
-    )
+    text = str(args[0] if args else kwargs.get("text", ""))
+    return max((measureText(line) for line in text.splitlines()), default=0)

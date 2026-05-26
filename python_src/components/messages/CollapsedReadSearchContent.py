@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/messages/CollapsedReadSearchContent.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload
+
+
 async def CollapsedReadSearchContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `CollapsedReadSearchContent`."""
-    raise NotImplementedError(
-        "components.messages.CollapsedReadSearchContent.CollapsedReadSearchContent still needs business-logic migration"
-    )
+    items = kwargs.get("items") or kwargs.get("results") or (args[0] if args else []) or []
+    if isinstance(items, str):
+        items = items.splitlines()
+    return message_payload("collapsed_read_search_content", count=len(items), preview=[str(item) for item in list(items)[:5]])
+
+
+__all__ = ["CollapsedReadSearchContent"]

@@ -8,6 +8,6 @@ Claude/Anthropic model calls should be routed through `deepseek_code`.
 
 from __future__ import annotations
 
-from typing import Any
+ENTER_WORKTREE_TOOL_NAME = "enter_worktree"
 
-ENTER_WORKTREE_TOOL_NAME: Any = None
+__all__ = ["ENTER_WORKTREE_TOOL_NAME"]

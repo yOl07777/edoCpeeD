@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/NotebookEditPermissionRequest/NotebookEditToolDiff.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def NotebookEditToolDiff(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `NotebookEditToolDiff`."""
-    raise NotImplementedError(
-        "components.permissions.NotebookEditPermissionRequest.NotebookEditToolDiff.NotebookEditToolDiff still needs business-logic migration"
-    )
+from python_src.components.permissions._shared import normalize_permission_input
+
+
+async def NotebookEditToolDiff(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = normalize_permission_input(*args, **kwargs)
+    return {
+        "type": "notebook_edit_diff",
+        "provider": "deepseek",
+        "path": data.get("path") or data.get("file_path") or data.get("input_path"),
+        "cell": data.get("cell") or data.get("cell_id") or data.get("input_cell"),
+        "operation": data.get("operation") or data.get("edit_mode") or "replace",
+        "preview": data.get("content") or data.get("new_text") or data.get("input_content") or "",
+    }
+
+
+__all__ = ["NotebookEditToolDiff"]

@@ -46,9 +46,20 @@ class ToolRegistry:
         if tool_call.name not in self._handlers:
             return tool_result_message(tool_call.id, {"error": f"Unknown tool: {tool_call.name}"})
         args = tool_call.arguments
-        if isinstance(args, str):
-            args = json.loads(args or "{}")
-        result = self._handlers[tool_call.name](**args)
-        if hasattr(result, "__await__"):
-            result = await result
-        return tool_result_message(tool_call.id, result)
+        try:
+            if isinstance(args, str):
+                args = json.loads(args or "{}")
+            result = self._handlers[tool_call.name](**args)
+            if hasattr(result, "__await__"):
+                result = await result
+            return tool_result_message(tool_call.id, result)
+        except Exception as error:
+            return tool_result_message(
+                tool_call.id,
+                {
+                    "ok": False,
+                    "tool": tool_call.name,
+                    "error": str(error),
+                    "suggestion": "工具调用失败，但对话可以继续。请基于已有信息回答，或尝试其他工具/来源。",
+                },
+            )

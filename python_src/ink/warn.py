@@ -1,17 +1,10 @@
-"""
-Python migration draft for `src/ink/warn.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+
 async def ifNotInteger(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ifNotInteger`."""
-    raise NotImplementedError(
-        "ink.warn.ifNotInteger still needs business-logic migration"
-    )
+    value = args[0] if args else kwargs.get("value")
+    name = str(args[1] if len(args) > 1 else kwargs.get("name", "value"))
+    ok = isinstance(value, int) and not isinstance(value, bool)
+    return None if ok else f"{name} must be an integer"

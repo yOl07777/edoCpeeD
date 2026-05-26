@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/design-system/KeyboardShortcutHint.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from importlib import import_module
+
+
 async def KeyboardShortcutHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `KeyboardShortcutHint`."""
-    raise NotImplementedError(
-        "components.design-system.KeyboardShortcutHint.KeyboardShortcutHint still needs business-logic migration"
-    )
+    shared = import_module("python_src.components.design-system._shared")
+    keys = kwargs.get("keys") or list(args) or []
+    if isinstance(keys, str):
+        keys = [keys]
+    return shared.ui_payload("keyboard_shortcut_hint", keys=keys, text=" + ".join(str(key) for key in keys))
+
+
+__all__ = ["KeyboardShortcutHint"]

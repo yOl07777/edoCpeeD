@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/commands/resume/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/resume`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .resume import call, filterResumableSessions, formatResumableSessions
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.resume.index still needs business-logic migration"
-    )
+
+resume = {
+    "type": "local-jsx",
+    "name": "resume",
+    "description": "List resumable local sessions",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = resume
+
+__all__ = ["call", "default", "filterResumableSessions", "formatResumableSessions", "resume"]

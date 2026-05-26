@@ -1,47 +1,52 @@
-"""
-Python migration draft for `src/tools/ScheduleCronTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable ScheduleCronTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def renderCreateResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderCreateResultMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderCreateResultMessage still needs business-logic migration"
-    )
 
-async def renderCreateToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderCreateToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderCreateToolUseMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    if args and isinstance(args[0], dict):
+        return {**args[0], **kwargs}
+    return dict(kwargs)
 
-async def renderDeleteResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderDeleteResultMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderDeleteResultMessage still needs business-logic migration"
-    )
 
-async def renderDeleteToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderDeleteToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderDeleteToolUseMessage still needs business-logic migration"
-    )
+async def renderCreateToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "cron-create-use", "name": data.get("name", ""), "schedule": data.get("schedule", ""), "prompt": data.get("prompt", "")}
 
-async def renderListResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderListResultMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderListResultMessage still needs business-logic migration"
-    )
 
-async def renderListToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderListToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.ScheduleCronTool.UI.renderListToolUseMessage still needs business-logic migration"
-    )
+async def renderCreateResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "cron-create-result", "id": data.get("id"), "name": data.get("name", ""), "schedule": data.get("schedule", ""), "status": data.get("status")}
+
+
+async def renderListToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "cron-list-use", "status": data.get("status")}
+
+
+async def renderListResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    crons = list(data.get("crons") or [])
+    return {"type": "cron-list-result", "count": data.get("count", len(crons)), "crons": crons}
+
+
+async def renderDeleteToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "cron-delete-use", "cronId": data.get("cron_id") or data.get("cronId")}
+
+
+async def renderDeleteResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "cron-delete-result", "id": data.get("id"), "name": data.get("name", ""), "status": data.get("status", "deleted")}
+
+
+__all__ = [
+    "renderCreateResultMessage",
+    "renderCreateToolUseMessage",
+    "renderDeleteResultMessage",
+    "renderDeleteToolUseMessage",
+    "renderListResultMessage",
+    "renderListToolUseMessage",
+]

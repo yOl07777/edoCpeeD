@@ -1,1273 +1,658 @@
-"""
-Python migration draft for `src/bootstrap/state.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+import os
+import time
+import uuid
+from copy import deepcopy
+from pathlib import Path
+from typing import Any, Callable
+
+
+onSessionSwitch: Callable[[str, str], Any] | None = None
+
+
+def _new_session_id() -> str:
+    return uuid.uuid4().hex
+
+
+def _initial_state() -> dict[str, Any]:
+    cwd = str(Path.cwd())
+    return {
+        "activeTimeCounter": 0,
+        "additionalDirectoriesForClaudeMd": [],
+        "afkModeHeaderLatched": False,
+        "agentColorMap": {},
+        "allowedChannels": [],
+        "allowedSettingSources": [],
+        "apiKeyFromFd": None,
+        "budgetContinuationCount": 0,
+        "cacheEditingHeaderLatched": False,
+        "cachedClaudeMdContent": None,
+        "chromeFlagOverride": None,
+        "clientType": "cli",
+        "codeEditToolDecisionCounter": 0,
+        "commitCounter": 0,
+        "costCounter": 0,
+        "currentTurnTokenBudget": None,
+        "cwdState": cwd,
+        "directConnectServerUrl": None,
+        "eventLogger": None,
+        "fastModeHeaderLatched": False,
+        "firstTeleportMessageLogged": False,
+        "flagSettingsInline": None,
+        "flagSettingsPath": None,
+        "hasDevChannels": False,
+        "hasExitedPlanMode": False,
+        "hasUnknownModelCost": False,
+        "initJsonSchema": None,
+        "initialMainLoopModel": os.getenv("DEFAULT_MODEL", "deepseek-chat"),
+        "inlinePlugins": [],
+        "inMemoryErrorLog": [],
+        "invokedSkills": set(),
+        "invokedSkillsByAgent": {},
+        "isInteractive": True,
+        "isNonInteractiveSession": False,
+        "isRemoteMode": False,
+        "isScrollDraining": False,
+        "kairosActive": False,
+        "lastAPIRequest": None,
+        "lastAPIRequestMessages": [],
+        "lastApiCompletionTimestamp": None,
+        "lastClassifierRequests": [],
+        "lastEmittedDate": None,
+        "lastInteractionTime": time.time(),
+        "lastMainRequestId": None,
+        "locCounter": 0,
+        "loggerProvider": None,
+        "lspRecommendationShownThisSession": False,
+        "mainLoopModelOverride": None,
+        "mainThreadAgentType": None,
+        "meter": None,
+        "meterProvider": None,
+        "modelStrings": {
+            "default": os.getenv("DEFAULT_MODEL", "deepseek-chat"),
+            "main": os.getenv("DEFAULT_MODEL", "deepseek-chat"),
+            "fast": "deepseek-chat",
+            "coder": "deepseek-coder",
+        },
+        "modelUsage": {},
+        "needsAutoModeExitAttachment": False,
+        "needsPlanModeExitAttachment": False,
+        "oauthTokenFromFd": None,
+        "originalCwd": cwd,
+        "parentSessionId": None,
+        "planSlugCache": {},
+        "postCompaction": False,
+        "prCounter": 0,
+        "projectRoot": cwd,
+        "promptCache1hAllowlist": [],
+        "promptCache1hEligible": False,
+        "promptId": None,
+        "questionPreviewFormat": None,
+        "registeredHooks": [],
+        "registeredPluginHooks": [],
+        "scheduledTasksEnabled": True,
+        "sdkAgentProgressSummariesEnabled": False,
+        "sdkBetas": [],
+        "sessionBypassPermissionsMode": None,
+        "sessionCounter": 0,
+        "sessionCreatedTeams": [],
+        "sessionCronTasks": [],
+        "sessionId": _new_session_id(),
+        "sessionIngressToken": None,
+        "sessionPersistenceDisabled": False,
+        "sessionProjectDir": cwd,
+        "sessionSource": "local",
+        "sessionTrustAccepted": False,
+        "slowOperations": [],
+        "statsStore": {},
+        "strictToolResultPairing": False,
+        "systemPromptSectionCache": {},
+        "teleportedSessionInfo": None,
+        "thinkingClearLatched": False,
+        "tokenCounter": 0,
+        "totalAPIDuration": 0,
+        "totalAPIDurationWithoutRetries": 0,
+        "totalCacheCreationInputTokens": 0,
+        "totalCacheReadInputTokens": 0,
+        "totalCostUSD": 0.0,
+        "totalDuration": 0,
+        "totalInputTokens": 0,
+        "totalLinesAdded": 0,
+        "totalLinesRemoved": 0,
+        "totalOutputTokens": 0,
+        "totalToolDuration": 0,
+        "totalWebSearchRequests": 0,
+        "tracerProvider": None,
+        "turnClassifierCount": 0,
+        "turnClassifierDurationMs": 0,
+        "turnHookCount": 0,
+        "turnHookDurationMs": 0,
+        "turnOutputTokens": 0,
+        "turnToolCount": 0,
+        "turnToolDurationMs": 0,
+        "useCoworkPlugins": False,
+        "userMsgOptIn": False,
+    }
 
-onSessionSwitch: Any = None
 
-async def addInvokedSkill(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addInvokedSkill`."""
-    raise NotImplementedError(
-        "bootstrap.state.addInvokedSkill still needs business-logic migration"
-    )
-
-async def addSessionCronTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addSessionCronTask`."""
-    raise NotImplementedError(
-        "bootstrap.state.addSessionCronTask still needs business-logic migration"
-    )
-
-async def addSlowOperation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addSlowOperation`."""
-    raise NotImplementedError(
-        "bootstrap.state.addSlowOperation still needs business-logic migration"
-    )
-
-async def addToInMemoryErrorLog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToInMemoryErrorLog`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToInMemoryErrorLog still needs business-logic migration"
-    )
-
-async def addToToolDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToToolDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToToolDuration still needs business-logic migration"
-    )
-
-async def addToTotalCostState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToTotalCostState`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToTotalCostState still needs business-logic migration"
-    )
-
-async def addToTotalDurationState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToTotalDurationState`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToTotalDurationState still needs business-logic migration"
-    )
-
-async def addToTotalLinesChanged(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToTotalLinesChanged`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToTotalLinesChanged still needs business-logic migration"
-    )
-
-async def addToTurnClassifierDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToTurnClassifierDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToTurnClassifierDuration still needs business-logic migration"
-    )
-
-async def addToTurnHookDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addToTurnHookDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.addToTurnHookDuration still needs business-logic migration"
-    )
-
-async def clearBetaHeaderLatches(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearBetaHeaderLatches`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearBetaHeaderLatches still needs business-logic migration"
-    )
-
-async def clearInvokedSkills(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearInvokedSkills`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearInvokedSkills still needs business-logic migration"
-    )
-
-async def clearInvokedSkillsForAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearInvokedSkillsForAgent`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearInvokedSkillsForAgent still needs business-logic migration"
-    )
-
-async def clearRegisteredHooks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearRegisteredHooks`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearRegisteredHooks still needs business-logic migration"
-    )
-
-async def clearRegisteredPluginHooks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearRegisteredPluginHooks`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearRegisteredPluginHooks still needs business-logic migration"
-    )
-
-async def clearSystemPromptSectionState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearSystemPromptSectionState`."""
-    raise NotImplementedError(
-        "bootstrap.state.clearSystemPromptSectionState still needs business-logic migration"
-    )
-
-async def consumePostCompaction(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `consumePostCompaction`."""
-    raise NotImplementedError(
-        "bootstrap.state.consumePostCompaction still needs business-logic migration"
-    )
-
-async def flushInteractionTime(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `flushInteractionTime`."""
-    raise NotImplementedError(
-        "bootstrap.state.flushInteractionTime still needs business-logic migration"
-    )
-
-async def getActiveTimeCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getActiveTimeCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getActiveTimeCounter still needs business-logic migration"
-    )
-
-async def getAdditionalDirectoriesForClaudeMd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAdditionalDirectoriesForClaudeMd`."""
-    raise NotImplementedError(
-        "bootstrap.state.getAdditionalDirectoriesForClaudeMd still needs business-logic migration"
-    )
-
-async def getAfkModeHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAfkModeHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.getAfkModeHeaderLatched still needs business-logic migration"
-    )
-
-async def getAgentColorMap(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAgentColorMap`."""
-    raise NotImplementedError(
-        "bootstrap.state.getAgentColorMap still needs business-logic migration"
-    )
-
-async def getAllowedChannels(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAllowedChannels`."""
-    raise NotImplementedError(
-        "bootstrap.state.getAllowedChannels still needs business-logic migration"
-    )
-
-async def getAllowedSettingSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAllowedSettingSources`."""
-    raise NotImplementedError(
-        "bootstrap.state.getAllowedSettingSources still needs business-logic migration"
-    )
-
-async def getApiKeyFromFd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getApiKeyFromFd`."""
-    raise NotImplementedError(
-        "bootstrap.state.getApiKeyFromFd still needs business-logic migration"
-    )
-
-async def getBudgetContinuationCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBudgetContinuationCount`."""
-    raise NotImplementedError(
-        "bootstrap.state.getBudgetContinuationCount still needs business-logic migration"
-    )
-
-async def getCacheEditingHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCacheEditingHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCacheEditingHeaderLatched still needs business-logic migration"
-    )
-
-async def getCachedClaudeMdContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCachedClaudeMdContent`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCachedClaudeMdContent still needs business-logic migration"
-    )
-
-async def getChromeFlagOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getChromeFlagOverride`."""
-    raise NotImplementedError(
-        "bootstrap.state.getChromeFlagOverride still needs business-logic migration"
-    )
-
-async def getClientType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getClientType`."""
-    raise NotImplementedError(
-        "bootstrap.state.getClientType still needs business-logic migration"
-    )
-
-async def getCodeEditToolDecisionCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCodeEditToolDecisionCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCodeEditToolDecisionCounter still needs business-logic migration"
-    )
-
-async def getCommitCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCommitCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCommitCounter still needs business-logic migration"
-    )
-
-async def getCostCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCostCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCostCounter still needs business-logic migration"
-    )
-
-async def getCurrentTurnTokenBudget(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCurrentTurnTokenBudget`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCurrentTurnTokenBudget still needs business-logic migration"
-    )
-
-async def getCwdState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCwdState`."""
-    raise NotImplementedError(
-        "bootstrap.state.getCwdState still needs business-logic migration"
-    )
-
-async def getDirectConnectServerUrl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDirectConnectServerUrl`."""
-    raise NotImplementedError(
-        "bootstrap.state.getDirectConnectServerUrl still needs business-logic migration"
-    )
-
-async def getEventLogger(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getEventLogger`."""
-    raise NotImplementedError(
-        "bootstrap.state.getEventLogger still needs business-logic migration"
-    )
-
-async def getFastModeHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFastModeHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.getFastModeHeaderLatched still needs business-logic migration"
-    )
-
-async def getFlagSettingsInline(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFlagSettingsInline`."""
-    raise NotImplementedError(
-        "bootstrap.state.getFlagSettingsInline still needs business-logic migration"
-    )
-
-async def getFlagSettingsPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFlagSettingsPath`."""
-    raise NotImplementedError(
-        "bootstrap.state.getFlagSettingsPath still needs business-logic migration"
-    )
-
-async def getHasDevChannels(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getHasDevChannels`."""
-    raise NotImplementedError(
-        "bootstrap.state.getHasDevChannels still needs business-logic migration"
-    )
-
-async def getInitJsonSchema(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInitJsonSchema`."""
-    raise NotImplementedError(
-        "bootstrap.state.getInitJsonSchema still needs business-logic migration"
-    )
-
-async def getInitialMainLoopModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInitialMainLoopModel`."""
-    raise NotImplementedError(
-        "bootstrap.state.getInitialMainLoopModel still needs business-logic migration"
-    )
-
-async def getInlinePlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInlinePlugins`."""
-    raise NotImplementedError(
-        "bootstrap.state.getInlinePlugins still needs business-logic migration"
-    )
-
-async def getInvokedSkills(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInvokedSkills`."""
-    raise NotImplementedError(
-        "bootstrap.state.getInvokedSkills still needs business-logic migration"
-    )
-
-async def getInvokedSkillsForAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInvokedSkillsForAgent`."""
-    raise NotImplementedError(
-        "bootstrap.state.getInvokedSkillsForAgent still needs business-logic migration"
-    )
-
-async def getIsInteractive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getIsInteractive`."""
-    raise NotImplementedError(
-        "bootstrap.state.getIsInteractive still needs business-logic migration"
-    )
-
-async def getIsNonInteractiveSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getIsNonInteractiveSession`."""
-    raise NotImplementedError(
-        "bootstrap.state.getIsNonInteractiveSession still needs business-logic migration"
-    )
-
-async def getIsRemoteMode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getIsRemoteMode`."""
-    raise NotImplementedError(
-        "bootstrap.state.getIsRemoteMode still needs business-logic migration"
-    )
-
-async def getIsScrollDraining(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getIsScrollDraining`."""
-    raise NotImplementedError(
-        "bootstrap.state.getIsScrollDraining still needs business-logic migration"
-    )
-
-async def getKairosActive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getKairosActive`."""
-    raise NotImplementedError(
-        "bootstrap.state.getKairosActive still needs business-logic migration"
-    )
-
-async def getLastAPIRequest(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastAPIRequest`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastAPIRequest still needs business-logic migration"
-    )
-
-async def getLastAPIRequestMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastAPIRequestMessages`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastAPIRequestMessages still needs business-logic migration"
-    )
-
-async def getLastApiCompletionTimestamp(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastApiCompletionTimestamp`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastApiCompletionTimestamp still needs business-logic migration"
-    )
-
-async def getLastClassifierRequests(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastClassifierRequests`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastClassifierRequests still needs business-logic migration"
-    )
-
-async def getLastEmittedDate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastEmittedDate`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastEmittedDate still needs business-logic migration"
-    )
-
-async def getLastInteractionTime(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastInteractionTime`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastInteractionTime still needs business-logic migration"
-    )
-
-async def getLastMainRequestId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastMainRequestId`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLastMainRequestId still needs business-logic migration"
-    )
-
-async def getLocCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLocCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLocCounter still needs business-logic migration"
-    )
-
-async def getLoggerProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLoggerProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.getLoggerProvider still needs business-logic migration"
-    )
-
-async def getMainLoopModelOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMainLoopModelOverride`."""
-    raise NotImplementedError(
-        "bootstrap.state.getMainLoopModelOverride still needs business-logic migration"
-    )
-
-async def getMainThreadAgentType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMainThreadAgentType`."""
-    raise NotImplementedError(
-        "bootstrap.state.getMainThreadAgentType still needs business-logic migration"
-    )
-
-async def getMeter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMeter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getMeter still needs business-logic migration"
-    )
-
-async def getMeterProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMeterProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.getMeterProvider still needs business-logic migration"
-    )
-
-async def getModelStrings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getModelStrings`."""
-    raise NotImplementedError(
-        "bootstrap.state.getModelStrings still needs business-logic migration"
-    )
-
-async def getModelUsage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getModelUsage`."""
-    raise NotImplementedError(
-        "bootstrap.state.getModelUsage still needs business-logic migration"
-    )
-
-async def getOauthTokenFromFd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getOauthTokenFromFd`."""
-    raise NotImplementedError(
-        "bootstrap.state.getOauthTokenFromFd still needs business-logic migration"
-    )
-
-async def getOriginalCwd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getOriginalCwd`."""
-    raise NotImplementedError(
-        "bootstrap.state.getOriginalCwd still needs business-logic migration"
-    )
-
-async def getParentSessionId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getParentSessionId`."""
-    raise NotImplementedError(
-        "bootstrap.state.getParentSessionId still needs business-logic migration"
-    )
-
-async def getPlanSlugCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPlanSlugCache`."""
-    raise NotImplementedError(
-        "bootstrap.state.getPlanSlugCache still needs business-logic migration"
-    )
-
-async def getPrCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getPrCounter still needs business-logic migration"
-    )
-
-async def getProjectRoot(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getProjectRoot`."""
-    raise NotImplementedError(
-        "bootstrap.state.getProjectRoot still needs business-logic migration"
-    )
-
-async def getPromptCache1hAllowlist(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPromptCache1hAllowlist`."""
-    raise NotImplementedError(
-        "bootstrap.state.getPromptCache1hAllowlist still needs business-logic migration"
-    )
-
-async def getPromptCache1hEligible(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPromptCache1hEligible`."""
-    raise NotImplementedError(
-        "bootstrap.state.getPromptCache1hEligible still needs business-logic migration"
-    )
-
-async def getPromptId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPromptId`."""
-    raise NotImplementedError(
-        "bootstrap.state.getPromptId still needs business-logic migration"
-    )
-
-async def getQuestionPreviewFormat(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getQuestionPreviewFormat`."""
-    raise NotImplementedError(
-        "bootstrap.state.getQuestionPreviewFormat still needs business-logic migration"
-    )
+_STATE: dict[str, Any] = _initial_state()
 
-async def getRegisteredHooks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getRegisteredHooks`."""
-    raise NotImplementedError(
-        "bootstrap.state.getRegisteredHooks still needs business-logic migration"
-    )
-
-async def getScheduledTasksEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getScheduledTasksEnabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.getScheduledTasksEnabled still needs business-logic migration"
-    )
-
-async def getSdkAgentProgressSummariesEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSdkAgentProgressSummariesEnabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSdkAgentProgressSummariesEnabled still needs business-logic migration"
-    )
-
-async def getSdkBetas(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSdkBetas`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSdkBetas still needs business-logic migration"
-    )
-
-async def getSessionBypassPermissionsMode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionBypassPermissionsMode`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionBypassPermissionsMode still needs business-logic migration"
-    )
-
-async def getSessionCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionCounter still needs business-logic migration"
-    )
-
-async def getSessionCreatedTeams(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionCreatedTeams`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionCreatedTeams still needs business-logic migration"
-    )
-
-async def getSessionCronTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionCronTasks`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionCronTasks still needs business-logic migration"
-    )
-
-async def getSessionId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionId`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionId still needs business-logic migration"
-    )
-
-async def getSessionIngressToken(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionIngressToken`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionIngressToken still needs business-logic migration"
-    )
-
-async def getSessionProjectDir(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionProjectDir`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionProjectDir still needs business-logic migration"
-    )
-
-async def getSessionSource(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionSource`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionSource still needs business-logic migration"
-    )
-
-async def getSessionTrustAccepted(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionTrustAccepted`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSessionTrustAccepted still needs business-logic migration"
-    )
-
-async def getSlowOperations(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSlowOperations`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSlowOperations still needs business-logic migration"
-    )
-
-async def getStatsStore(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getStatsStore`."""
-    raise NotImplementedError(
-        "bootstrap.state.getStatsStore still needs business-logic migration"
-    )
-
-async def getStrictToolResultPairing(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getStrictToolResultPairing`."""
-    raise NotImplementedError(
-        "bootstrap.state.getStrictToolResultPairing still needs business-logic migration"
-    )
-
-async def getSystemPromptSectionCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSystemPromptSectionCache`."""
-    raise NotImplementedError(
-        "bootstrap.state.getSystemPromptSectionCache still needs business-logic migration"
-    )
-
-async def getTeleportedSessionInfo(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTeleportedSessionInfo`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTeleportedSessionInfo still needs business-logic migration"
-    )
-
-async def getThinkingClearLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getThinkingClearLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.getThinkingClearLatched still needs business-logic migration"
-    )
 
-async def getTokenCounter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTokenCounter`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTokenCounter still needs business-logic migration"
-    )
+def _clone(value: Any) -> Any:
+    if isinstance(value, set):
+        return set(value)
+    try:
+        return deepcopy(value)
+    except Exception:
+        return value
 
-async def getTotalAPIDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalAPIDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalAPIDuration still needs business-logic migration"
-    )
 
-async def getTotalAPIDurationWithoutRetries(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalAPIDurationWithoutRetries`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalAPIDurationWithoutRetries still needs business-logic migration"
-    )
+def _key_from_accessor(name: str, prefix_len: int) -> str:
+    stem = name[prefix_len:]
+    return stem[:1].lower() + stem[1:]
 
-async def getTotalCacheCreationInputTokens(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalCacheCreationInputTokens`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalCacheCreationInputTokens still needs business-logic migration"
-    )
 
-async def getTotalCacheReadInputTokens(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalCacheReadInputTokens`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalCacheReadInputTokens still needs business-logic migration"
-    )
+def peekState(key: str | None = None, default: Any = None) -> Any:
+    if key is None:
+        return _clone(_STATE)
+    return _clone(_STATE.get(key, default))
 
-async def getTotalCostUSD(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalCostUSD`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalCostUSD still needs business-logic migration"
-    )
 
-async def getTotalDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalDuration still needs business-logic migration"
-    )
+def setStateValue(key: str, value: Any) -> Any:
+    _STATE[key] = value
+    return value
 
-async def getTotalInputTokens(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalInputTokens`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalInputTokens still needs business-logic migration"
-    )
 
-async def getTotalLinesAdded(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalLinesAdded`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalLinesAdded still needs business-logic migration"
-    )
+def getStateSnapshot() -> dict[str, Any]:
+    return peekState()
 
-async def getTotalLinesRemoved(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalLinesRemoved`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalLinesRemoved still needs business-logic migration"
-    )
 
-async def getTotalOutputTokens(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalOutputTokens`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalOutputTokens still needs business-logic migration"
-    )
+def resetStateForTests() -> dict[str, Any]:
+    global _STATE
+    _STATE = _initial_state()
+    return getStateSnapshot()
 
-async def getTotalToolDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalToolDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalToolDuration still needs business-logic migration"
-    )
 
-async def getTotalWebSearchRequests(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTotalWebSearchRequests`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTotalWebSearchRequests still needs business-logic migration"
-    )
+def resetSdkInitState() -> None:
+    for key in ("sdkBetas", "sdkAgentProgressSummariesEnabled", "initJsonSchema"):
+        _STATE[key] = _initial_state()[key]
 
-async def getTracerProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTracerProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTracerProvider still needs business-logic migration"
-    )
 
-async def getTurnClassifierCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnClassifierCount`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnClassifierCount still needs business-logic migration"
-    )
+def resetModelStringsForTestingOnly() -> dict[str, str]:
+    _STATE["modelStrings"] = _initial_state()["modelStrings"]
+    return _clone(_STATE["modelStrings"])
 
-async def getTurnClassifierDurationMs(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnClassifierDurationMs`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnClassifierDurationMs still needs business-logic migration"
-    )
 
-async def getTurnHookCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnHookCount`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnHookCount still needs business-logic migration"
-    )
+def resetCostState() -> None:
+    for key in (
+        "costCounter",
+        "totalCostUSD",
+        "totalInputTokens",
+        "totalOutputTokens",
+        "totalCacheCreationInputTokens",
+        "totalCacheReadInputTokens",
+        "modelUsage",
+    ):
+        _STATE[key] = _initial_state()[key]
 
-async def getTurnHookDurationMs(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnHookDurationMs`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnHookDurationMs still needs business-logic migration"
-    )
 
-async def getTurnOutputTokens(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnOutputTokens`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnOutputTokens still needs business-logic migration"
-    )
+def resetTotalDurationStateAndCost_FOR_TESTS_ONLY() -> None:
+    resetCostState()
+    for key in ("totalDuration", "totalAPIDuration", "totalAPIDurationWithoutRetries", "totalToolDuration"):
+        _STATE[key] = 0
 
-async def getTurnToolCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnToolCount`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnToolCount still needs business-logic migration"
-    )
 
-async def getTurnToolDurationMs(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTurnToolDurationMs`."""
-    raise NotImplementedError(
-        "bootstrap.state.getTurnToolDurationMs still needs business-logic migration"
-    )
+def setCostStateForRestore(state: dict[str, Any]) -> dict[str, Any]:
+    for key, value in state.items():
+        if key in _STATE:
+            _STATE[key] = value
+    return getStateSnapshot()
 
-async def getUsageForModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getUsageForModel`."""
-    raise NotImplementedError(
-        "bootstrap.state.getUsageForModel still needs business-logic migration"
-    )
 
-async def getUseCoworkPlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getUseCoworkPlugins`."""
-    raise NotImplementedError(
-        "bootstrap.state.getUseCoworkPlugins still needs business-logic migration"
-    )
+def addInvokedSkill(skill: str, agentId: str | None = None) -> list[str]:
+    _STATE["invokedSkills"].add(skill)
+    if agentId:
+        _STATE["invokedSkillsByAgent"].setdefault(agentId, set()).add(skill)
+    return sorted(_STATE["invokedSkills"])
 
-async def getUserMsgOptIn(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getUserMsgOptIn`."""
-    raise NotImplementedError(
-        "bootstrap.state.getUserMsgOptIn still needs business-logic migration"
-    )
 
-async def handleAutoModeTransition(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `handleAutoModeTransition`."""
-    raise NotImplementedError(
-        "bootstrap.state.handleAutoModeTransition still needs business-logic migration"
-    )
+def getInvokedSkills() -> list[str]:
+    return sorted(_STATE["invokedSkills"])
 
-async def handlePlanModeTransition(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `handlePlanModeTransition`."""
-    raise NotImplementedError(
-        "bootstrap.state.handlePlanModeTransition still needs business-logic migration"
-    )
 
-async def hasExitedPlanModeInSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasExitedPlanModeInSession`."""
-    raise NotImplementedError(
-        "bootstrap.state.hasExitedPlanModeInSession still needs business-logic migration"
-    )
+def getInvokedSkillsForAgent(agentId: str) -> list[str]:
+    return sorted(_STATE["invokedSkillsByAgent"].get(agentId, set()))
 
-async def hasShownLspRecommendationThisSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasShownLspRecommendationThisSession`."""
-    raise NotImplementedError(
-        "bootstrap.state.hasShownLspRecommendationThisSession still needs business-logic migration"
-    )
 
-async def hasUnknownModelCost(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasUnknownModelCost`."""
-    raise NotImplementedError(
-        "bootstrap.state.hasUnknownModelCost still needs business-logic migration"
-    )
+def clearInvokedSkills() -> None:
+    _STATE["invokedSkills"].clear()
+    _STATE["invokedSkillsByAgent"].clear()
 
-async def incrementBudgetContinuationCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `incrementBudgetContinuationCount`."""
-    raise NotImplementedError(
-        "bootstrap.state.incrementBudgetContinuationCount still needs business-logic migration"
-    )
 
-async def isSessionPersistenceDisabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSessionPersistenceDisabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.isSessionPersistenceDisabled still needs business-logic migration"
-    )
+def clearInvokedSkillsForAgent(agentId: str) -> None:
+    _STATE["invokedSkillsByAgent"].pop(agentId, None)
 
-async def markFirstTeleportMessageLogged(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markFirstTeleportMessageLogged`."""
-    raise NotImplementedError(
-        "bootstrap.state.markFirstTeleportMessageLogged still needs business-logic migration"
-    )
 
-async def markPostCompaction(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markPostCompaction`."""
-    raise NotImplementedError(
-        "bootstrap.state.markPostCompaction still needs business-logic migration"
-    )
+def addSessionCronTask(task: Any) -> list[Any]:
+    _STATE["sessionCronTasks"].append(task)
+    return _clone(_STATE["sessionCronTasks"])
 
-async def markScrollActivity(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markScrollActivity`."""
-    raise NotImplementedError(
-        "bootstrap.state.markScrollActivity still needs business-logic migration"
-    )
 
-async def needsAutoModeExitAttachment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `needsAutoModeExitAttachment`."""
-    raise NotImplementedError(
-        "bootstrap.state.needsAutoModeExitAttachment still needs business-logic migration"
-    )
+def removeSessionCronTasks(predicate: Callable[[Any], bool] | None = None) -> list[Any]:
+    if predicate is None:
+        _STATE["sessionCronTasks"] = []
+    else:
+        _STATE["sessionCronTasks"] = [task for task in _STATE["sessionCronTasks"] if not predicate(task)]
+    return _clone(_STATE["sessionCronTasks"])
 
-async def needsPlanModeExitAttachment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `needsPlanModeExitAttachment`."""
-    raise NotImplementedError(
-        "bootstrap.state.needsPlanModeExitAttachment still needs business-logic migration"
-    )
 
-async def preferThirdPartyAuthentication(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `preferThirdPartyAuthentication`."""
-    raise NotImplementedError(
-        "bootstrap.state.preferThirdPartyAuthentication still needs business-logic migration"
-    )
+def addSlowOperation(operation: Any) -> list[Any]:
+    _STATE["slowOperations"].append(operation)
+    return _clone(_STATE["slowOperations"])
 
-async def regenerateSessionId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `regenerateSessionId`."""
-    raise NotImplementedError(
-        "bootstrap.state.regenerateSessionId still needs business-logic migration"
-    )
 
-async def registerHookCallbacks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerHookCallbacks`."""
-    raise NotImplementedError(
-        "bootstrap.state.registerHookCallbacks still needs business-logic migration"
-    )
+def addToInMemoryErrorLog(error: Any) -> list[Any]:
+    _STATE["inMemoryErrorLog"].append(error)
+    _STATE["inMemoryErrorLog"] = _STATE["inMemoryErrorLog"][-100:]
+    return _clone(_STATE["inMemoryErrorLog"])
 
-async def removeSessionCronTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `removeSessionCronTasks`."""
-    raise NotImplementedError(
-        "bootstrap.state.removeSessionCronTasks still needs business-logic migration"
-    )
 
-async def resetCostState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetCostState`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetCostState still needs business-logic migration"
-    )
+def addToToolDuration(ms: int | float) -> int | float:
+    _STATE["totalToolDuration"] += ms
+    _STATE["turnToolDurationMs"] += ms
+    _STATE["turnToolCount"] += 1
+    return _STATE["totalToolDuration"]
 
-async def resetModelStringsForTestingOnly(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetModelStringsForTestingOnly`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetModelStringsForTestingOnly still needs business-logic migration"
-    )
 
-async def resetSdkInitState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetSdkInitState`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetSdkInitState still needs business-logic migration"
-    )
+def addToTotalCostState(cost: int | float) -> float:
+    _STATE["totalCostUSD"] += float(cost)
+    _STATE["costCounter"] += float(cost)
+    return float(_STATE["totalCostUSD"])
 
-async def resetStateForTests(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetStateForTests`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetStateForTests still needs business-logic migration"
-    )
 
-async def resetTotalDurationStateAndCost_FOR_TESTS_ONLY(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetTotalDurationStateAndCost_FOR_TESTS_ONLY`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetTotalDurationStateAndCost_FOR_TESTS_ONLY still needs business-logic migration"
-    )
+def addToTotalDurationState(ms: int | float) -> int | float:
+    _STATE["totalDuration"] += ms
+    return _STATE["totalDuration"]
 
-async def resetTurnClassifierDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetTurnClassifierDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetTurnClassifierDuration still needs business-logic migration"
-    )
 
-async def resetTurnHookDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetTurnHookDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetTurnHookDuration still needs business-logic migration"
-    )
+def addToTotalLinesChanged(added: int = 0, removed: int = 0) -> dict[str, int]:
+    _STATE["totalLinesAdded"] += int(added)
+    _STATE["totalLinesRemoved"] += int(removed)
+    _STATE["locCounter"] += int(added) + int(removed)
+    return {"added": _STATE["totalLinesAdded"], "removed": _STATE["totalLinesRemoved"]}
 
-async def resetTurnToolDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetTurnToolDuration`."""
-    raise NotImplementedError(
-        "bootstrap.state.resetTurnToolDuration still needs business-logic migration"
-    )
 
-async def setAdditionalDirectoriesForClaudeMd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setAdditionalDirectoriesForClaudeMd`."""
-    raise NotImplementedError(
-        "bootstrap.state.setAdditionalDirectoriesForClaudeMd still needs business-logic migration"
-    )
+def addToTurnClassifierDuration(ms: int | float) -> int | float:
+    _STATE["turnClassifierDurationMs"] += ms
+    _STATE["turnClassifierCount"] += 1
+    return _STATE["turnClassifierDurationMs"]
 
-async def setAfkModeHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setAfkModeHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.setAfkModeHeaderLatched still needs business-logic migration"
-    )
 
-async def setAllowedChannels(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setAllowedChannels`."""
-    raise NotImplementedError(
-        "bootstrap.state.setAllowedChannels still needs business-logic migration"
-    )
+def addToTurnHookDuration(ms: int | float) -> int | float:
+    _STATE["turnHookDurationMs"] += ms
+    _STATE["turnHookCount"] += 1
+    return _STATE["turnHookDurationMs"]
 
-async def setAllowedSettingSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setAllowedSettingSources`."""
-    raise NotImplementedError(
-        "bootstrap.state.setAllowedSettingSources still needs business-logic migration"
-    )
 
-async def setApiKeyFromFd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setApiKeyFromFd`."""
-    raise NotImplementedError(
-        "bootstrap.state.setApiKeyFromFd still needs business-logic migration"
-    )
+def clearBetaHeaderLatches() -> None:
+    for key in ("afkModeHeaderLatched", "cacheEditingHeaderLatched", "fastModeHeaderLatched", "thinkingClearLatched"):
+        _STATE[key] = False
 
-async def setCacheEditingHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setCacheEditingHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.setCacheEditingHeaderLatched still needs business-logic migration"
-    )
 
-async def setCachedClaudeMdContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setCachedClaudeMdContent`."""
-    raise NotImplementedError(
-        "bootstrap.state.setCachedClaudeMdContent still needs business-logic migration"
-    )
+def clearRegisteredHooks() -> None:
+    _STATE["registeredHooks"] = []
 
-async def setChromeFlagOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setChromeFlagOverride`."""
-    raise NotImplementedError(
-        "bootstrap.state.setChromeFlagOverride still needs business-logic migration"
-    )
 
-async def setClientType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setClientType`."""
-    raise NotImplementedError(
-        "bootstrap.state.setClientType still needs business-logic migration"
-    )
+def clearRegisteredPluginHooks() -> None:
+    _STATE["registeredPluginHooks"] = []
 
-async def setCostStateForRestore(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setCostStateForRestore`."""
-    raise NotImplementedError(
-        "bootstrap.state.setCostStateForRestore still needs business-logic migration"
-    )
 
-async def setCwdState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setCwdState`."""
-    raise NotImplementedError(
-        "bootstrap.state.setCwdState still needs business-logic migration"
-    )
+def registerHookCallbacks(callbacks: Any, plugin: bool = False) -> list[Any]:
+    key = "registeredPluginHooks" if plugin else "registeredHooks"
+    if isinstance(callbacks, list):
+        _STATE[key].extend(callbacks)
+    else:
+        _STATE[key].append(callbacks)
+    return _clone(_STATE[key])
 
-async def setDirectConnectServerUrl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setDirectConnectServerUrl`."""
-    raise NotImplementedError(
-        "bootstrap.state.setDirectConnectServerUrl still needs business-logic migration"
-    )
 
-async def setEventLogger(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setEventLogger`."""
-    raise NotImplementedError(
-        "bootstrap.state.setEventLogger still needs business-logic migration"
-    )
+def clearSystemPromptSectionState() -> None:
+    _STATE["systemPromptSectionCache"] = {}
 
-async def setFastModeHeaderLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setFastModeHeaderLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.setFastModeHeaderLatched still needs business-logic migration"
-    )
 
-async def setFlagSettingsInline(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setFlagSettingsInline`."""
-    raise NotImplementedError(
-        "bootstrap.state.setFlagSettingsInline still needs business-logic migration"
-    )
+def setSystemPromptSectionCacheEntry(section: str, value: Any) -> dict[str, Any]:
+    _STATE["systemPromptSectionCache"][section] = value
+    return _clone(_STATE["systemPromptSectionCache"])
 
-async def setFlagSettingsPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setFlagSettingsPath`."""
-    raise NotImplementedError(
-        "bootstrap.state.setFlagSettingsPath still needs business-logic migration"
-    )
 
-async def setHasDevChannels(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setHasDevChannels`."""
-    raise NotImplementedError(
-        "bootstrap.state.setHasDevChannels still needs business-logic migration"
-    )
+def markPostCompaction() -> None:
+    _STATE["postCompaction"] = True
 
-async def setHasExitedPlanMode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setHasExitedPlanMode`."""
-    raise NotImplementedError(
-        "bootstrap.state.setHasExitedPlanMode still needs business-logic migration"
-    )
 
-async def setHasUnknownModelCost(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setHasUnknownModelCost`."""
-    raise NotImplementedError(
-        "bootstrap.state.setHasUnknownModelCost still needs business-logic migration"
-    )
+def consumePostCompaction() -> bool:
+    value = bool(_STATE["postCompaction"])
+    _STATE["postCompaction"] = False
+    return value
 
-async def setInitJsonSchema(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setInitJsonSchema`."""
-    raise NotImplementedError(
-        "bootstrap.state.setInitJsonSchema still needs business-logic migration"
-    )
 
-async def setInitialMainLoopModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setInitialMainLoopModel`."""
-    raise NotImplementedError(
-        "bootstrap.state.setInitialMainLoopModel still needs business-logic migration"
-    )
+def flushInteractionTime() -> float:
+    now = time.time()
+    _STATE["activeTimeCounter"] += max(0, now - float(_STATE["lastInteractionTime"]))
+    _STATE["lastInteractionTime"] = now
+    return _STATE["activeTimeCounter"]
 
-async def setInlinePlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setInlinePlugins`."""
-    raise NotImplementedError(
-        "bootstrap.state.setInlinePlugins still needs business-logic migration"
-    )
 
-async def setIsInteractive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setIsInteractive`."""
-    raise NotImplementedError(
-        "bootstrap.state.setIsInteractive still needs business-logic migration"
-    )
+def updateLastInteractionTime() -> float:
+    _STATE["lastInteractionTime"] = time.time()
+    return _STATE["lastInteractionTime"]
 
-async def setIsRemoteMode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setIsRemoteMode`."""
-    raise NotImplementedError(
-        "bootstrap.state.setIsRemoteMode still needs business-logic migration"
-    )
 
-async def setKairosActive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setKairosActive`."""
-    raise NotImplementedError(
-        "bootstrap.state.setKairosActive still needs business-logic migration"
-    )
+def markScrollActivity() -> None:
+    _STATE["isScrollDraining"] = True
+    _STATE["lastScrollActivity"] = time.time()
 
-async def setLastAPIRequest(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastAPIRequest`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastAPIRequest still needs business-logic migration"
-    )
 
-async def setLastAPIRequestMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastAPIRequestMessages`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastAPIRequestMessages still needs business-logic migration"
-    )
+def waitForScrollIdle() -> bool:
+    _STATE["isScrollDraining"] = False
+    return True
 
-async def setLastApiCompletionTimestamp(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastApiCompletionTimestamp`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastApiCompletionTimestamp still needs business-logic migration"
-    )
 
-async def setLastClassifierRequests(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastClassifierRequests`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastClassifierRequests still needs business-logic migration"
-    )
+def handleAutoModeTransition(active: bool | None = None) -> bool:
+    if active is not None:
+        _STATE["needsAutoModeExitAttachment"] = bool(active)
+    return bool(_STATE["needsAutoModeExitAttachment"])
 
-async def setLastEmittedDate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastEmittedDate`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastEmittedDate still needs business-logic migration"
-    )
 
-async def setLastMainRequestId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastMainRequestId`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLastMainRequestId still needs business-logic migration"
-    )
+def handlePlanModeTransition(active: bool | None = None) -> bool:
+    if active is not None:
+        _STATE["needsPlanModeExitAttachment"] = bool(active)
+        if not active:
+            _STATE["hasExitedPlanMode"] = True
+    return bool(_STATE["needsPlanModeExitAttachment"])
 
-async def setLoggerProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLoggerProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLoggerProvider still needs business-logic migration"
-    )
 
-async def setLspRecommendationShownThisSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLspRecommendationShownThisSession`."""
-    raise NotImplementedError(
-        "bootstrap.state.setLspRecommendationShownThisSession still needs business-logic migration"
-    )
+def hasExitedPlanModeInSession() -> bool:
+    return bool(_STATE["hasExitedPlanMode"])
 
-async def setMainLoopModelOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMainLoopModelOverride`."""
-    raise NotImplementedError(
-        "bootstrap.state.setMainLoopModelOverride still needs business-logic migration"
-    )
 
-async def setMainThreadAgentType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMainThreadAgentType`."""
-    raise NotImplementedError(
-        "bootstrap.state.setMainThreadAgentType still needs business-logic migration"
-    )
+def hasShownLspRecommendationThisSession() -> bool:
+    return bool(_STATE["lspRecommendationShownThisSession"])
 
-async def setMeter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMeter`."""
-    raise NotImplementedError(
-        "bootstrap.state.setMeter still needs business-logic migration"
-    )
 
-async def setMeterProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMeterProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.setMeterProvider still needs business-logic migration"
-    )
+def setLspRecommendationShownThisSession(value: bool = True) -> bool:
+    _STATE["lspRecommendationShownThisSession"] = bool(value)
+    return bool(_STATE["lspRecommendationShownThisSession"])
 
-async def setModelStrings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setModelStrings`."""
-    raise NotImplementedError(
-        "bootstrap.state.setModelStrings still needs business-logic migration"
-    )
 
-async def setNeedsAutoModeExitAttachment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setNeedsAutoModeExitAttachment`."""
-    raise NotImplementedError(
-        "bootstrap.state.setNeedsAutoModeExitAttachment still needs business-logic migration"
-    )
+def hasUnknownModelCost() -> bool:
+    return bool(_STATE["hasUnknownModelCost"])
 
-async def setNeedsPlanModeExitAttachment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setNeedsPlanModeExitAttachment`."""
-    raise NotImplementedError(
-        "bootstrap.state.setNeedsPlanModeExitAttachment still needs business-logic migration"
-    )
 
-async def setOauthTokenFromFd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setOauthTokenFromFd`."""
-    raise NotImplementedError(
-        "bootstrap.state.setOauthTokenFromFd still needs business-logic migration"
-    )
+def incrementBudgetContinuationCount() -> int:
+    _STATE["budgetContinuationCount"] += 1
+    return int(_STATE["budgetContinuationCount"])
 
-async def setOriginalCwd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setOriginalCwd`."""
-    raise NotImplementedError(
-        "bootstrap.state.setOriginalCwd still needs business-logic migration"
-    )
 
-async def setProjectRoot(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setProjectRoot`."""
-    raise NotImplementedError(
-        "bootstrap.state.setProjectRoot still needs business-logic migration"
-    )
+def isSessionPersistenceDisabled() -> bool:
+    return bool(_STATE["sessionPersistenceDisabled"])
 
-async def setPromptCache1hAllowlist(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setPromptCache1hAllowlist`."""
-    raise NotImplementedError(
-        "bootstrap.state.setPromptCache1hAllowlist still needs business-logic migration"
-    )
 
-async def setPromptCache1hEligible(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setPromptCache1hEligible`."""
-    raise NotImplementedError(
-        "bootstrap.state.setPromptCache1hEligible still needs business-logic migration"
-    )
+def markFirstTeleportMessageLogged() -> bool:
+    _STATE["firstTeleportMessageLogged"] = True
+    return True
 
-async def setPromptId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setPromptId`."""
-    raise NotImplementedError(
-        "bootstrap.state.setPromptId still needs business-logic migration"
-    )
 
-async def setQuestionPreviewFormat(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setQuestionPreviewFormat`."""
-    raise NotImplementedError(
-        "bootstrap.state.setQuestionPreviewFormat still needs business-logic migration"
-    )
+def needsAutoModeExitAttachment() -> bool:
+    return bool(_STATE["needsAutoModeExitAttachment"])
 
-async def setScheduledTasksEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setScheduledTasksEnabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.setScheduledTasksEnabled still needs business-logic migration"
-    )
 
-async def setSdkAgentProgressSummariesEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSdkAgentProgressSummariesEnabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSdkAgentProgressSummariesEnabled still needs business-logic migration"
-    )
+def needsPlanModeExitAttachment() -> bool:
+    return bool(_STATE["needsPlanModeExitAttachment"])
 
-async def setSdkBetas(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSdkBetas`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSdkBetas still needs business-logic migration"
-    )
 
-async def setSessionBypassPermissionsMode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionBypassPermissionsMode`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSessionBypassPermissionsMode still needs business-logic migration"
-    )
+def preferThirdPartyAuthentication() -> bool:
+    return os.getenv("DEEPSEEK_PREFER_THIRD_PARTY_AUTH", "").lower() in {"1", "true", "yes"}
 
-async def setSessionIngressToken(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionIngressToken`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSessionIngressToken still needs business-logic migration"
-    )
 
-async def setSessionPersistenceDisabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionPersistenceDisabled`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSessionPersistenceDisabled still needs business-logic migration"
-    )
+def regenerateSessionId() -> str:
+    old_id = _STATE["sessionId"]
+    new_id = _new_session_id()
+    _STATE["parentSessionId"] = old_id
+    _STATE["sessionId"] = new_id
+    return new_id
 
-async def setSessionSource(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionSource`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSessionSource still needs business-logic migration"
-    )
 
-async def setSessionTrustAccepted(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionTrustAccepted`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSessionTrustAccepted still needs business-logic migration"
-    )
+def switchSession(sessionId: str | None = None) -> str:
+    old_id = _STATE["sessionId"]
+    new_id = sessionId or _new_session_id()
+    _STATE["parentSessionId"] = old_id
+    _STATE["sessionId"] = new_id
+    if onSessionSwitch is not None:
+        onSessionSwitch(old_id, new_id)
+    return new_id
 
-async def setStatsStore(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setStatsStore`."""
-    raise NotImplementedError(
-        "bootstrap.state.setStatsStore still needs business-logic migration"
-    )
 
-async def setStrictToolResultPairing(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setStrictToolResultPairing`."""
-    raise NotImplementedError(
-        "bootstrap.state.setStrictToolResultPairing still needs business-logic migration"
-    )
+def snapshotOutputTokensForTurn() -> int:
+    _STATE["turnOutputTokens"] = int(_STATE["totalOutputTokens"])
+    return int(_STATE["turnOutputTokens"])
 
-async def setSystemPromptSectionCacheEntry(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSystemPromptSectionCacheEntry`."""
-    raise NotImplementedError(
-        "bootstrap.state.setSystemPromptSectionCacheEntry still needs business-logic migration"
-    )
 
-async def setTeleportedSessionInfo(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setTeleportedSessionInfo`."""
-    raise NotImplementedError(
-        "bootstrap.state.setTeleportedSessionInfo still needs business-logic migration"
+def getUsageForModel(model: str) -> dict[str, Any]:
+    return _clone(
+        _STATE["modelUsage"].setdefault(
+            model,
+            {"inputTokens": 0, "outputTokens": 0, "cacheCreationInputTokens": 0, "cacheReadInputTokens": 0, "costUSD": 0.0},
+        )
     )
 
-async def setThinkingClearLatched(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setThinkingClearLatched`."""
-    raise NotImplementedError(
-        "bootstrap.state.setThinkingClearLatched still needs business-logic migration"
-    )
 
-async def setTracerProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setTracerProvider`."""
-    raise NotImplementedError(
-        "bootstrap.state.setTracerProvider still needs business-logic migration"
-    )
+def resetTurnClassifierDuration() -> None:
+    _STATE["turnClassifierDurationMs"] = 0
+    _STATE["turnClassifierCount"] = 0
 
-async def setUseCoworkPlugins(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setUseCoworkPlugins`."""
-    raise NotImplementedError(
-        "bootstrap.state.setUseCoworkPlugins still needs business-logic migration"
-    )
 
-async def setUserMsgOptIn(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setUserMsgOptIn`."""
-    raise NotImplementedError(
-        "bootstrap.state.setUserMsgOptIn still needs business-logic migration"
-    )
+def resetTurnHookDuration() -> None:
+    _STATE["turnHookDurationMs"] = 0
+    _STATE["turnHookCount"] = 0
 
-async def snapshotOutputTokensForTurn(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `snapshotOutputTokensForTurn`."""
-    raise NotImplementedError(
-        "bootstrap.state.snapshotOutputTokensForTurn still needs business-logic migration"
-    )
 
-async def switchSession(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `switchSession`."""
-    raise NotImplementedError(
-        "bootstrap.state.switchSession still needs business-logic migration"
-    )
+def resetTurnToolDuration() -> None:
+    _STATE["turnToolDurationMs"] = 0
+    _STATE["turnToolCount"] = 0
 
-async def updateLastInteractionTime(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `updateLastInteractionTime`."""
-    raise NotImplementedError(
-        "bootstrap.state.updateLastInteractionTime still needs business-logic migration"
-    )
 
-async def waitForScrollIdle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `waitForScrollIdle`."""
-    raise NotImplementedError(
-        "bootstrap.state.waitForScrollIdle still needs business-logic migration"
-    )
+_GETTER_NAMES = [
+    "getActiveTimeCounter",
+    "getAdditionalDirectoriesForClaudeMd",
+    "getAfkModeHeaderLatched",
+    "getAgentColorMap",
+    "getAllowedChannels",
+    "getAllowedSettingSources",
+    "getApiKeyFromFd",
+    "getBudgetContinuationCount",
+    "getCacheEditingHeaderLatched",
+    "getCachedClaudeMdContent",
+    "getChromeFlagOverride",
+    "getClientType",
+    "getCodeEditToolDecisionCounter",
+    "getCommitCounter",
+    "getCostCounter",
+    "getCurrentTurnTokenBudget",
+    "getCwdState",
+    "getDirectConnectServerUrl",
+    "getEventLogger",
+    "getFastModeHeaderLatched",
+    "getFlagSettingsInline",
+    "getFlagSettingsPath",
+    "getHasDevChannels",
+    "getInitJsonSchema",
+    "getInitialMainLoopModel",
+    "getInlinePlugins",
+    "getIsInteractive",
+    "getIsNonInteractiveSession",
+    "getIsRemoteMode",
+    "getIsScrollDraining",
+    "getKairosActive",
+    "getLastAPIRequest",
+    "getLastAPIRequestMessages",
+    "getLastApiCompletionTimestamp",
+    "getLastClassifierRequests",
+    "getLastEmittedDate",
+    "getLastInteractionTime",
+    "getLastMainRequestId",
+    "getLocCounter",
+    "getLoggerProvider",
+    "getMainLoopModelOverride",
+    "getMainThreadAgentType",
+    "getMeter",
+    "getMeterProvider",
+    "getModelStrings",
+    "getModelUsage",
+    "getOauthTokenFromFd",
+    "getOriginalCwd",
+    "getParentSessionId",
+    "getPlanSlugCache",
+    "getPrCounter",
+    "getProjectRoot",
+    "getPromptCache1hAllowlist",
+    "getPromptCache1hEligible",
+    "getPromptId",
+    "getQuestionPreviewFormat",
+    "getRegisteredHooks",
+    "getScheduledTasksEnabled",
+    "getSdkAgentProgressSummariesEnabled",
+    "getSdkBetas",
+    "getSessionBypassPermissionsMode",
+    "getSessionCounter",
+    "getSessionCreatedTeams",
+    "getSessionCronTasks",
+    "getSessionId",
+    "getSessionIngressToken",
+    "getSessionProjectDir",
+    "getSessionSource",
+    "getSessionTrustAccepted",
+    "getSlowOperations",
+    "getStatsStore",
+    "getStrictToolResultPairing",
+    "getSystemPromptSectionCache",
+    "getTeleportedSessionInfo",
+    "getThinkingClearLatched",
+    "getTokenCounter",
+    "getTotalAPIDuration",
+    "getTotalAPIDurationWithoutRetries",
+    "getTotalCacheCreationInputTokens",
+    "getTotalCacheReadInputTokens",
+    "getTotalCostUSD",
+    "getTotalDuration",
+    "getTotalInputTokens",
+    "getTotalLinesAdded",
+    "getTotalLinesRemoved",
+    "getTotalOutputTokens",
+    "getTotalToolDuration",
+    "getTotalWebSearchRequests",
+    "getTracerProvider",
+    "getTurnClassifierCount",
+    "getTurnClassifierDurationMs",
+    "getTurnHookCount",
+    "getTurnHookDurationMs",
+    "getTurnOutputTokens",
+    "getTurnToolCount",
+    "getTurnToolDurationMs",
+    "getUseCoworkPlugins",
+    "getUserMsgOptIn",
+]
+
+_SETTER_NAMES = [
+    "setAdditionalDirectoriesForClaudeMd",
+    "setAfkModeHeaderLatched",
+    "setAllowedChannels",
+    "setAllowedSettingSources",
+    "setApiKeyFromFd",
+    "setCacheEditingHeaderLatched",
+    "setCachedClaudeMdContent",
+    "setChromeFlagOverride",
+    "setClientType",
+    "setCwdState",
+    "setDirectConnectServerUrl",
+    "setEventLogger",
+    "setFastModeHeaderLatched",
+    "setFlagSettingsInline",
+    "setFlagSettingsPath",
+    "setHasDevChannels",
+    "setHasExitedPlanMode",
+    "setHasUnknownModelCost",
+    "setInitJsonSchema",
+    "setInitialMainLoopModel",
+    "setInlinePlugins",
+    "setIsInteractive",
+    "setIsRemoteMode",
+    "setKairosActive",
+    "setLastAPIRequest",
+    "setLastAPIRequestMessages",
+    "setLastApiCompletionTimestamp",
+    "setLastClassifierRequests",
+    "setLastEmittedDate",
+    "setLastMainRequestId",
+    "setLoggerProvider",
+    "setMainLoopModelOverride",
+    "setMainThreadAgentType",
+    "setMeter",
+    "setMeterProvider",
+    "setModelStrings",
+    "setNeedsAutoModeExitAttachment",
+    "setNeedsPlanModeExitAttachment",
+    "setOauthTokenFromFd",
+    "setOriginalCwd",
+    "setProjectRoot",
+    "setPromptCache1hAllowlist",
+    "setPromptCache1hEligible",
+    "setPromptId",
+    "setQuestionPreviewFormat",
+    "setScheduledTasksEnabled",
+    "setSdkAgentProgressSummariesEnabled",
+    "setSdkBetas",
+    "setSessionBypassPermissionsMode",
+    "setSessionIngressToken",
+    "setSessionPersistenceDisabled",
+    "setSessionSource",
+    "setSessionTrustAccepted",
+    "setStatsStore",
+    "setStrictToolResultPairing",
+    "setTeleportedSessionInfo",
+    "setThinkingClearLatched",
+    "setTracerProvider",
+    "setUseCoworkPlugins",
+    "setUserMsgOptIn",
+]
+
+
+def _make_getter(name: str):
+    key = _key_from_accessor(name, 3)
+
+    def getter() -> Any:
+        return _clone(_STATE.get(key))
+
+    getter.__name__ = name
+    return getter
+
+
+def _make_setter(name: str):
+    key = _key_from_accessor(name, 3)
+
+    def setter(value: Any = None) -> Any:
+        _STATE[key] = value
+        return value
+
+    setter.__name__ = name
+    return setter
+
+
+for _name in _GETTER_NAMES:
+    globals().setdefault(_name, _make_getter(_name))
+
+for _name in _SETTER_NAMES:
+    globals().setdefault(_name, _make_setter(_name))
+
+
+__all__ = sorted(name for name in globals() if name.startswith(("get", "set", "add", "clear", "reset", "mark", "handle", "has", "is", "needs", "prefer", "regenerate", "register", "remove", "snapshot", "switch", "update", "wait", "consume", "flush", "peek")))

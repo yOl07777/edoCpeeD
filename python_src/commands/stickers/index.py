@@ -1,16 +1,30 @@
-"""
-Python migration draft for `src/commands/stickers/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""DeepSeek stickers command shim."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.stickers.index still needs business-logic migration"
-    )
+STICKER_URL = "https://www.deepseek.com"
+
+
+async def call(
+    onDone: Callable[[str], Any] | None = None,
+    context: Any | None = None,
+    args: str = "",
+) -> dict[str, str]:
+    value = f"DeepSeek sticker ordering is not bundled with this Python migration. Visit: {STICKER_URL}"
+    if onDone:
+        onDone(value)
+    return {"type": "text", "value": value, "url": STICKER_URL}
+
+
+stickers = {
+    "type": "local",
+    "name": "stickers",
+    "description": "Show DeepSeek sticker/community link",
+    "source": "builtin",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = stickers

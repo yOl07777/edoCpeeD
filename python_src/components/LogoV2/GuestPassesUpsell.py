@@ -1,29 +1,30 @@
-"""
-Python migration draft for `src/components/LogoV2/GuestPassesUpsell.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.LogoV2._shared import logo_payload, option, scalar_arg, visible_by_seen_count
+
+
 async def GuestPassesUpsell(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `GuestPassesUpsell`."""
-    raise NotImplementedError(
-        "components.LogoV2.GuestPassesUpsell.GuestPassesUpsell still needs business-logic migration"
+    remaining = option(args, kwargs, "remaining", option(args, kwargs, "passes", scalar_arg(args, 0)))
+    visible = await useShowGuestPassesUpsell(*args, **kwargs)
+    return logo_payload(
+        "guest_passes_upsell",
+        visible=bool(visible["visible"]),
+        remaining=remaining,
+        text=f"{remaining} guest passes available for teammates.",
     )
+
 
 async def incrementGuestPassesSeenCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `incrementGuestPassesSeenCount`."""
-    raise NotImplementedError(
-        "components.LogoV2.GuestPassesUpsell.incrementGuestPassesSeenCount still needs business-logic migration"
-    )
+    current = int(option(args, kwargs, "seenCount", option(args, kwargs, "seen_count", scalar_arg(args, 0))) or 0)
+    return logo_payload("guest_passes_seen_count", seenCount=current + 1)
+
 
 async def useShowGuestPassesUpsell(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useShowGuestPassesUpsell`."""
-    raise NotImplementedError(
-        "components.LogoV2.GuestPassesUpsell.useShowGuestPassesUpsell still needs business-logic migration"
-    )
+    visible = visible_by_seen_count(args, kwargs, default=True, max_seen=3)
+    remaining = option(args, kwargs, "remaining", option(args, kwargs, "passes", scalar_arg(args, 0)))
+    return logo_payload("guest_passes_visibility", visible=visible and bool(remaining), remaining=remaining)
+
+
+__all__ = ["GuestPassesUpsell", "incrementGuestPassesSeenCount", "useShowGuestPassesUpsell"]

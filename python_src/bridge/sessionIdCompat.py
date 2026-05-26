@@ -1,29 +1,26 @@
-"""
-Python migration draft for `src/bridge/sessionIdCompat.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Session ID retagging helpers for CCR compatibility."""
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable
 
-async def setCseShimGate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setCseShimGate`."""
-    raise NotImplementedError(
-        "bridge.sessionIdCompat.setCseShimGate still needs business-logic migration"
-    )
+_is_cse_shim_enabled: Callable[[], bool] | None = None
 
-async def toCompatSessionId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `toCompatSessionId`."""
-    raise NotImplementedError(
-        "bridge.sessionIdCompat.toCompatSessionId still needs business-logic migration"
-    )
 
-async def toInfraSessionId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `toInfraSessionId`."""
-    raise NotImplementedError(
-        "bridge.sessionIdCompat.toInfraSessionId still needs business-logic migration"
-    )
+def setCseShimGate(gate: Callable[[], bool]) -> None:
+    global _is_cse_shim_enabled
+    _is_cse_shim_enabled = gate
+
+
+def toCompatSessionId(id: str) -> str:
+    if not id.startswith("cse_"):
+        return id
+    if _is_cse_shim_enabled is not None and not _is_cse_shim_enabled():
+        return id
+    return "session_" + id[len("cse_") :]
+
+
+def toInfraSessionId(id: str) -> str:
+    if not id.startswith("session_"):
+        return id
+    return "cse_" + id[len("session_") :]

@@ -1,103 +1,102 @@
-"""
-Python migration draft for `src/services/SessionMemory/sessionMemoryUtils.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import asyncio
+from dataclasses import dataclass, field
 from typing import Any
 
-DEFAULT_SESSION_MEMORY_CONFIG: Any = None
 
-async def getLastSummarizedMessageId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastSummarizedMessageId`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.getLastSummarizedMessageId still needs business-logic migration"
-    )
+DEFAULT_SESSION_MEMORY_CONFIG = {
+    "enabled": True,
+    "initialization_threshold": 6,
+    "update_threshold": 4,
+    "max_chars": 12_000,
+}
 
-async def getSessionMemoryConfig(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionMemoryConfig`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.getSessionMemoryConfig still needs business-logic migration"
-    )
 
-async def getSessionMemoryContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSessionMemoryContent`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.getSessionMemoryContent still needs business-logic migration"
-    )
+@dataclass
+class SessionMemoryState:
+    initialized: bool = False
+    extracting: bool = False
+    last_summarized_message_id: str | None = None
+    extraction_token_count: int = 0
+    content: str = ""
+    config: dict[str, Any] = field(default_factory=lambda: dict(DEFAULT_SESSION_MEMORY_CONFIG))
 
-async def getToolCallsBetweenUpdates(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getToolCallsBetweenUpdates`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.getToolCallsBetweenUpdates still needs business-logic migration"
-    )
 
-async def hasMetInitializationThreshold(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasMetInitializationThreshold`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.hasMetInitializationThreshold still needs business-logic migration"
-    )
+STATE = SessionMemoryState()
 
-async def hasMetUpdateThreshold(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasMetUpdateThreshold`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.hasMetUpdateThreshold still needs business-logic migration"
-    )
 
-async def isSessionMemoryInitialized(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSessionMemoryInitialized`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.isSessionMemoryInitialized still needs business-logic migration"
-    )
+async def resetSessionMemoryState() -> None:
+    global STATE
+    STATE = SessionMemoryState()
 
-async def markExtractionCompleted(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markExtractionCompleted`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.markExtractionCompleted still needs business-logic migration"
-    )
 
-async def markExtractionStarted(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markExtractionStarted`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.markExtractionStarted still needs business-logic migration"
-    )
+async def getSessionMemoryConfig() -> dict[str, Any]:
+    return dict(STATE.config)
 
-async def markSessionMemoryInitialized(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markSessionMemoryInitialized`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.markSessionMemoryInitialized still needs business-logic migration"
-    )
 
-async def recordExtractionTokenCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `recordExtractionTokenCount`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.recordExtractionTokenCount still needs business-logic migration"
-    )
+async def setSessionMemoryConfig(config: dict[str, Any]) -> dict[str, Any]:
+    STATE.config.update(config)
+    return await getSessionMemoryConfig()
 
-async def resetSessionMemoryState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetSessionMemoryState`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.resetSessionMemoryState still needs business-logic migration"
-    )
 
-async def setLastSummarizedMessageId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setLastSummarizedMessageId`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.setLastSummarizedMessageId still needs business-logic migration"
-    )
+async def isSessionMemoryInitialized() -> bool:
+    return STATE.initialized
 
-async def setSessionMemoryConfig(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setSessionMemoryConfig`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.setSessionMemoryConfig still needs business-logic migration"
-    )
 
-async def waitForSessionMemoryExtraction(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `waitForSessionMemoryExtraction`."""
-    raise NotImplementedError(
-        "services.SessionMemory.sessionMemoryUtils.waitForSessionMemoryExtraction still needs business-logic migration"
-    )
+async def markSessionMemoryInitialized(content: str = "") -> dict[str, Any]:
+    STATE.initialized = True
+    if content:
+        STATE.content = content
+    return {"initialized": STATE.initialized, "content": STATE.content}
+
+
+async def getSessionMemoryContent() -> str:
+    return STATE.content
+
+
+async def getLastSummarizedMessageId() -> str | None:
+    return STATE.last_summarized_message_id
+
+
+async def setLastSummarizedMessageId(message_id: str | None) -> str | None:
+    STATE.last_summarized_message_id = message_id
+    return STATE.last_summarized_message_id
+
+
+async def markExtractionStarted() -> dict[str, bool]:
+    STATE.extracting = True
+    return {"extracting": True}
+
+
+async def markExtractionCompleted(content: str | None = None, last_message_id: str | None = None) -> dict[str, Any]:
+    STATE.extracting = False
+    if content is not None:
+        STATE.content = content
+    if last_message_id is not None:
+        STATE.last_summarized_message_id = last_message_id
+    return {"extracting": False, "content": STATE.content, "last_summarized_message_id": STATE.last_summarized_message_id}
+
+
+async def waitForSessionMemoryExtraction(timeout_seconds: float = 5.0) -> bool:
+    deadline = asyncio.get_event_loop().time() + timeout_seconds
+    while STATE.extracting and asyncio.get_event_loop().time() < deadline:
+        await asyncio.sleep(0.01)
+    return not STATE.extracting
+
+
+async def recordExtractionTokenCount(count: int) -> int:
+    STATE.extraction_token_count += count
+    return STATE.extraction_token_count
+
+
+async def hasMetInitializationThreshold(messages: list[dict[str, Any]]) -> bool:
+    return len(messages) >= int(STATE.config.get("initialization_threshold", 6))
+
+
+async def hasMetUpdateThreshold(messages: list[dict[str, Any]]) -> bool:
+    return len(messages) >= int(STATE.config.get("update_threshold", 4))
+
+
+async def getToolCallsBetweenUpdates(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [m for m in messages if m.get("tool_calls") or m.get("role") == "tool"]

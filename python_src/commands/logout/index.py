@@ -1,16 +1,19 @@
-"""
-Python migration draft for `src/commands/logout/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Logout command metadata."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib
+import os
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.logout.index still needs business-logic migration"
-    )
+
+def _truthy(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+default = {
+    "type": "local-jsx",
+    "name": "logout",
+    "description": "Sign out from your DeepSeek account",
+    "isEnabled": lambda: not _truthy(os.getenv("DISABLE_LOGOUT_COMMAND")),
+    "load": lambda: importlib.import_module("python_src.commands.logout.logout"),
+}

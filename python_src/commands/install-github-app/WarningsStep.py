@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/commands/install-github-app/WarningsStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured warnings step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def WarningsStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `WarningsStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.WarningsStep.WarningsStep still needs business-logic migration"
-    )
+from ._shared import step_payload
+
+
+async def WarningsStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    warnings = kwargs.get("warnings")
+    if warnings is None and args:
+        warnings = args[0]
+    return step_payload("warnings", warnings=list(warnings or []))
+
+
+__all__ = ["WarningsStep"]

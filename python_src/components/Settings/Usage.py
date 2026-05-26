@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/Settings/Usage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.Settings._shared import settings_payload
+
+
 async def Usage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Usage`."""
-    raise NotImplementedError(
-        "components.Settings.Usage.Usage still needs business-logic migration"
-    )
+    usage = kwargs.get("usage") or (args[0] if args else {}) or {}
+    if not isinstance(usage, dict):
+        usage = {"value": usage}
+    return settings_payload("settings_usage", usage=usage, totalTokens=usage.get("totalTokens", usage.get("tokens", 0)))
+
+
+__all__ = ["Usage"]

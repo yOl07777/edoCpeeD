@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/hooks/useMainLoopModel.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
 from typing import Any
 
-async def useMainLoopModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useMainLoopModel`."""
-    raise NotImplementedError(
-        "hooks.useMainLoopModel.useMainLoopModel still needs business-logic migration"
-    )
+
+async def useMainLoopModel(model: Any = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    selected = str(kwargs.get("model", model or os.getenv("DEFAULT_MODEL") or "deepseek-chat"))
+    return {"provider": "deepseek", "model": selected, "reasoning": selected in {"deepseek-reasoner"}}
+
+
+__all__ = ["useMainLoopModel"]

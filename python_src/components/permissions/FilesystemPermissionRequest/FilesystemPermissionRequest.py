@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/FilesystemPermissionRequest/FilesystemPermissionRequest.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def FilesystemPermissionRequest(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `FilesystemPermissionRequest`."""
-    raise NotImplementedError(
-        "components.permissions.FilesystemPermissionRequest.FilesystemPermissionRequest.FilesystemPermissionRequest still needs business-logic migration"
+from python_src.components.permissions._shared import permission_request
+
+
+async def FilesystemPermissionRequest(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    action = str(kwargs.pop("action", "access the filesystem"))
+    return permission_request(
+        "FilesystemPermissionRequest",
+        *args,
+        tool_name=str(kwargs.pop("tool_name", kwargs.pop("toolName", "filesystem"))),
+        action=action,
+        kind="filesystem",
+        **kwargs,
     )
+
+
+__all__ = ["FilesystemPermissionRequest"]

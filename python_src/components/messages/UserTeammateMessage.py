@@ -1,23 +1,18 @@
-"""
-Python migration draft for `src/components/messages/UserTeammateMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload, text_from
+
+
 async def TeammateMessageContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TeammateMessageContent`."""
-    raise NotImplementedError(
-        "components.messages.UserTeammateMessage.TeammateMessageContent still needs business-logic migration"
-    )
+    return text_from(args[0] if args else None, **kwargs)
+
 
 async def UserTeammateMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `UserTeammateMessage`."""
-    raise NotImplementedError(
-        "components.messages.UserTeammateMessage.UserTeammateMessage still needs business-logic migration"
-    )
+    text = await TeammateMessageContent(args[0] if args else None, **kwargs)
+    teammate = str(kwargs.get("teammate") or kwargs.get("agent") or "teammate")
+    return message_payload("user_teammate_message", teammate=teammate, text=text)
+
+
+__all__ = ["TeammateMessageContent", "UserTeammateMessage"]

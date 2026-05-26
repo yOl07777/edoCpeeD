@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/PermissionRequestTitle.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def PermissionRequestTitle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PermissionRequestTitle`."""
-    raise NotImplementedError(
-        "components.permissions.PermissionRequestTitle.PermissionRequestTitle still needs business-logic migration"
-    )
+from python_src.components.permissions._shared import normalize_permission_input, permission_title
+
+
+async def PermissionRequestTitle(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = normalize_permission_input(*args, **kwargs)
+    tool_name = str(data.get("toolName") or data.get("tool_name") or data.get("tool") or "tool")
+    action = data.get("action")
+    return {
+        "type": "permission_request_title",
+        "provider": "deepseek",
+        "toolName": tool_name,
+        "title": permission_title(tool_name, str(action) if action else None),
+    }
+
+
+__all__ = ["PermissionRequestTitle"]

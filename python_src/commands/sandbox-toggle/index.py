@@ -1,16 +1,25 @@
-"""
-Python migration draft for `src/commands/sandbox-toggle/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/sandbox`."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib.util
+from pathlib import Path
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.sandbox-toggle.index still needs business-logic migration"
-    )
+_path = Path(__file__).with_name("sandbox-toggle.py")
+_spec = importlib.util.spec_from_file_location("sandbox_toggle_command_impl", _path)
+_module = importlib.util.module_from_spec(_spec)
+assert _spec and _spec.loader
+_spec.loader.exec_module(_module)
+call = _module.call
+
+sandboxToggle = {
+    "type": "local",
+    "name": "sandbox",
+    "aliases": ["sandbox-toggle"],
+    "description": "Configure local sandbox settings",
+    "progressMessage": "configuring sandbox",
+    "source": "builtin",
+    "call": call,
+}
+
+default = sandboxToggle

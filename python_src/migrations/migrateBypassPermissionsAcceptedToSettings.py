@@ -1,17 +1,23 @@
-"""
-Python migration draft for `src/migrations/migrateBypassPermissionsAcceptedToSettings.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def migrateBypassPermissionsAcceptedToSettings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `migrateBypassPermissionsAcceptedToSettings`."""
-    raise NotImplementedError(
-        "migrations.migrateBypassPermissionsAcceptedToSettings.migrateBypassPermissionsAcceptedToSettings still needs business-logic migration"
-    )
+from ._shared import get_global_config, has_skip_dangerous_prompt, mutate_global_config, update_user_settings
+
+
+async def migrateBypassPermissionsAcceptedToSettings(*_args: Any, **_kwargs: Any) -> bool:
+    """Move accepted dangerous-mode prompt flag into user settings."""
+
+    config = await get_global_config()
+    if not config.get("bypassPermissionsModeAccepted"):
+        return False
+    if not await has_skip_dangerous_prompt():
+        await update_user_settings({"skipDangerousModePermissionPrompt": True})
+
+    def remove_key(current: dict[str, Any]) -> dict[str, Any]:
+        next_config = dict(current)
+        next_config.pop("bypassPermissionsModeAccepted", None)
+        return next_config
+
+    await mutate_global_config(remove_key)
+    return True

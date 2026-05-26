@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/ink/hooks/use-app.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.hooks.use-app still needs business-logic migration"
-    )
+
+def useApp(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    exit_code = kwargs.get("exitCode")
+    exited: list[Any] = []
+
+    def exit(error: Any = None) -> dict[str, Any]:
+        exited.append(error)
+        return {"provider": "deepseek", "exited": True, "error": error, "exitCode": exit_code}
+
+    return {"provider": "deepseek", "exit": exit, "exited": exited, "exitCode": exit_code}
+
+
+default = useApp
+_module_migration_placeholder = useApp

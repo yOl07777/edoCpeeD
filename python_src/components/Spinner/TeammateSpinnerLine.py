@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/components/Spinner/TeammateSpinnerLine.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def TeammateSpinnerLine(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TeammateSpinnerLine`."""
-    raise NotImplementedError(
-        "components.Spinner.TeammateSpinnerLine.TeammateSpinnerLine still needs business-logic migration"
-    )
+
+async def TeammateSpinnerLine(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    name = kwargs.get("name") or kwargs.get("agent") or "agent"
+    status = kwargs.get("status") or "working"
+    return {"type": "teammate_spinner_line", "provider": "deepseek", "name": str(name), "status": str(status)}
+
+
+__all__ = ["TeammateSpinnerLine"]

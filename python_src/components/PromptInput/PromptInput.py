@@ -1,16 +1,14 @@
-"""
-Python migration draft for `src/components/PromptInput/PromptInput.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.PromptInput.PromptInput still needs business-logic migration"
-    )
+from python_src.components.PromptInput._shared import mode_from_text, prompt_payload
+
+
+async def PromptInput(*args: Any, **kwargs: Any) -> Any:
+    value = str(kwargs.get("value") or kwargs.get("input") or (args[0] if args else "") or "")
+    mode = kwargs.get("mode") or mode_from_text(value)
+    return prompt_payload("prompt_input", value=value, mode=mode, multiline=bool(kwargs.get("multiline", False)), disabled=bool(kwargs.get("disabled", False)))
+
+
+__all__ = ["PromptInput"]

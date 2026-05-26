@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/commands/install-github-app/ErrorStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured error step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def ErrorStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ErrorStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.ErrorStep.ErrorStep still needs business-logic migration"
+from ._shared import step_payload
+
+
+async def ErrorStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return step_payload(
+        "error",
+        error=kwargs.get("error") or (args[0] if args else "GitHub app setup could not continue."),
+        errorReason=kwargs.get("errorReason", "local_shim"),
+        errorInstructions=kwargs.get("errorInstructions", []),
     )
+
+
+__all__ = ["ErrorStep"]

@@ -1,29 +1,35 @@
-"""
-Python migration draft for `src/tools/BriefTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable BriefTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def AttachmentList(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AttachmentList`."""
-    raise NotImplementedError(
-        "tools.BriefTool.UI.AttachmentList still needs business-logic migration"
-    )
 
-async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
-    raise NotImplementedError(
-        "tools.BriefTool.UI.renderToolResultMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {**(args[0] if args and isinstance(args[0], dict) else {}), **kwargs}
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.BriefTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+
+async def AttachmentList(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    attachments = list(data.get("attachments") or data.get("files") or [])
+    return {"type": "brief-attachments", "count": len(attachments), "attachments": attachments}
+
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    attachments = list(data.get("attachments") or [])
+    return {"type": "brief-use", "title": data.get("title") or "Brief", "attachmentCount": len(attachments)}
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {
+        "type": "brief-result",
+        "ok": data.get("ok", True),
+        "briefId": data.get("briefId") or data.get("id"),
+        "attachmentCount": len(data.get("attachments") or []),
+        "message": data.get("message", ""),
+    }
+
+
+__all__ = ["AttachmentList", "renderToolResultMessage", "renderToolUseMessage"]

@@ -1,17 +1,27 @@
-"""
-Python migration draft for `src/replLauncher.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""REPL launcher compatibility layer for DeepSeek Code."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def launchRepl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `launchRepl`."""
-    raise NotImplementedError(
-        "replLauncher.launchRepl still needs business-logic migration"
-    )
+
+async def launchRepl(*_args: Any, **kwargs: Any) -> int | dict[str, Any]:
+    """Launch the standalone DeepSeek terminal, or return a dry-run plan."""
+
+    argv = kwargs.get("argv")
+    dry_run = bool(kwargs.get("dryRun", False) or kwargs.get("dry_run", False))
+    if dry_run:
+        return {
+            "type": "repl_launch",
+            "provider": "deepseek",
+            "entrypoint": "deepseek_code.terminal",
+            "argv": list(argv or []),
+            "dryRun": True,
+        }
+
+    from deepseek_code.terminal import amain
+
+    return await amain(list(argv or []))
+
+
+__all__ = ["launchRepl"]

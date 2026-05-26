@@ -1,23 +1,30 @@
-"""
-Python migration draft for `src/services/remoteManagedSettings/syncCache.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Eligibility wrapper for remote managed settings cache."""
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-async def isRemoteManagedSettingsEligible(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isRemoteManagedSettingsEligible`."""
-    raise NotImplementedError(
-        "services.remoteManagedSettings.syncCache.isRemoteManagedSettingsEligible still needs business-logic migration"
-    )
+from .syncCacheState import resetSyncCache as resetLeafCache
+from .syncCacheState import setEligibility
 
-async def resetSyncCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetSyncCache`."""
-    raise NotImplementedError(
-        "services.remoteManagedSettings.syncCache.resetSyncCache still needs business-logic migration"
-    )
+_cached: bool | None = None
+
+
+async def isRemoteManagedSettingsEligible(*args: Any, **kwargs: Any) -> bool:
+    global _cached
+    if _cached is not None:
+        return _cached
+    value = os.getenv("DEEPCODE_REMOTE_MANAGED_SETTINGS_ELIGIBLE") or os.getenv("DEEPSEEK_REMOTE_MANAGED_SETTINGS_ELIGIBLE")
+    _cached = True if value is None else value.lower() in {"1", "true", "yes", "on"}
+    await setEligibility(_cached)
+    return _cached
+
+
+async def resetSyncCache(*args: Any, **kwargs: Any) -> None:
+    global _cached
+    _cached = None
+    await resetLeafCache()
+
+
+__all__ = ["isRemoteManagedSettingsEligible", "resetSyncCache"]

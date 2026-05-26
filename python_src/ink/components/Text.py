@@ -1,16 +1,17 @@
-"""
-Python migration draft for `src/ink/components/Text.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.components.Text still needs business-logic migration"
-    )
+from ._nodes import normalize_children, render_node, text_from_children
+
+
+def Text(*children: Any, **props: Any) -> dict[str, Any]:
+    explicit_text = props.pop("text", None)
+    prop_children = props.pop("children", None)
+    node_children = normalize_children(prop_children, *children)
+    text = str(explicit_text) if explicit_text is not None else text_from_children(node_children)
+    return render_node("text", text=text, children=node_children, style=props)
+
+
+default = Text
+_module_migration_placeholder = Text

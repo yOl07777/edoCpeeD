@@ -1,59 +1,62 @@
-"""
-Python migration draft for `src/components/TrustDialog/utils.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+
 async def formatListWithAnd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `formatListWithAnd`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.formatListWithAnd still needs business-logic migration"
-    )
+    items = kwargs.get("items") or (args[0] if args else []) or []
+    items = [str(item) for item in items]
+    if len(items) <= 1:
+        return "".join(items)
+    if len(items) == 2:
+        return f"{items[0]} and {items[1]}"
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
+
+
+def _source_payload(name: str, sources: Any) -> dict[str, Any]:
+    if sources is None:
+        sources = []
+    if isinstance(sources, str):
+        sources = [sources]
+    return {"category": name, "sources": [str(source) for source in sources], "count": len(sources)}
+
 
 async def getApiKeyHelperSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getApiKeyHelperSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getApiKeyHelperSources still needs business-logic migration"
-    )
+    sources = kwargs.get("sources") if "sources" in kwargs else (args[0] if args else None)
+    return _source_payload("api_keys", sources if sources is not None else ["DEEPSEEK_API_KEYS", ".env"])
+
 
 async def getAwsCommandsSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAwsCommandsSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getAwsCommandsSources still needs business-logic migration"
-    )
+    return _source_payload("aws_commands", kwargs.get("sources") or (args[0] if args else []))
+
 
 async def getBashPermissionSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBashPermissionSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getBashPermissionSources still needs business-logic migration"
-    )
+    return _source_payload("shell_permissions", kwargs.get("sources") or (args[0] if args else []))
+
 
 async def getDangerousEnvVarsSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDangerousEnvVarsSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getDangerousEnvVarsSources still needs business-logic migration"
-    )
+    return _source_payload("dangerous_env_vars", kwargs.get("sources") or (args[0] if args else []))
+
 
 async def getGcpCommandsSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getGcpCommandsSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getGcpCommandsSources still needs business-logic migration"
-    )
+    return _source_payload("gcp_commands", kwargs.get("sources") or (args[0] if args else []))
+
 
 async def getHooksSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getHooksSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getHooksSources still needs business-logic migration"
-    )
+    return _source_payload("hooks", kwargs.get("sources") or (args[0] if args else []))
+
 
 async def getOtelHeadersHelperSources(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getOtelHeadersHelperSources`."""
-    raise NotImplementedError(
-        "components.TrustDialog.utils.getOtelHeadersHelperSources still needs business-logic migration"
-    )
+    return _source_payload("otel_headers", kwargs.get("sources") or (args[0] if args else []))
+
+
+__all__ = [
+    "formatListWithAnd",
+    "getApiKeyHelperSources",
+    "getAwsCommandsSources",
+    "getBashPermissionSources",
+    "getDangerousEnvVarsSources",
+    "getGcpCommandsSources",
+    "getHooksSources",
+    "getOtelHeadersHelperSources",
+]

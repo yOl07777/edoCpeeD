@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/hooks/useGlobalKeybindings.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def GlobalKeybindingHandlers(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `GlobalKeybindingHandlers`."""
-    raise NotImplementedError(
-        "hooks.useGlobalKeybindings.GlobalKeybindingHandlers still needs business-logic migration"
-    )
+
+async def GlobalKeybindingHandlers(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    bindings = dict(kwargs.get("bindings", {}) or {})
+    key = str(kwargs.get("key", ""))
+    action = bindings.get(key)
+    return {"provider": "deepseek", "key": key, "action": action, "handled": action is not None, "bindings": bindings}
+
+
+__all__ = ["GlobalKeybindingHandlers"]

@@ -1,26 +1,25 @@
-"""
-Python migration draft for `src/ink/node-cache.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-nodeCache: Any = None
-pendingClears: Any = None
+nodeCache: dict[str, Any] = {}
+pendingClears: set[str] = set()
+_absolute_removed = False
+
 
 async def addPendingClear(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addPendingClear`."""
-    raise NotImplementedError(
-        "ink.node-cache.addPendingClear still needs business-logic migration"
-    )
+    key = str(args[0] if args else kwargs.get("key", "default"))
+    pendingClears.add(key)
+    return sorted(pendingClears)
+
 
 async def consumeAbsoluteRemovedFlag(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `consumeAbsoluteRemovedFlag`."""
-    raise NotImplementedError(
-        "ink.node-cache.consumeAbsoluteRemovedFlag still needs business-logic migration"
-    )
+    global _absolute_removed
+    value = _absolute_removed
+    _absolute_removed = False
+    return value
+
+
+def markAbsoluteRemoved() -> None:
+    global _absolute_removed
+    _absolute_removed = True

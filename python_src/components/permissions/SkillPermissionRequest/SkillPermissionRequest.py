@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/SkillPermissionRequest/SkillPermissionRequest.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def SkillPermissionRequest(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SkillPermissionRequest`."""
-    raise NotImplementedError(
-        "components.permissions.SkillPermissionRequest.SkillPermissionRequest.SkillPermissionRequest still needs business-logic migration"
+from python_src.components.permissions._shared import permission_request
+
+
+async def SkillPermissionRequest(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    request = permission_request(
+        "SkillPermissionRequest",
+        *args,
+        tool_name="skill",
+        action="load a skill",
+        **kwargs,
     )
+    request["skill"] = kwargs.get("skill") or kwargs.get("skillName") or kwargs.get("name")
+    return request
+
+
+__all__ = ["SkillPermissionRequest"]

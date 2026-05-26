@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/HistorySearchDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def HistorySearchDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `HistorySearchDialog`."""
-    raise NotImplementedError(
-        "components.HistorySearchDialog.HistorySearchDialog still needs business-logic migration"
-    )
+    query = str(option(args, kwargs, "query", ""))
+    entries = normalize_items(option(args, kwargs, "entries", scalar_arg(args, [])))
+    if query:
+        entries = [entry for entry in entries if query.lower() in str(entry.get("text", "")).lower()]
+    return component_payload("history_search_dialog", query=query, entries=entries, count=len(entries))
+
+
+__all__ = ["HistorySearchDialog"]

@@ -1,41 +1,88 @@
-"""
-Python migration draft for `src/bridge/bridgeDebug.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Bridge debug handle and fault injection helpers."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
-async def clearBridgeDebugHandle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearBridgeDebugHandle`."""
-    raise NotImplementedError(
-        "bridge.bridgeDebug.clearBridgeDebugHandle still needs business-logic migration"
+
+@dataclass
+class BridgeFault:
+    method: str
+    kind: str
+    status: int
+    errorType: str | None = None
+    count: int = 1
+
+
+class InjectedBridgeFault(RuntimeError):
+    def __init__(self, message: str, status: int, errorType: str | None = None, fatal: bool = False) -> None:
+        super().__init__(message)
+        self.status = status
+        self.errorType = errorType
+        self.fatal = fatal
+
+
+_debug_handle: Any | None = None
+_fault_queue: list[BridgeFault] = []
+
+
+def registerBridgeDebugHandle(h: Any) -> None:
+    global _debug_handle
+    _debug_handle = h
+
+
+def clearBridgeDebugHandle() -> None:
+    global _debug_handle
+    _debug_handle = None
+    _fault_queue.clear()
+
+
+def getBridgeDebugHandle() -> Any | None:
+    return _debug_handle
+
+
+def injectBridgeFault(fault: BridgeFault | dict[str, Any]) -> None:
+    if isinstance(fault, dict):
+        fault = BridgeFault(**fault)
+    _fault_queue.append(fault)
+
+
+def _consume(method: str) -> BridgeFault | None:
+    for idx, fault in enumerate(_fault_queue):
+        if fault.method == method:
+            fault.count -= 1
+            if fault.count <= 0:
+                _fault_queue.pop(idx)
+            return fault
+    return None
+
+
+def _throw_fault(fault: BridgeFault, context: str) -> None:
+    raise InjectedBridgeFault(
+        f"[injected {'fatal' if fault.kind == 'fatal' else 'transient'}] {context} {fault.status}",
+        fault.status,
+        fault.errorType,
+        fatal=fault.kind == "fatal",
     )
 
-async def getBridgeDebugHandle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeDebugHandle`."""
-    raise NotImplementedError(
-        "bridge.bridgeDebug.getBridgeDebugHandle still needs business-logic migration"
-    )
 
-async def injectBridgeFault(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `injectBridgeFault`."""
-    raise NotImplementedError(
-        "bridge.bridgeDebug.injectBridgeFault still needs business-logic migration"
-    )
+def wrapApiForFaultInjection(api: Any) -> Any:
+    class FaultInjectingApi:
+        def __init__(self, wrapped: Any) -> None:
+            self._wrapped = wrapped
 
-async def registerBridgeDebugHandle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerBridgeDebugHandle`."""
-    raise NotImplementedError(
-        "bridge.bridgeDebug.registerBridgeDebugHandle still needs business-logic migration"
-    )
+        def __getattr__(self, name: str) -> Any:
+            attr = getattr(self._wrapped, name)
+            if name not in {"pollForWork", "registerBridgeEnvironment", "reconnectSession", "heartbeatWork"}:
+                return attr
 
-async def wrapApiForFaultInjection(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `wrapApiForFaultInjection`."""
-    raise NotImplementedError(
-        "bridge.bridgeDebug.wrapApiForFaultInjection still needs business-logic migration"
-    )
+            async def call(*args: Any, **kwargs: Any) -> Any:
+                fault = _consume(name)
+                if fault:
+                    _throw_fault(fault, name)
+                return await attr(*args, **kwargs)
+
+            return call
+
+    return FaultInjectingApi(api)

@@ -1,29 +1,22 @@
-"""
-Python migration draft for `src/utils/hash.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+import hashlib
 
-async def djb2Hash(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `djb2Hash`."""
-    raise NotImplementedError(
-        "utils.hash.djb2Hash still needs business-logic migration"
-    )
 
-async def hashContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hashContent`."""
-    raise NotImplementedError(
-        "utils.hash.hashContent still needs business-logic migration"
-    )
+def djb2Hash(str: str) -> int:
+    value = 0
+    for ch in str:
+        value = ((value << 5) - value + ord(ch)) & 0xFFFFFFFF
+    return value - 0x100000000 if value & 0x80000000 else value
 
-async def hashPair(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hashPair`."""
-    raise NotImplementedError(
-        "utils.hash.hashPair still needs business-logic migration"
-    )
+
+def hashContent(content: str) -> str:
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def hashPair(a: str, b: str) -> str:
+    h = hashlib.sha256()
+    h.update(a.encode("utf-8"))
+    h.update(b"\0")
+    h.update(b.encode("utf-8"))
+    return h.hexdigest()

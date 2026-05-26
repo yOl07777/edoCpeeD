@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/useSkillsChange.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, listify, pick
+
+
 async def useSkillsChange(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSkillsChange`."""
-    raise NotImplementedError(
-        "hooks.useSkillsChange.useSkillsChange still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    before = {str(item) for item in listify(pick(options, "before", "previous", default=[]))}
+    after = {str(item) for item in listify(pick(options, "after", "current", default=[]))}
+    return {
+        "provider": "deepseek",
+        "added": sorted(after - before),
+        "removed": sorted(before - after),
+        "changed": before != after,
+    }

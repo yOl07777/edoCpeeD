@@ -1,125 +1,115 @@
-"""
-Python migration draft for `src/services/mockRateLimits.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Mock rate limit state for local testing."""
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-async def addExceededLimit(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addExceededLimit`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.addExceededLimit still needs business-logic migration"
-    )
+_STATE: dict[str, Any] = {
+    "scenario": None,
+    "headers": {},
+    "exceeded": [],
+    "earlyWarning": None,
+    "subscriptionType": None,
+    "billingAccess": False,
+}
 
-async def applyMockHeaders(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `applyMockHeaders`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.applyMockHeaders still needs business-logic migration"
-    )
 
-async def checkMockFastModeRateLimit(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `checkMockFastModeRateLimit`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.checkMockFastModeRateLimit still needs business-logic migration"
-    )
+async def setMockRateLimitScenario(scenario: str | None) -> dict[str, Any]:
+    _STATE["scenario"] = scenario
+    return await getMockStatus()
 
-async def clearMockEarlyWarning(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearMockEarlyWarning`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.clearMockEarlyWarning still needs business-logic migration"
-    )
 
-async def clearMockHeaders(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearMockHeaders`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.clearMockHeaders still needs business-logic migration"
-    )
+async def getCurrentMockScenario() -> str | None:
+    return _STATE.get("scenario")
 
-async def getCurrentMockScenario(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCurrentMockScenario`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getCurrentMockScenario still needs business-logic migration"
-    )
 
-async def getMockHeaderless429Message(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMockHeaderless429Message`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getMockHeaderless429Message still needs business-logic migration"
-    )
+async def getScenarioDescription(scenario: str | None = None) -> str:
+    scenario = scenario if scenario is not None else _STATE.get("scenario")
+    descriptions = {
+        "fast_mode": "Fast mode rate limit reached",
+        "exceeded": "Configured mock rate limit exceeded",
+        "warning": "Configured mock rate limit warning",
+    }
+    return descriptions.get(str(scenario), "No mock rate limit scenario")
 
-async def getMockHeaders(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMockHeaders`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getMockHeaders still needs business-logic migration"
-    )
 
-async def getMockStatus(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMockStatus`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getMockStatus still needs business-logic migration"
-    )
+async def isMockFastModeRateLimitScenario(scenario: str | None = None) -> bool:
+    return (scenario if scenario is not None else _STATE.get("scenario")) in {"fast_mode", "fast-mode", "fast"}
 
-async def getMockSubscriptionType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getMockSubscriptionType`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getMockSubscriptionType still needs business-logic migration"
-    )
 
-async def getScenarioDescription(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getScenarioDescription`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.getScenarioDescription still needs business-logic migration"
-    )
+async def checkMockFastModeRateLimit() -> dict[str, Any]:
+    exceeded = await isMockFastModeRateLimitScenario()
+    return {"limited": exceeded, "message": await getScenarioDescription("fast_mode") if exceeded else None}
 
-async def isMockFastModeRateLimitScenario(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isMockFastModeRateLimitScenario`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.isMockFastModeRateLimitScenario still needs business-logic migration"
-    )
 
-async def setMockBillingAccess(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMockBillingAccess`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.setMockBillingAccess still needs business-logic migration"
-    )
+async def addExceededLimit(limit_name: str, details: dict[str, Any] | None = None) -> dict[str, Any]:
+    entry = {"limit": limit_name, "details": details or {}}
+    _STATE["exceeded"].append(entry)
+    return entry
 
-async def setMockEarlyWarning(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMockEarlyWarning`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.setMockEarlyWarning still needs business-logic migration"
-    )
 
-async def setMockHeader(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMockHeader`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.setMockHeader still needs business-logic migration"
-    )
+async def setMockHeader(name: str, value: Any) -> dict[str, str]:
+    _STATE["headers"][str(name).lower()] = str(value)
+    return await getMockHeaders()
 
-async def setMockRateLimitScenario(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMockRateLimitScenario`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.setMockRateLimitScenario still needs business-logic migration"
-    )
 
-async def setMockSubscriptionType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setMockSubscriptionType`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.setMockSubscriptionType still needs business-logic migration"
-    )
+async def getMockHeaders() -> dict[str, str]:
+    return dict(_STATE["headers"])
 
-async def shouldProcessMockLimits(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldProcessMockLimits`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.shouldProcessMockLimits still needs business-logic migration"
-    )
 
-async def shouldUseMockSubscription(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldUseMockSubscription`."""
-    raise NotImplementedError(
-        "services.mockRateLimits.shouldUseMockSubscription still needs business-logic migration"
-    )
+async def applyMockHeaders(headers: dict[str, Any] | None = None) -> dict[str, str]:
+    merged = {str(k).lower(): str(v) for k, v in (headers or {}).items()}
+    merged.update(await getMockHeaders())
+    return merged
+
+
+async def clearMockHeaders() -> None:
+    _STATE["headers"].clear()
+
+
+async def setMockEarlyWarning(warning: dict[str, Any] | str | None) -> Any:
+    _STATE["earlyWarning"] = warning
+    return warning
+
+
+async def clearMockEarlyWarning() -> None:
+    _STATE["earlyWarning"] = None
+
+
+async def setMockSubscriptionType(subscription_type: str | None) -> str | None:
+    _STATE["subscriptionType"] = subscription_type
+    return subscription_type
+
+
+async def getMockSubscriptionType() -> str | None:
+    return _STATE.get("subscriptionType")
+
+
+async def shouldUseMockSubscription() -> bool:
+    return bool(_STATE.get("subscriptionType"))
+
+
+async def setMockBillingAccess(enabled: bool) -> bool:
+    _STATE["billingAccess"] = bool(enabled)
+    return bool(_STATE["billingAccess"])
+
+
+async def shouldProcessMockLimits() -> bool:
+    env = os.getenv("DEEPSEEK_MOCK_RATE_LIMITS")
+    return bool(_STATE.get("scenario") or _STATE["headers"] or _STATE["exceeded"] or str(env).lower() in {"1", "true", "yes"})
+
+
+async def getMockHeaderless429Message() -> str:
+    return "Mock DeepSeek rate limit reached without rate-limit headers."
+
+
+async def getMockStatus() -> dict[str, Any]:
+    return {
+        "scenario": _STATE.get("scenario"),
+        "headers": await getMockHeaders(),
+        "exceeded": list(_STATE["exceeded"]),
+        "earlyWarning": _STATE.get("earlyWarning"),
+        "subscriptionType": _STATE.get("subscriptionType"),
+        "billingAccess": bool(_STATE.get("billingAccess")),
+    }

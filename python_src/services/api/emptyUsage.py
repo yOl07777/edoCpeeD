@@ -1,13 +1,12 @@
-"""
-Python migration draft for `src/services/api/emptyUsage.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""OpenAI/DeepSeek compatible empty usage object."""
 
 from __future__ import annotations
 
-from typing import Any
+EMPTY_USAGE = {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "total_tokens": 0,
+}
 
-EMPTY_USAGE: Any = None

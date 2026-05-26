@@ -1,16 +1,25 @@
-"""
-Python migration draft for `src/ink/hooks/use-stdin.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.hooks.use-stdin still needs business-logic migration"
-    )
+
+def useStdin(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    raw_mode = bool(kwargs.get("isRawModeEnabled", kwargs.get("rawMode", False)))
+    supported = bool(kwargs.get("isRawModeSupported", True))
+
+    def setRawMode(enabled: bool) -> dict[str, Any]:
+        nonlocal raw_mode
+        raw_mode = bool(enabled) and supported
+        return {"provider": "deepseek", "isRawModeEnabled": raw_mode}
+
+    return {
+        "provider": "deepseek",
+        "stdin": kwargs.get("stdin"),
+        "isRawModeSupported": supported,
+        "isRawModeEnabled": raw_mode,
+        "setRawMode": setRawMode,
+    }
+
+
+default = useStdin
+_module_migration_placeholder = useStdin

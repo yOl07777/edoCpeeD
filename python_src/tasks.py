@@ -1,23 +1,27 @@
-"""
-Python migration draft for `src/tasks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def getAllTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAllTasks`."""
-    raise NotImplementedError(
-        "tasks.getAllTasks still needs business-logic migration"
-    )
 
-async def getTaskByType(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTaskByType`."""
-    raise NotImplementedError(
-        "tasks.getTaskByType still needs business-logic migration"
-    )
+def _task(name: str, type: str) -> dict[str, Any]:
+    async def kill(taskId: str, setAppState: Any = None) -> None:
+        if callable(setAppState):
+            setAppState(lambda prev: prev)
+
+    return {"name": name, "type": type, "kill": kill}
+
+
+def getAllTasks() -> list[dict[str, Any]]:
+    return [
+        _task("LocalShellTask", "local_bash"),
+        _task("LocalAgentTask", "local_agent"),
+        _task("RemoteAgentTask", "remote_agent"),
+        _task("InProcessTeammateTask", "in_process_teammate"),
+        _task("LocalWorkflowTask", "local_workflow"),
+        _task("MonitorMcpTask", "monitor_mcp"),
+        _task("DreamTask", "dream"),
+    ]
+
+
+def getTaskByType(type: str) -> dict[str, Any] | None:
+    return next((task for task in getAllTasks() if task["type"] == type), None)

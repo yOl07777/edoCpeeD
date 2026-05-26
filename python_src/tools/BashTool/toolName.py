@@ -1,13 +1,7 @@
-"""
-Python migration draft for `src/tools/BashTool/toolName.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""BashTool name constant."""
 
 from __future__ import annotations
 
-from typing import Any
+BASH_TOOL_NAME = "run_shell"
 
-BASH_TOOL_NAME: Any = None
+__all__ = ["BASH_TOOL_NAME"]

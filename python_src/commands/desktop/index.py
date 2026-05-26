@@ -1,16 +1,21 @@
-"""
-Python migration draft for `src/commands/desktop/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/desktop`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .desktop import call, getDesktopHandoffInfo, isSupportedPlatform
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.desktop.index still needs business-logic migration"
-    )
+
+desktop = {
+    "type": "local-jsx",
+    "name": "desktop",
+    "aliases": ["app"],
+    "description": "Continue the current session in DeepSeek Desktop",
+    "availability": ["deepseek"],
+    "isEnabled": isSupportedPlatform,
+    "isHidden": lambda: not isSupportedPlatform(),
+    "call": call,
+}
+
+default = desktop
+
+__all__ = ["call", "desktop", "default", "getDesktopHandoffInfo", "isSupportedPlatform"]

@@ -1,1 +1,1 @@
-"""Migrated Python package."""
+"""MCP UI shims for the DeepSeek Python runtime."""

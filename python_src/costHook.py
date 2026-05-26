@@ -1,17 +1,28 @@
-"""
-Python migration draft for `src/costHook.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Cost summary helpers for the Python/DeepSeek runtime."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def useCostSummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useCostSummary`."""
-    raise NotImplementedError(
-        "costHook.useCostSummary still needs business-logic migration"
-    )
+from python_src import cost_tracker
+
+
+async def useCostSummary(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+    """Return a hook-like cost summary without depending on React."""
+
+    text = await cost_tracker.formatTotalCost()
+    return {
+        "type": "cost_summary",
+        "provider": "deepseek",
+        "summary": text,
+        "totalCostUSD": cost_tracker.getTotalCost(),
+        "totalInputTokens": cost_tracker.getTotalInputTokens(),
+        "totalOutputTokens": cost_tracker.getTotalOutputTokens(),
+        "totalCacheReadInputTokens": cost_tracker.getTotalCacheReadInputTokens(),
+        "totalCacheCreationInputTokens": cost_tracker.getTotalCacheCreationInputTokens(),
+        "totalWebSearchRequests": cost_tracker.getTotalWebSearchRequests(),
+        "modelUsage": cost_tracker.getModelUsage(),
+    }
+
+
+__all__ = ["useCostSummary"]

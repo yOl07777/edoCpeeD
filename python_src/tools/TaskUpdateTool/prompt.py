@@ -1,14 +1,8 @@
-"""
-Python migration draft for `src/tools/TaskUpdateTool/prompt.ts`.
+"""Prompt text for TaskUpdateTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+from python_src.tools.TaskUpdateTool.constants import TASK_UPDATE_TOOL_NAME
 
-from __future__ import annotations
+DESCRIPTION = "Update title, description, or status on a local in-memory task."
+PROMPT = f"Use {TASK_UPDATE_TOOL_NAME} with task_id and only the fields that should change."
 
-from typing import Any
-
-DESCRIPTION: Any = None
-PROMPT: Any = None
+__all__ = ["DESCRIPTION", "PROMPT"]

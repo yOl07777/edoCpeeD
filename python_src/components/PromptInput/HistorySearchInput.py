@@ -1,16 +1,15 @@
-"""
-Python migration draft for `src/components/PromptInput/HistorySearchInput.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.PromptInput.HistorySearchInput still needs business-logic migration"
-    )
+from python_src.components.PromptInput._shared import prompt_payload
+
+
+async def HistorySearchInput(*args: Any, **kwargs: Any) -> Any:
+    history = kwargs.get("history") or (args[0] if args else []) or []
+    query = str(kwargs.get("query") or "")
+    matches = [item for item in history if not query or query.lower() in str(item).lower()]
+    return prompt_payload("history_search_input", query=query, matches=matches[:20], count=len(matches))
+
+
+__all__ = ["HistorySearchInput"]

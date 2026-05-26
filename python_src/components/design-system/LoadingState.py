@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/design-system/LoadingState.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from importlib import import_module
+
+
 async def LoadingState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `LoadingState`."""
-    raise NotImplementedError(
-        "components.design-system.LoadingState.LoadingState still needs business-logic migration"
-    )
+    shared = import_module("python_src.components.design-system._shared")
+    return shared.ui_payload("loading_state", message=str(kwargs.get("message") or (args[0] if args else "Loading")), active=bool(kwargs.get("active", True)))
+
+
+__all__ = ["LoadingState"]

@@ -1,29 +1,33 @@
-"""
-Python migration draft for `src/components/DesktopUpsell/DesktopUpsellStartup.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
 from typing import Any
 
-async def DesktopUpsellStartup(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `DesktopUpsellStartup`."""
-    raise NotImplementedError(
-        "components.DesktopUpsell.DesktopUpsellStartup.DesktopUpsellStartup still needs business-logic migration"
-    )
 
-async def getDesktopUpsellConfig(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDesktopUpsellConfig`."""
-    raise NotImplementedError(
-        "components.DesktopUpsell.DesktopUpsellStartup.getDesktopUpsellConfig still needs business-logic migration"
-    )
+async def getDesktopUpsellConfig(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    enabled = str(os.environ.get("DEEPCODE_DESKTOP_UPSELL", kwargs.get("enabled", "0"))).lower() in {"1", "true", "yes"}
+    return {
+        "provider": "deepseek",
+        "enabled": enabled,
+        "source": "env" if "DEEPCODE_DESKTOP_UPSELL" in os.environ else "default",
+        "message": "DeepSeek Code desktop integration is optional.",
+    }
 
-async def shouldShowDesktopUpsellStartup(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shouldShowDesktopUpsellStartup`."""
-    raise NotImplementedError(
-        "components.DesktopUpsell.DesktopUpsellStartup.shouldShowDesktopUpsellStartup still needs business-logic migration"
-    )
+
+async def shouldShowDesktopUpsellStartup(*args: Any, **kwargs: Any) -> bool:
+    config = await getDesktopUpsellConfig(*args, **kwargs)
+    return bool(config["enabled"]) and not bool(kwargs.get("alreadyShown", False))
+
+
+async def DesktopUpsellStartup(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    config = await getDesktopUpsellConfig(*args, **kwargs)
+    return {
+        "type": "desktop_upsell_startup",
+        "provider": "deepseek",
+        "config": config,
+        "shouldShow": await shouldShowDesktopUpsellStartup(*args, **kwargs),
+        "actions": ["dismiss", "open-settings"],
+    }
+
+
+__all__ = ["DesktopUpsellStartup", "getDesktopUpsellConfig", "shouldShowDesktopUpsellStartup"]

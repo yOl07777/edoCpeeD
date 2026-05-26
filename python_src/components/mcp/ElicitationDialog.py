@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/mcp/ElicitationDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.mcp._shared import mcp_payload
+
+
 async def ElicitationDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ElicitationDialog`."""
-    raise NotImplementedError(
-        "components.mcp.ElicitationDialog.ElicitationDialog still needs business-logic migration"
+    prompt = str(kwargs.get("prompt") or (args[0] if args else "MCP server requested input."))
+    fields = kwargs.get("fields") or []
+    return mcp_payload(
+        "mcp_elicitation_dialog",
+        prompt=prompt,
+        fields=fields,
+        responses=kwargs.get("responses") or {},
+        actions=["submit", "cancel"],
     )
+
+
+__all__ = ["ElicitationDialog"]

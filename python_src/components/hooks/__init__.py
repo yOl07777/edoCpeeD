@@ -1,1 +1,1 @@
-"""Migrated Python package."""
+"""Hook configuration shims for the DeepSeek Python runtime."""

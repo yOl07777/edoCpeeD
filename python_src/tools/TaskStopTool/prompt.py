@@ -1,14 +1,6 @@
-"""
-Python migration draft for `src/tools/TaskStopTool/prompt.ts`.
+"""Prompt text for TaskStopTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+TASK_STOP_TOOL_NAME = "task_stop"
+DESCRIPTION = "Mark a local in-memory task as stopped, optionally recording a reason."
 
-from __future__ import annotations
-
-from typing import Any
-
-DESCRIPTION: Any = None
-TASK_STOP_TOOL_NAME: Any = None
+__all__ = ["DESCRIPTION", "TASK_STOP_TOOL_NAME"]

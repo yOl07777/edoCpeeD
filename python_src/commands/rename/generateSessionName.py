@@ -1,17 +1,29 @@
-"""
-Python migration draft for `src/commands/rename/generateSessionName.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Session naming helpers."""
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
-async def generateSessionName(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateSessionName`."""
-    raise NotImplementedError(
-        "commands.rename.generateSessionName.generateSessionName still needs business-logic migration"
-    )
+from python_src.session_store import SESSION_STATE
+
+
+_WORD_RE = re.compile(r"[A-Za-z0-9\u4e00-\u9fff]+")
+
+
+def _words(text: str) -> list[str]:
+    return _WORD_RE.findall(text or "")
+
+
+async def generateSessionName(prompt: str | None = None, messages: list[dict[str, Any]] | None = None, max_words: int = 6) -> str:
+    source = prompt or ""
+    if not source:
+        for message in reversed(messages if messages is not None else SESSION_STATE.messages):
+            content = str(message.get("content", ""))
+            if content.strip():
+                source = content
+                break
+    words = _words(source)
+    if not words:
+        return "untitled-session"
+    return "-".join(words[:max(1, max_words)]).lower()[:80]

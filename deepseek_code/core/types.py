@@ -21,6 +21,7 @@ class InternalMessage:
     name: str | None = None
     tool_call_id: str | None = None
     tool_calls: list[InternalToolCall] = field(default_factory=list)
+    reasoning_content: str | None = None
 
 
 @dataclass
@@ -33,6 +34,7 @@ class InternalResponse:
 @dataclass
 class InternalStreamDelta:
     content: str = ""
+    reasoning_content: str = ""
     tool_calls: list[InternalToolCall] = field(default_factory=list)
     finish_reason: str | None = None
     usage: dict[str, Any] | None = None

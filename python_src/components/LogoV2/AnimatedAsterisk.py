@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/LogoV2/AnimatedAsterisk.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.LogoV2._shared import frame_glyph, frame_index, logo_payload
+
+
 async def AnimatedAsterisk(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AnimatedAsterisk`."""
-    raise NotImplementedError(
-        "components.LogoV2.AnimatedAsterisk.AnimatedAsterisk still needs business-logic migration"
-    )
+    frame = kwargs.get("frame", args[0] if args and not isinstance(args[0], dict) else 0)
+    glyph = frame_glyph(frame)
+    return logo_payload("animated_asterisk", frame=frame_index(frame), glyph=glyph, text=glyph)
+
+
+__all__ = ["AnimatedAsterisk"]

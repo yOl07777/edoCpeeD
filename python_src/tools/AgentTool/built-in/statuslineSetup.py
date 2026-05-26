@@ -1,13 +1,14 @@
-"""
-Python migration draft for `src/tools/AgentTool/built-in/statuslineSetup.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Built-in statusline setup agent definition."""
 
 from __future__ import annotations
 
 from typing import Any
 
-STATUSLINE_SETUP_AGENT: Any = None
+STATUSLINE_SETUP_AGENT: dict[str, Any] = {
+    "agentType": "statusline-setup",
+    "name": "Statusline setup",
+    "description": "Helps configure local statusline integrations.",
+    "source": "built-in",
+}
+
+__all__ = ["STATUSLINE_SETUP_AGENT"]

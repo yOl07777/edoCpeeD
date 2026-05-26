@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/ConsoleOAuthFlow.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def ConsoleOAuthFlow(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ConsoleOAuthFlow`."""
-    raise NotImplementedError(
-        "components.ConsoleOAuthFlow.ConsoleOAuthFlow still needs business-logic migration"
-    )
+    url = str(option(args, kwargs, "url", option(args, kwargs, "verificationUri", "")))
+    code = str(option(args, kwargs, "code", option(args, kwargs, "userCode", "")))
+    return component_payload("console_oauth_flow", url=url, code=code, waiting=bool(url or code), opensBrowser=False)
+
+
+__all__ = ["ConsoleOAuthFlow"]

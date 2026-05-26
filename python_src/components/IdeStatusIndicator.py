@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/IdeStatusIndicator.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def IdeStatusIndicator(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `IdeStatusIndicator`."""
-    raise NotImplementedError(
-        "components.IdeStatusIndicator.IdeStatusIndicator still needs business-logic migration"
-    )
+    connected = bool(option(args, kwargs, "connected", False))
+    ide = str(option(args, kwargs, "ide", "IDE"))
+    return component_payload("ide_status_indicator", ide=ide, connected=connected, text=f"{ide}: {'connected' if connected else 'disconnected'}")
+
+
+__all__ = ["IdeStatusIndicator"]

@@ -1,13 +1,7 @@
-"""
-Python migration draft for `src/tools/ToolSearchTool/constants.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""ToolSearchTool constants."""
 
 from __future__ import annotations
 
-from typing import Any
+TOOL_SEARCH_TOOL_NAME = "tool_search"
 
-TOOL_SEARCH_TOOL_NAME: Any = None
+__all__ = ["TOOL_SEARCH_TOOL_NAME"]

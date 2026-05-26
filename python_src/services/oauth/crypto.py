@@ -1,29 +1,26 @@
-"""
-Python migration draft for `src/services/oauth/crypto.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""OAuth PKCE helpers ported from ``src/services/oauth/crypto.ts``."""
 
 from __future__ import annotations
 
-from typing import Any
+import base64
+import hashlib
+import os
 
-async def generateCodeChallenge(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateCodeChallenge`."""
-    raise NotImplementedError(
-        "services.oauth.crypto.generateCodeChallenge still needs business-logic migration"
-    )
 
-async def generateCodeVerifier(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateCodeVerifier`."""
-    raise NotImplementedError(
-        "services.oauth.crypto.generateCodeVerifier still needs business-logic migration"
-    )
+def _base64_url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).decode("ascii").rstrip("=")
 
-async def generateState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateState`."""
-    raise NotImplementedError(
-        "services.oauth.crypto.generateState still needs business-logic migration"
-    )
+
+def generateCodeVerifier() -> str:
+    return _base64_url_encode(os.urandom(32))
+
+
+def generateCodeChallenge(verifier: str) -> str:
+    return _base64_url_encode(hashlib.sha256(verifier.encode("utf-8")).digest())
+
+
+def generateState() -> str:
+    return _base64_url_encode(os.urandom(32))
+
+
+__all__ = ["generateCodeChallenge", "generateCodeVerifier", "generateState"]

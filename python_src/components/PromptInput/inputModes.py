@@ -1,35 +1,30 @@
-"""
-Python migration draft for `src/components/PromptInput/inputModes.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def getModeFromInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getModeFromInput`."""
-    raise NotImplementedError(
-        "components.PromptInput.inputModes.getModeFromInput still needs business-logic migration"
-    )
+from python_src.components.PromptInput._shared import MODE_PREFIXES, mode_from_text, strip_mode_prefix
 
-async def getValueFromInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getValueFromInput`."""
-    raise NotImplementedError(
-        "components.PromptInput.inputModes.getValueFromInput still needs business-logic migration"
-    )
 
 async def isInputModeCharacter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isInputModeCharacter`."""
-    raise NotImplementedError(
-        "components.PromptInput.inputModes.isInputModeCharacter still needs business-logic migration"
-    )
+    char = str(kwargs.get("char") or (args[0] if args else "") or "")[:1]
+    return char in MODE_PREFIXES
+
+
+async def getModeFromInput(*args: Any, **kwargs: Any) -> Any:
+    text = str(kwargs.get("input") or (args[0] if args else "") or "")
+    return mode_from_text(text)
+
+
+async def getValueFromInput(*args: Any, **kwargs: Any) -> Any:
+    text = str(kwargs.get("input") or (args[0] if args else "") or "")
+    return strip_mode_prefix(text)
+
 
 async def prependModeCharacterToInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `prependModeCharacterToInput`."""
-    raise NotImplementedError(
-        "components.PromptInput.inputModes.prependModeCharacterToInput still needs business-logic migration"
-    )
+    mode = str(kwargs.get("mode") or (args[0] if args else "prompt"))
+    text = str(kwargs.get("input") or (args[1] if len(args) > 1 else "") or "")
+    prefix = next((key for key, value in MODE_PREFIXES.items() if value == mode), "")
+    return text if not prefix or text.startswith(prefix) else prefix + text
+
+
+__all__ = ["getModeFromInput", "getValueFromInput", "isInputModeCharacter", "prependModeCharacterToInput"]

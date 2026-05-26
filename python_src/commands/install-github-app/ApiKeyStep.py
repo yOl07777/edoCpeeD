@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/commands/install-github-app/ApiKeyStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured replacement for the React API-key step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def ApiKeyStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ApiKeyStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.ApiKeyStep.ApiKeyStep still needs business-logic migration"
+from ._shared import DEFAULT_SECRET_NAME, step_payload
+
+
+async def ApiKeyStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return step_payload(
+        "api-key",
+        secretName=kwargs.get("secretName", DEFAULT_SECRET_NAME),
+        selectedApiKeyOption=kwargs.get("selectedApiKeyOption", "existing"),
+        message="Use a DeepSeek API key stored as a GitHub Actions secret; this shim never stores or prints the key.",
     )
+
+
+__all__ = ["ApiKeyStep"]

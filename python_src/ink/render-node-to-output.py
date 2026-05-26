@@ -1,53 +1,46 @@
-"""
-Python migration draft for `src/ink/render-node-to-output.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def consumeFollowScroll(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `consumeFollowScroll`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.consumeFollowScroll still needs business-logic migration"
-    )
+_state: dict[str, Any] = {"layoutShifted": False, "scrollHint": None, "scrollDrainNode": None}
+
 
 async def didLayoutShift(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `didLayoutShift`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.didLayoutShift still needs business-logic migration"
-    )
+    before = args[0] if args else kwargs.get("before")
+    after = args[1] if len(args) > 1 else kwargs.get("after")
+    shifted = before != after if before is not None or after is not None else bool(_state["layoutShifted"])
+    _state["layoutShifted"] = shifted
+    return shifted
 
-async def getScrollDrainNode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getScrollDrainNode`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.getScrollDrainNode still needs business-logic migration"
-    )
-
-async def getScrollHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getScrollHint`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.getScrollHint still needs business-logic migration"
-    )
 
 async def resetLayoutShifted(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetLayoutShifted`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.resetLayoutShifted still needs business-logic migration"
-    )
+    _state["layoutShifted"] = False
+    return False
 
-async def resetScrollDrainNode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetScrollDrainNode`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.resetScrollDrainNode still needs business-logic migration"
-    )
+
+async def getScrollHint(*args: Any, **kwargs: Any) -> Any:
+    if args or "hint" in kwargs:
+        _state["scrollHint"] = args[0] if args else kwargs.get("hint")
+    return _state["scrollHint"]
+
 
 async def resetScrollHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resetScrollHint`."""
-    raise NotImplementedError(
-        "ink.render-node-to-output.resetScrollHint still needs business-logic migration"
-    )
+    _state["scrollHint"] = None
+    return None
+
+
+async def getScrollDrainNode(*args: Any, **kwargs: Any) -> Any:
+    if args or "node" in kwargs:
+        _state["scrollDrainNode"] = args[0] if args else kwargs.get("node")
+    return _state["scrollDrainNode"]
+
+
+async def resetScrollDrainNode(*args: Any, **kwargs: Any) -> Any:
+    _state["scrollDrainNode"] = None
+    return None
+
+
+async def consumeFollowScroll(*args: Any, **kwargs: Any) -> Any:
+    hint = _state.get("scrollHint")
+    _state["scrollHint"] = None
+    return {"provider": "deepseek", "consumed": hint is not None, "hint": hint}

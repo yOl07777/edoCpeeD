@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/NotebookEditToolUseRejectedMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, path_label, scalar_arg
+
+
 async def NotebookEditToolUseRejectedMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `NotebookEditToolUseRejectedMessage`."""
-    raise NotImplementedError(
-        "components.NotebookEditToolUseRejectedMessage.NotebookEditToolUseRejectedMessage still needs business-logic migration"
-    )
+    path = path_label(option(args, kwargs, "path", scalar_arg(args, "")))
+    cell = option(args, kwargs, "cell", option(args, kwargs, "cellIndex", None))
+    return component_payload("notebook_edit_tool_use_rejected_message", path=path, cell=cell, reason=str(option(args, kwargs, "reason", "notebook edit rejected")))
+
+
+__all__ = ["NotebookEditToolUseRejectedMessage"]

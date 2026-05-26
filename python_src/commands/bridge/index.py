@@ -1,16 +1,22 @@
-"""
-Python migration draft for `src/commands/bridge/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/remote-control`."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.bridge.bridgeEnabled import isBridgeEnabled
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.bridge.index still needs business-logic migration"
-    )
+from .bridge import call
+
+bridge = {
+    "type": "local-jsx",
+    "name": "remote-control",
+    "aliases": ["rc"],
+    "description": "Connect this terminal for remote-control sessions",
+    "argumentHint": "[name]",
+    "isEnabled": isBridgeEnabled,
+    "isHidden": lambda: not isBridgeEnabled(),
+    "progressMessage": "Connecting remote-control bridge",
+    "userFacingName": lambda: "remote-control",
+    "call": call,
+}
+
+default = bridge

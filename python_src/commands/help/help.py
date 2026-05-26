@@ -1,13 +1,13 @@
-"""
-Python migration draft for `src/commands/help/help.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Help command shim."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Awaitable, Callable
 
-call: Any = None
+DoneCallback = Callable[[Any], Any | Awaitable[Any]]
+
+
+async def call(onDone: DoneCallback | None = None, context: dict[str, Any] | Any = None, *_args: Any) -> dict[str, Any]:
+    options = context.get("options", {}) if isinstance(context, dict) else getattr(context, "options", {})
+    commands = options.get("commands", []) if isinstance(options, dict) else []
+    return {"type": "help", "commands": list(commands or []), "onClose": onDone}

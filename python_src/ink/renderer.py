@@ -1,16 +1,16 @@
-"""
-Python migration draft for `src/ink/renderer.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import importlib
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.renderer still needs business-logic migration"
-    )
+root_mod = importlib.import_module("python_src.ink.root")
+
+
+async def render(*args: Any, **kwargs: Any) -> Any:
+    root = await root_mod.createRoot(args[0] if args else kwargs.get("node"), **kwargs)
+    await root["render"]()
+    return root
+
+
+default = render
+_module_migration_placeholder = render

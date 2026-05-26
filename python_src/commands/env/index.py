@@ -1,16 +1,30 @@
-"""
-Python migration draft for `src/commands/env/index.js`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.env.index still needs business-logic migration"
-    )
+
+SAFE_ENV_KEYS = [
+    "DEEPSEEK_API_KEYS",
+    "DEEPSEEK_MODELS",
+    "DEEPSEEK_ENDPOINTS",
+    "DEEPSEEK_BALANCE_STRATEGY",
+    "DEFAULT_MODEL",
+    "PYTHONPATH",
+]
+
+
+def _redact(key: str, value: str | None) -> str | None:
+    if value is None:
+        return None
+    if "KEY" in key or "TOKEN" in key or "SECRET" in key:
+        return "<set>" if value else ""
+    return value
+
+
+async def env_command(keys: list[str] | None = None) -> dict[str, Any]:
+    selected = keys or SAFE_ENV_KEYS
+    return {"env": {key: _redact(key, os.getenv(key)) for key in selected}}
+
+
+call = env_command

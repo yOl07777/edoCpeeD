@@ -1,23 +1,24 @@
-"""
-Python migration draft for `src/tools/TeamDeleteTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable TeamDeleteTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
-    raise NotImplementedError(
-        "tools.TeamDeleteTool.UI.renderToolResultMessage still needs business-logic migration"
-    )
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.TeamDeleteTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    if args and isinstance(args[0], dict):
+        return {**args[0], **kwargs}
+    return dict(kwargs)
+
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "team-delete-use", "teamId": data.get("team_id") or data.get("teamId")}
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "team-delete-result", "id": data.get("id"), "name": data.get("name"), "agentIds": data.get("agent_ids") or data.get("agentIds") or []}
+
+
+__all__ = ["renderToolResultMessage", "renderToolUseMessage"]

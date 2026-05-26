@@ -1,16 +1,5 @@
-"""
-Python migration draft for `src/commands/commit-push-pr.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Compatibility wrapper for `src/commands/commit-push-pr.ts`."""
 
 from __future__ import annotations
 
-from typing import Any
-
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.commit-push-pr still needs business-logic migration"
-    )
+from python_src.commands.commit_push_pr import *  # noqa: F401,F403

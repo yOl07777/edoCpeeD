@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/tasks/AsyncAgentDetailDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.tasks._shared import normalize_task, task_payload
+
+
 async def AsyncAgentDetailDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AsyncAgentDetailDialog`."""
-    raise NotImplementedError(
-        "components.tasks.AsyncAgentDetailDialog.AsyncAgentDetailDialog still needs business-logic migration"
-    )
+    task = normalize_task(kwargs.get("task") or (args[0] if args else None), **kwargs)
+    return task_payload("async_agent_detail_dialog", task=task, tools=task["tools"])
+
+
+__all__ = ["AsyncAgentDetailDialog"]

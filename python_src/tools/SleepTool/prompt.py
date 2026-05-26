@@ -1,15 +1,12 @@
-"""
-Python migration draft for `src/tools/SleepTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt constants for SleepTool."""
 
 from __future__ import annotations
 
-from typing import Any
+SLEEP_TOOL_NAME = "sleep"
+DESCRIPTION = "Wait for a short duration, capped at 60 seconds."
+SLEEP_TOOL_PROMPT = (
+    "Use sleep only when a brief delay is necessary for polling or pacing. "
+    "Do not use it for long waits; the Python shim enforces a 60 second cap."
+)
 
-DESCRIPTION: Any = None
-SLEEP_TOOL_NAME: Any = None
-SLEEP_TOOL_PROMPT: Any = None
+__all__ = ["DESCRIPTION", "SLEEP_TOOL_NAME", "SLEEP_TOOL_PROMPT"]

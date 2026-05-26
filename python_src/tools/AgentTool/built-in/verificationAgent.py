@@ -1,13 +1,14 @@
-"""
-Python migration draft for `src/tools/AgentTool/built-in/verificationAgent.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Built-in verification agent definition."""
 
 from __future__ import annotations
 
 from typing import Any
 
-VERIFICATION_AGENT: Any = None
+VERIFICATION_AGENT: dict[str, Any] = {
+    "agentType": "verification",
+    "name": "Verification",
+    "description": "Checks completed work and summarizes residual risk.",
+    "source": "built-in",
+}
+
+__all__ = ["VERIFICATION_AGENT"]

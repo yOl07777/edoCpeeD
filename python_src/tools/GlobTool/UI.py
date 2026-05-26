@@ -1,37 +1,63 @@
-"""
-Python migration draft for `src/tools/GlobTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable GlobTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-renderToolResultMessage: Any = None
 
-async def getToolUseSummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getToolUseSummary`."""
-    raise NotImplementedError(
-        "tools.GlobTool.UI.getToolUseSummary still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    if args and isinstance(args[0], dict):
+        return {**args[0], **kwargs}
+    return dict(kwargs)
 
-async def renderToolUseErrorMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseErrorMessage`."""
-    raise NotImplementedError(
-        "tools.GlobTool.UI.renderToolUseErrorMessage still needs business-logic migration"
-    )
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.GlobTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+async def userFacingName(*args: Any, **kwargs: Any) -> str:
+    data = _payload(args, kwargs)
+    pattern = data.get("pattern") or "*"
+    return f"Find files matching {pattern}"
 
-async def userFacingName(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `userFacingName`."""
-    raise NotImplementedError(
-        "tools.GlobTool.UI.userFacingName still needs business-logic migration"
-    )
+
+async def getToolUseSummary(*args: Any, **kwargs: Any) -> str:
+    data = _payload(args, kwargs)
+    pattern = data.get("pattern") or "*"
+    root = data.get("path") or data.get("root") or "."
+    limit = data.get("limit")
+    suffix = f", limit={limit}" if limit is not None else ""
+    return f"Glob {pattern} in {root}{suffix}"
+
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {
+        "type": "glob-use",
+        "pattern": data.get("pattern", "*"),
+        "path": data.get("path", "."),
+        "limit": data.get("limit"),
+    }
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    matches = list(data.get("matches") or [])
+    return {
+        "type": "glob-result",
+        "root": data.get("root") or data.get("path") or ".",
+        "pattern": data.get("pattern", "*"),
+        "matches": matches,
+        "count": len(matches),
+        "truncated": bool(data.get("truncated", False)),
+    }
+
+
+async def renderToolUseErrorMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "glob-error", "pattern": data.get("pattern", "*"), "error": data.get("error") or data.get("message", "")}
+
+
+__all__ = [
+    "getToolUseSummary",
+    "renderToolResultMessage",
+    "renderToolUseErrorMessage",
+    "renderToolUseMessage",
+    "userFacingName",
+]

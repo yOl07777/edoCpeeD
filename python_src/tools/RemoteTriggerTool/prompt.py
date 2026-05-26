@@ -1,15 +1,12 @@
-"""
-Python migration draft for `src/tools/RemoteTriggerTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt constants for RemoteTriggerTool."""
 
 from __future__ import annotations
 
-from typing import Any
+REMOTE_TRIGGER_TOOL_NAME = "remote_trigger"
+DESCRIPTION = "Record a lightweight remote trigger event in local schedule state."
+PROMPT = (
+    "Use this shim to record that an external trigger would be fired. "
+    "It does not call remote services or wake external workers."
+)
 
-DESCRIPTION: Any = None
-PROMPT: Any = None
-REMOTE_TRIGGER_TOOL_NAME: Any = None
+__all__ = ["DESCRIPTION", "PROMPT", "REMOTE_TRIGGER_TOOL_NAME"]

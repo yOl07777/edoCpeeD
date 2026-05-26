@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/tools/EnterPlanModeTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt helper for EnterPlanModeTool."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def getEnterPlanModeToolPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getEnterPlanModeToolPrompt`."""
-    raise NotImplementedError(
-        "tools.EnterPlanModeTool.prompt.getEnterPlanModeToolPrompt still needs business-logic migration"
+
+async def getEnterPlanModeToolPrompt(*args: Any, **kwargs: Any) -> str:
+    return (
+        "Use enter_plan_mode when the user wants to pause implementation and produce a concrete plan. "
+        "Provide a goal and optional ordered steps with statuses."
     )
+
+
+__all__ = ["getEnterPlanModeToolPrompt"]

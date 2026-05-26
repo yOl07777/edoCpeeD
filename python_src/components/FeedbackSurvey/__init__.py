@@ -1,1 +1,1 @@
-"""Migrated Python package."""
+"""Feedback survey shims for the DeepSeek Python runtime."""

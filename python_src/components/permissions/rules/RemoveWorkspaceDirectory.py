@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/permissions/rules/RemoveWorkspaceDirectory.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def RemoveWorkspaceDirectory(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `RemoveWorkspaceDirectory`."""
-    raise NotImplementedError(
-        "components.permissions.rules.RemoveWorkspaceDirectory.RemoveWorkspaceDirectory still needs business-logic migration"
-    )
+from python_src.components.permissions.rules._shared import workspace_entry
+
+
+async def RemoveWorkspaceDirectory(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    path = kwargs.get("path") or (args[0] if args else ".")
+    entry = workspace_entry(path)
+    entry.update({"type": "remove_workspace_directory", "provider": "deepseek", "allowed": False})
+    return entry
+
+
+__all__ = ["RemoveWorkspaceDirectory"]

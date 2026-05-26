@@ -1,16 +1,15 @@
-"""
-Python migration draft for `src/components/CustomSelect/option-map.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.CustomSelect.option-map still needs business-logic migration"
-    )
+from python_src.components.CustomSelect._shared import normalize_options
+
+
+async def createOptionMap(options: Any = None, *_args: Any, **_kwargs: Any) -> dict[Any, dict[str, Any]]:
+    return {option["value"]: option for option in normalize_options(options or [])}
+
+
+optionMap = createOptionMap
+
+
+__all__ = ["createOptionMap", "optionMap"]

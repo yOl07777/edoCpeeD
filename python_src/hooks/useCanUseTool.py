@@ -1,16 +1,20 @@
-"""
-Python migration draft for `src/hooks/useCanUseTool.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "hooks.useCanUseTool still needs business-logic migration"
-    )
+
+async def useCanUseTool(tool: Any = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    name = str(kwargs.get("tool", tool) or "")
+    allowed = kwargs.get("allowedTools")
+    denied = {str(item) for item in kwargs.get("deniedTools", []) or []}
+    if allowed is None:
+        permitted = name not in denied
+    else:
+        permitted = name in {str(item) for item in allowed}
+    return {"provider": "deepseek", "tool": name, "canUse": permitted, "reason": "" if permitted else "tool not allowed"}
+
+
+_module_migration_placeholder = useCanUseTool
+
+
+__all__ = ["useCanUseTool"]

@@ -1,29 +1,45 @@
-"""
-Python migration draft for `src/components/permissions/FilePermissionDialog/permissionOptions.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
 
-async def getFilePermissionOptions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFilePermissionOptions`."""
-    raise NotImplementedError(
-        "components.permissions.FilePermissionDialog.permissionOptions.getFilePermissionOptions still needs business-logic migration"
-    )
+from python_src.components.permissions._shared import permission_options
 
-async def isInClaudeFolder(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isInClaudeFolder`."""
-    raise NotImplementedError(
-        "components.permissions.FilePermissionDialog.permissionOptions.isInClaudeFolder still needs business-logic migration"
-    )
 
-async def isInGlobalClaudeFolder(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isInGlobalClaudeFolder`."""
-    raise NotImplementedError(
-        "components.permissions.FilePermissionDialog.permissionOptions.isInGlobalClaudeFolder still needs business-logic migration"
-    )
+def _path_from_args(*args: Any, **kwargs: Any) -> str:
+    if "path" in kwargs and kwargs["path"] is not None:
+        return str(kwargs["path"])
+    if "file_path" in kwargs and kwargs["file_path"] is not None:
+        return str(kwargs["file_path"])
+    if args:
+        first = args[0]
+        if isinstance(first, dict):
+            return str(first.get("path") or first.get("file_path") or "")
+        return str(first)
+    return ""
+
+
+async def getFilePermissionOptions(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    path = _path_from_args(*args, **kwargs)
+    return permission_options("file", path=path or None)
+
+
+async def isInClaudeFolder(*args: Any, **kwargs: Any) -> bool:
+    path = Path(_path_from_args(*args, **kwargs) or ".").expanduser().resolve()
+    parts = {part.lower() for part in path.parts}
+    return ".claude" in parts or ".deepseek" in parts
+
+
+async def isInGlobalClaudeFolder(*args: Any, **kwargs: Any) -> bool:
+    path = Path(_path_from_args(*args, **kwargs) or ".").expanduser().resolve()
+    home = Path(os.path.expanduser("~")).resolve()
+    candidates = [
+        home / ".claude",
+        home / ".deepseek",
+        Path(os.getenv("DEEPCODE_CONFIG_HOME", home / ".deepseek")).expanduser().resolve(),
+    ]
+    return any(path == candidate or candidate in path.parents for candidate in candidates)
+
+
+__all__ = ["getFilePermissionOptions", "isInClaudeFolder", "isInGlobalClaudeFolder"]

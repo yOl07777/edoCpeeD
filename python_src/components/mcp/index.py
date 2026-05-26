@@ -1,16 +1,42 @@
-"""
-Python migration draft for `src/components/mcp/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+from python_src.components.mcp.CapabilitiesSection import CapabilitiesSection
+from python_src.components.mcp.ElicitationDialog import ElicitationDialog
+from python_src.components.mcp.MCPAgentServerMenu import MCPAgentServerMenu
+from python_src.components.mcp.MCPListPanel import MCPListPanel
+from python_src.components.mcp.MCPReconnect import MCPReconnect
+from python_src.components.mcp.MCPRemoteServerMenu import MCPRemoteServerMenu
+from python_src.components.mcp.MCPSettings import MCPSettings
+from python_src.components.mcp.MCPStdioServerMenu import MCPStdioServerMenu
+from python_src.components.mcp.MCPToolDetailView import MCPToolDetailView
+from python_src.components.mcp.MCPToolListView import MCPToolListView
+from python_src.components.mcp.McpParsingWarnings import McpParsingWarnings
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.mcp.index still needs business-logic migration"
-    )
+
+default = {
+    "provider": "deepseek",
+    "components": [
+        "CapabilitiesSection",
+        "ElicitationDialog",
+        "MCPListPanel",
+        "MCPSettings",
+        "MCPToolListView",
+        "MCPToolDetailView",
+    ],
+}
+
+
+__all__ = [
+    "CapabilitiesSection",
+    "ElicitationDialog",
+    "MCPAgentServerMenu",
+    "MCPListPanel",
+    "MCPReconnect",
+    "MCPRemoteServerMenu",
+    "MCPSettings",
+    "MCPStdioServerMenu",
+    "MCPToolDetailView",
+    "MCPToolListView",
+    "McpParsingWarnings",
+    "default",
+]

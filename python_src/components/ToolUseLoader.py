@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/ToolUseLoader.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def ToolUseLoader(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ToolUseLoader`."""
-    raise NotImplementedError(
-        "components.ToolUseLoader.ToolUseLoader still needs business-logic migration"
-    )
+from python_src.components._shared import component_payload, option, scalar_arg
+
+
+async def ToolUseLoader(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    tool = str(option(args, kwargs, "tool", option(args, kwargs, "name", scalar_arg(args, ""))) or "")
+    status = str(option(args, kwargs, "status", "running") or "running")
+    return component_payload("tool_use_loader", tool=tool, status=status, loading=status in {"pending", "running"})
+
+
+__all__ = ["ToolUseLoader"]

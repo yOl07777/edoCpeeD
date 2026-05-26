@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/commands/release-notes/release-notes.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Release notes command."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.release-notes.release-notes.call still needs business-logic migration"
-    )
+from python_src.utils.releaseNotes import CHANGELOG_URL, getAllReleaseNotes, getStoredChangelog
+
+
+def formatReleaseNotes(notes: list[tuple[str, list[str]]]) -> str:
+    return "\n\n".join(f"Version {version}:\n" + "\n".join(f"- {note}" for note in items) for version, items in notes)
+
+
+async def call(*_args: Any, **_kwargs: Any) -> dict[str, str]:
+    cached = getAllReleaseNotes(await getStoredChangelog())
+    if cached:
+        return {"type": "text", "value": formatReleaseNotes(cached)}
+    return {"type": "text", "value": f"See the full changelog at: {CHANGELOG_URL}"}

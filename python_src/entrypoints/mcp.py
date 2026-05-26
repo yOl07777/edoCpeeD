@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/entrypoints/mcp.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def startMCPServer(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `startMCPServer`."""
-    raise NotImplementedError(
-        "entrypoints.mcp.startMCPServer still needs business-logic migration"
-    )
+
+async def startMCPServer(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {
+        "type": "mcp_server",
+        "provider": "deepseek",
+        "status": "planned" if kwargs.get("dryRun", True) else "ready",
+        "transport": kwargs.get("transport", "stdio"),
+        "servers": list(kwargs.get("servers", []) or []),
+        "dryRun": bool(kwargs.get("dryRun", True)),
+    }
+
+
+__all__ = ["startMCPServer"]

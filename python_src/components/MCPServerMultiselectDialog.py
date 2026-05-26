@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/MCPServerMultiselectDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def MCPServerMultiselectDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MCPServerMultiselectDialog`."""
-    raise NotImplementedError(
-        "components.MCPServerMultiselectDialog.MCPServerMultiselectDialog still needs business-logic migration"
-    )
+    selected = set(option(args, kwargs, "selected", []))
+    servers = normalize_items(option(args, kwargs, "servers", scalar_arg(args, [])), text_key="name")
+    for server in servers:
+        server["selected"] = server["name"] in selected
+    return component_payload("mcp_server_multiselect_dialog", servers=servers, selected=sorted(selected), count=len(servers))
+
+
+__all__ = ["MCPServerMultiselectDialog"]

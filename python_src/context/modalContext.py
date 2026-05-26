@@ -1,31 +1,28 @@
-"""
-Python migration draft for `src/context/modalContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-ModalContext: Any = None
 
-async def useIsInsideModal(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIsInsideModal`."""
-    raise NotImplementedError(
-        "context.modalContext.useIsInsideModal still needs business-logic migration"
-    )
+ModalContext: dict[str, Any] = {"inside": False, "width": 80, "height": 24, "scrollTop": 0}
 
-async def useModalOrTerminalSize(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useModalOrTerminalSize`."""
-    raise NotImplementedError(
-        "context.modalContext.useModalOrTerminalSize still needs business-logic migration"
-    )
 
-async def useModalScrollRef(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useModalScrollRef`."""
-    raise NotImplementedError(
-        "context.modalContext.useModalScrollRef still needs business-logic migration"
-    )
+async def useIsInsideModal(*_args: Any, **kwargs: Any) -> bool:
+    if "inside" in kwargs:
+        ModalContext["inside"] = bool(kwargs["inside"])
+    return bool(ModalContext.get("inside"))
+
+
+async def useModalOrTerminalSize(*_args: Any, **kwargs: Any) -> dict[str, int]:
+    width = int(kwargs.get("width", ModalContext.get("width", 80)) or 80)
+    height = int(kwargs.get("height", ModalContext.get("height", 24)) or 24)
+    ModalContext.update({"width": width, "height": height})
+    return {"width": width, "height": height}
+
+
+async def useModalScrollRef(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    if "scrollTop" in kwargs:
+        ModalContext["scrollTop"] = int(kwargs["scrollTop"])
+    return {"current": {"scrollTop": int(ModalContext.get("scrollTop", 0))}}
+
+
+__all__ = ["ModalContext", "useIsInsideModal", "useModalOrTerminalSize", "useModalScrollRef"]

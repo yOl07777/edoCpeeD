@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/commands/install-github-app/ChooseRepoStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured repository selection step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def ChooseRepoStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ChooseRepoStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.ChooseRepoStep.ChooseRepoStep still needs business-logic migration"
-    )
+from ._shared import detect_current_repo, normalize_repo, step_payload
+
+
+async def ChooseRepoStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    context = kwargs.get("context") if isinstance(kwargs.get("context"), dict) else {}
+    repo = normalize_repo(kwargs.get("selectedRepoName") or (args[0] if args else "") or detect_current_repo(context.get("cwd")))
+    warnings = []
+    if repo and "/" not in repo:
+        warnings.append({"title": "Repository format warning", "message": 'Use "owner/repo".'})
+    return step_payload("choose-repo", selectedRepoName=repo, useCurrentRepo=bool(repo), warnings=warnings)
+
+
+__all__ = ["ChooseRepoStep"]

@@ -1,29 +1,28 @@
-"""
-Python migration draft for `src/context/overlayContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useIsModalOverlayActive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIsModalOverlayActive`."""
-    raise NotImplementedError(
-        "context.overlayContext.useIsModalOverlayActive still needs business-logic migration"
-    )
 
-async def useIsOverlayActive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIsOverlayActive`."""
-    raise NotImplementedError(
-        "context.overlayContext.useIsOverlayActive still needs business-logic migration"
-    )
+_OVERLAYS: dict[str, dict[str, Any]] = {}
 
-async def useRegisterOverlay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useRegisterOverlay`."""
-    raise NotImplementedError(
-        "context.overlayContext.useRegisterOverlay still needs business-logic migration"
-    )
+
+async def useRegisterOverlay(name: Any = "overlay", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    overlay_id = str(kwargs.get("id") or name or "overlay")
+    active = bool(kwargs.get("active", True))
+    modal = bool(kwargs.get("modal", False))
+    if kwargs.get("unregister"):
+        _OVERLAYS.pop(overlay_id, None)
+    else:
+        _OVERLAYS[overlay_id] = {"id": overlay_id, "active": active, "modal": modal}
+    return {"provider": "deepseek", "overlay": _OVERLAYS.get(overlay_id), "overlays": list(_OVERLAYS.values())}
+
+
+async def useIsOverlayActive(*_args: Any, **_kwargs: Any) -> bool:
+    return any(item.get("active") for item in _OVERLAYS.values())
+
+
+async def useIsModalOverlayActive(*_args: Any, **_kwargs: Any) -> bool:
+    return any(item.get("active") and item.get("modal") for item in _OVERLAYS.values())
+
+
+__all__ = ["useIsModalOverlayActive", "useIsOverlayActive", "useRegisterOverlay"]

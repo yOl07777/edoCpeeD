@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/permissions/BashPermissionRequest/bashToolUseOptions.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def bashToolUseOptions(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `bashToolUseOptions`."""
-    raise NotImplementedError(
-        "components.permissions.BashPermissionRequest.bashToolUseOptions.bashToolUseOptions still needs business-logic migration"
-    )
+from python_src.components.permissions._shared import permission_options
+
+
+async def bashToolUseOptions(*_args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    command = kwargs.get("command") or kwargs.get("cmd")
+    options = permission_options("shell")
+    for option in options:
+        option["command"] = command
+    return options
+
+
+__all__ = ["bashToolUseOptions"]

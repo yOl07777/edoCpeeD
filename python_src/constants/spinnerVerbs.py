@@ -1,19 +1,23 @@
-"""
-Python migration draft for `src/constants/spinnerVerbs.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-SPINNER_VERBS: Any = None
 
-async def getSpinnerVerbs(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSpinnerVerbs`."""
-    raise NotImplementedError(
-        "constants.spinnerVerbs.getSpinnerVerbs still needs business-logic migration"
-    )
+SPINNER_VERBS = [
+    "Thinking",
+    "Reading",
+    "Writing",
+    "Editing",
+    "Searching",
+    "Running",
+    "Checking",
+    "Reviewing",
+]
+
+
+async def getSpinnerVerbs(*_args: Any, **kwargs: Any) -> list[str]:
+    extra = kwargs.get("extra") or []
+    return list(dict.fromkeys([*SPINNER_VERBS, *[str(item) for item in extra]]))
+
+
+__all__ = ["SPINNER_VERBS", "getSpinnerVerbs"]

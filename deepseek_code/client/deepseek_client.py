@@ -44,6 +44,7 @@ class DeepSeekClient(BaseLLMClient):
     async def complete(self, request: dict[str, Any]) -> dict[str, Any]:
         request = {**request, "stream": False}
         last_error: Exception | None = None
+        errors: list[str] = []
         for attempt in range(self.config.max_retries):
             target = await self.load_balancer.next_target(preferred_model=request.get("model"))
             try:
@@ -55,20 +56,26 @@ class DeepSeekClient(BaseLLMClient):
                     )
                 if response.status_code >= 400:
                     self.load_balancer.mark_failure(target, response.status_code)
-                    last_error = DeepSeekAPIError(response.text, status_code=response.status_code)
+                    last_error = DeepSeekAPIError(
+                        self._format_response_error("request", target, response.status_code, response.text),
+                        status_code=response.status_code,
+                    )
+                    errors.append(str(last_error))
                     await self._backoff(attempt)
                     continue
                 self.load_balancer.mark_success(target)
                 return response.json()
             except (httpx.HTTPError, asyncio.TimeoutError) as exc:
                 self.load_balancer.mark_failure(target, None)
-                last_error = exc
+                last_error = DeepSeekAPIError(self._format_exception("request", target, exc))
+                errors.append(str(last_error))
                 await self._backoff(attempt)
-        raise DeepSeekAPIError(f"DeepSeek request failed after retries: {last_error}") from last_error
+        raise DeepSeekAPIError(self._format_retry_failure("request", last_error, errors)) from last_error
 
     async def stream(self, request: dict[str, Any]) -> AsyncIterator[dict[str, Any]]:
         request = {**request, "stream": True}
         last_error: Exception | None = None
+        errors: list[str] = []
         for attempt in range(self.config.max_retries):
             target = await self.load_balancer.next_target(preferred_model=request.get("model"))
             try:
@@ -83,9 +90,15 @@ class DeepSeekClient(BaseLLMClient):
                             body = await response.aread()
                             self.load_balancer.mark_failure(target, response.status_code)
                             last_error = DeepSeekAPIError(
-                                body.decode("utf-8", errors="replace"),
+                                self._format_response_error(
+                                    "stream",
+                                    target,
+                                    response.status_code,
+                                    body.decode("utf-8", errors="replace"),
+                                ),
                                 status_code=response.status_code,
                             )
+                            errors.append(str(last_error))
                             await self._backoff(attempt)
                             continue
                         async for event in self._iter_sse(response):
@@ -94,9 +107,10 @@ class DeepSeekClient(BaseLLMClient):
                 return
             except (httpx.HTTPError, asyncio.TimeoutError) as exc:
                 self.load_balancer.mark_failure(target, None)
-                last_error = exc
+                last_error = DeepSeekAPIError(self._format_exception("stream", target, exc))
+                errors.append(str(last_error))
                 await self._backoff(attempt)
-        raise DeepSeekAPIError(f"DeepSeek stream failed after retries: {last_error}") from last_error
+        raise DeepSeekAPIError(self._format_retry_failure("stream", last_error, errors)) from last_error
 
     @staticmethod
     def _headers(target: DeepSeekTarget) -> dict[str, str]:
@@ -117,6 +131,27 @@ class DeepSeekClient(BaseLLMClient):
                 if data == "[DONE]":
                     return
                 yield json.loads(data)
+
+    @staticmethod
+    def _format_response_error(kind: str, target: DeepSeekTarget, status_code: int, body: str) -> str:
+        body = (body or "").strip()
+        if len(body) > 800:
+            body = body[:800] + "... [truncated]"
+        suffix = f": {body}" if body else ""
+        return f"{kind} HTTP {status_code} from {target.chat_url}{suffix}"
+
+    @staticmethod
+    def _format_exception(kind: str, target: DeepSeekTarget, exc: Exception) -> str:
+        detail = str(exc).strip() or exc.__class__.__name__
+        return f"{kind} {exc.__class__.__name__} from {target.chat_url}: {detail}"
+
+    @staticmethod
+    def _format_retry_failure(kind: str, last_error: Exception | None, errors: list[str]) -> str:
+        if not errors:
+            return f"DeepSeek {kind} failed after retries: {last_error}"
+        unique_errors = list(dict.fromkeys(errors))
+        attempts = "; ".join(unique_errors[-3:])
+        return f"DeepSeek {kind} failed after retries: {last_error}. Attempts: {attempts}"
 
     @staticmethod
     async def _backoff(attempt: int) -> None:

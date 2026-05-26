@@ -1,19 +1,20 @@
-"""
-Python migration draft for `src/entrypoints/init.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
 from typing import Any
 
-init: Any = None
 
-async def initializeTelemetryAfterTrust(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `initializeTelemetryAfterTrust`."""
-    raise NotImplementedError(
-        "entrypoints.init.initializeTelemetryAfterTrust still needs business-logic migration"
-    )
+async def initializeTelemetryAfterTrust(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    enabled = not (os.getenv("DEEPSEEK_DISABLE_TELEMETRY") == "1" or kwargs.get("disabled"))
+    return {"provider": "deepseek", "telemetryEnabled": enabled, "trusted": bool(kwargs.get("trusted", True))}
+
+
+async def call(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"type": "init", "provider": "deepseek", "telemetry": await initializeTelemetryAfterTrust(**kwargs)}
+
+
+init = {"provider": "deepseek", "call": call, "initializeTelemetryAfterTrust": initializeTelemetryAfterTrust}
+default = init
+
+
+__all__ = ["call", "default", "init", "initializeTelemetryAfterTrust"]

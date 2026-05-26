@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/SessionBackgroundHint.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def SessionBackgroundHint(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SessionBackgroundHint`."""
-    raise NotImplementedError(
-        "components.SessionBackgroundHint.SessionBackgroundHint still needs business-logic migration"
-    )
+    running = bool(option(args, kwargs, "running", option(args, kwargs, "background", False)))
+    return component_payload("session_background_hint", running=running, text="Session continues in background" if running else "Session is foreground only")
+
+
+__all__ = ["SessionBackgroundHint"]

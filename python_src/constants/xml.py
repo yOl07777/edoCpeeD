@@ -1,45 +1,39 @@
-"""
-Python migration draft for `src/constants/xml.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
 
-BASH_INPUT_TAG: Any = None
-BASH_STDERR_TAG: Any = None
-BASH_STDOUT_TAG: Any = None
-CHANNEL_MESSAGE_TAG: Any = None
-CHANNEL_TAG: Any = None
-COMMAND_ARGS_TAG: Any = None
-COMMAND_MESSAGE_TAG: Any = None
-COMMAND_NAME_TAG: Any = None
-COMMON_HELP_ARGS: Any = None
-COMMON_INFO_ARGS: Any = None
-CROSS_SESSION_MESSAGE_TAG: Any = None
-FORK_BOILERPLATE_TAG: Any = None
-FORK_DIRECTIVE_PREFIX: Any = None
-LOCAL_COMMAND_CAVEAT_TAG: Any = None
-LOCAL_COMMAND_STDERR_TAG: Any = None
-LOCAL_COMMAND_STDOUT_TAG: Any = None
-OUTPUT_FILE_TAG: Any = None
-REASON_TAG: Any = None
-REMOTE_REVIEW_PROGRESS_TAG: Any = None
-REMOTE_REVIEW_TAG: Any = None
-STATUS_TAG: Any = None
-SUMMARY_TAG: Any = None
-TASK_ID_TAG: Any = None
-TASK_NOTIFICATION_TAG: Any = None
-TASK_TYPE_TAG: Any = None
-TEAMMATE_MESSAGE_TAG: Any = None
-TERMINAL_OUTPUT_TAGS: Any = None
-TICK_TAG: Any = None
-TOOL_USE_ID_TAG: Any = None
-ULTRAPLAN_TAG: Any = None
-WORKTREE_BRANCH_TAG: Any = None
-WORKTREE_PATH_TAG: Any = None
-WORKTREE_TAG: Any = None
+BASH_INPUT_TAG = "bash-input"
+BASH_STDERR_TAG = "bash-stderr"
+BASH_STDOUT_TAG = "bash-stdout"
+CHANNEL_MESSAGE_TAG = "channel-message"
+CHANNEL_TAG = "channel"
+COMMAND_ARGS_TAG = "command-args"
+COMMAND_MESSAGE_TAG = "command-message"
+COMMAND_NAME_TAG = "command-name"
+COMMON_HELP_ARGS = "help"
+COMMON_INFO_ARGS = "info"
+CROSS_SESSION_MESSAGE_TAG = "cross-session-message"
+FORK_BOILERPLATE_TAG = "fork-boilerplate"
+FORK_DIRECTIVE_PREFIX = "fork:"
+LOCAL_COMMAND_CAVEAT_TAG = "local-command-caveat"
+LOCAL_COMMAND_STDERR_TAG = "local-command-stderr"
+LOCAL_COMMAND_STDOUT_TAG = "local-command-stdout"
+OUTPUT_FILE_TAG = "output-file"
+REASON_TAG = "reason"
+REMOTE_REVIEW_PROGRESS_TAG = "remote-review-progress"
+REMOTE_REVIEW_TAG = "remote-review"
+STATUS_TAG = "status"
+SUMMARY_TAG = "summary"
+TASK_ID_TAG = "task-id"
+TASK_NOTIFICATION_TAG = "task-notification"
+TASK_TYPE_TAG = "task-type"
+TEAMMATE_MESSAGE_TAG = "teammate-message"
+TERMINAL_OUTPUT_TAGS = [BASH_INPUT_TAG, BASH_STDOUT_TAG, BASH_STDERR_TAG, LOCAL_COMMAND_STDOUT_TAG, LOCAL_COMMAND_STDERR_TAG]
+TICK_TAG = "tick"
+TOOL_USE_ID_TAG = "tool-use-id"
+ULTRAPLAN_TAG = "ultraplan"
+WORKTREE_BRANCH_TAG = "worktree-branch"
+WORKTREE_PATH_TAG = "worktree-path"
+WORKTREE_TAG = "worktree"
+
+
+__all__ = [name for name in globals() if name.isupper()]

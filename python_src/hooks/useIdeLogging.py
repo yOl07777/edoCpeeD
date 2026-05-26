@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/useIdeLogging.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useIdeLogging(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIdeLogging`."""
-    raise NotImplementedError(
-        "hooks.useIdeLogging.useIdeLogging still needs business-logic migration"
-    )
+
+_IDE_LOGS: list[dict[str, Any]] = []
+
+
+async def useIdeLogging(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    if kwargs.get("clear"):
+        _IDE_LOGS.clear()
+    if "message" in kwargs:
+        _IDE_LOGS.append({"level": kwargs.get("level", "info"), "message": str(kwargs["message"])})
+    return {"provider": "deepseek", "logs": list(_IDE_LOGS), "count": len(_IDE_LOGS)}
+
+
+__all__ = ["useIdeLogging"]

@@ -1,29 +1,28 @@
-"""
-Python migration draft for `src/bridge/replBridgeHandle.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Process-global REPL bridge handle pointer."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def getReplBridgeHandle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getReplBridgeHandle`."""
-    raise NotImplementedError(
-        "bridge.replBridgeHandle.getReplBridgeHandle still needs business-logic migration"
-    )
+from .sessionIdCompat import toCompatSessionId
 
-async def getSelfBridgeCompatId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSelfBridgeCompatId`."""
-    raise NotImplementedError(
-        "bridge.replBridgeHandle.getSelfBridgeCompatId still needs business-logic migration"
-    )
+_handle: Any | None = None
 
-async def setReplBridgeHandle(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setReplBridgeHandle`."""
-    raise NotImplementedError(
-        "bridge.replBridgeHandle.setReplBridgeHandle still needs business-logic migration"
-    )
+
+def setReplBridgeHandle(h: Any | None) -> None:
+    global _handle
+    _handle = h
+
+
+def getReplBridgeHandle() -> Any | None:
+    return _handle
+
+
+def getSelfBridgeCompatId() -> str | None:
+    handle = getReplBridgeHandle()
+    if handle is None:
+        return None
+    session_id = getattr(handle, "bridgeSessionId", None)
+    if session_id is None and isinstance(handle, dict):
+        session_id = handle.get("bridgeSessionId")
+    return toCompatSessionId(session_id) if isinstance(session_id, str) else None

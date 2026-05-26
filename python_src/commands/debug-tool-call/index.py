@@ -1,16 +1,7 @@
-"""
-Python migration draft for `src/commands/debug-tool-call/index.js`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Disabled debug-tool-call command stub, matching the upstream JS stub."""
 
 from __future__ import annotations
 
-from typing import Any
+debugToolCall = {"isEnabled": lambda: False, "isHidden": True, "name": "stub"}
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.debug-tool-call.index still needs business-logic migration"
-    )
+default = debugToolCall

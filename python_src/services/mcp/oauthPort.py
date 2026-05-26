@@ -1,23 +1,26 @@
-"""
-Python migration draft for `src/services/mcp/oauthPort.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""OAuth redirect port helpers for MCP auth flows."""
 
 from __future__ import annotations
 
-from typing import Any
+import socket
 
-async def buildRedirectUri(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `buildRedirectUri`."""
-    raise NotImplementedError(
-        "services.mcp.oauthPort.buildRedirectUri still needs business-logic migration"
-    )
 
-async def findAvailablePort(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `findAvailablePort`."""
-    raise NotImplementedError(
-        "services.mcp.oauthPort.findAvailablePort still needs business-logic migration"
-    )
+async def buildRedirectUri(port: int, path: str = "/callback", host: str = "127.0.0.1") -> str:
+    """Build a local OAuth redirect URI."""
+
+    normalized_path = path if path.startswith("/") else f"/{path}"
+    return f"http://{host}:{int(port)}{normalized_path}"
+
+
+async def findAvailablePort(start_port: int = 54545, host: str = "127.0.0.1", attempts: int = 100) -> int:
+    """Find an available local TCP port for OAuth callbacks."""
+
+    for port in range(int(start_port), int(start_port) + int(attempts)):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind((host, port))
+            except OSError:
+                continue
+            return port
+    raise RuntimeError(f"No available port found from {start_port} after {attempts} attempts")

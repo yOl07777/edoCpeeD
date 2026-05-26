@@ -1,40 +1,68 @@
-"""
-Python migration draft for `src/services/mcp/channelNotification.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""MCP channel notification helpers."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
-CHANNEL_PERMISSION_METHOD: Any = None
-CHANNEL_PERMISSION_REQUEST_METHOD: Any = None
-ChannelMessageNotificationSchema: Any = None
-ChannelPermissionNotificationSchema: Any = None
+from .channelAllowlist import getChannelAllowlist, isChannelAllowlisted
 
-async def findChannelEntry(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `findChannelEntry`."""
-    raise NotImplementedError(
-        "services.mcp.channelNotification.findChannelEntry still needs business-logic migration"
-    )
+CHANNEL_PERMISSION_METHOD = "mcp/channel_permission"
+CHANNEL_PERMISSION_REQUEST_METHOD = "mcp/channel_permission_request"
+ChannelMessageNotificationSchema: dict[str, Any] = {"type": "object"}
+ChannelPermissionNotificationSchema: dict[str, Any] = {"type": "object"}
 
-async def gateChannelServer(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `gateChannelServer`."""
-    raise NotImplementedError(
-        "services.mcp.channelNotification.gateChannelServer still needs business-logic migration"
-    )
 
-async def getEffectiveChannelAllowlist(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getEffectiveChannelAllowlist`."""
-    raise NotImplementedError(
-        "services.mcp.channelNotification.getEffectiveChannelAllowlist still needs business-logic migration"
-    )
+def _entry_name(entry: Any) -> str:
+    if isinstance(entry, dict):
+        return str(entry.get("channel") or entry.get("name") or entry.get("id") or "")
+    return str(entry or "")
 
-async def wrapChannelMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `wrapChannelMessage`."""
-    raise NotImplementedError(
-        "services.mcp.channelNotification.wrapChannelMessage still needs business-logic migration"
-    )
+
+async def findChannelEntry(channel: str, entries: Iterable[Any] | None = None) -> Any | None:
+    """Find a channel entry by name, accepting wildcard entries."""
+
+    for entry in entries or []:
+        name = _entry_name(entry)
+        if name == "*" or name.lower() == str(channel or "").lower():
+            return entry
+    return None
+
+
+async def gateChannelServer(server: dict[str, Any], allowlist: Iterable[str] | None = None) -> dict[str, Any]:
+    """Annotate a server with its channel gating state."""
+
+    channel = str(server.get("channel") or server.get("name") or "")
+    permitted = await isChannelAllowlisted(channel, allowlist)
+    result = dict(server)
+    result["channelAllowed"] = permitted
+    return result
+
+
+async def getEffectiveChannelAllowlist(
+    config: dict[str, Any] | None = None,
+    enterprise_allowlist: Iterable[str] | None = None,
+) -> list[str]:
+    """Merge local and enterprise channel allowlists."""
+
+    values = list(enterprise_allowlist or []) + await getChannelAllowlist(config)
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        lowered = str(value).lower()
+        if lowered not in seen:
+            seen.add(lowered)
+            result.append(str(value))
+    return result
+
+
+async def wrapChannelMessage(channel: str, message: Any, method: str | None = None) -> dict[str, Any]:
+    """Wrap a notification payload in a stable MCP channel envelope."""
+
+    return {
+        "method": method or CHANNEL_PERMISSION_METHOD,
+        "params": {
+            "channel": channel,
+            "message": message,
+        },
+    }

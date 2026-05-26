@@ -1,1 +1,1 @@
-"""Migrated Python package."""
+"""Wizard state shims for the DeepSeek Python runtime."""

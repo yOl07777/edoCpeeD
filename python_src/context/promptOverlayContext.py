@@ -1,41 +1,47 @@
-"""
-Python migration draft for `src/context/promptOverlayContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def PromptOverlayProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PromptOverlayProvider`."""
-    raise NotImplementedError(
-        "context.promptOverlayContext.PromptOverlayProvider still needs business-logic migration"
-    )
 
-async def usePromptOverlay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `usePromptOverlay`."""
-    raise NotImplementedError(
-        "context.promptOverlayContext.usePromptOverlay still needs business-logic migration"
-    )
+_PROMPT_OVERLAY: dict[str, Any] = {"value": None, "dialog": None}
 
-async def usePromptOverlayDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `usePromptOverlayDialog`."""
-    raise NotImplementedError(
-        "context.promptOverlayContext.usePromptOverlayDialog still needs business-logic migration"
-    )
 
-async def useSetPromptOverlay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSetPromptOverlay`."""
-    raise NotImplementedError(
-        "context.promptOverlayContext.useSetPromptOverlay still needs business-logic migration"
-    )
+async def PromptOverlayProvider(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    if "value" in kwargs:
+        _PROMPT_OVERLAY["value"] = kwargs["value"]
+    if "dialog" in kwargs:
+        _PROMPT_OVERLAY["dialog"] = kwargs["dialog"]
+    return {"provider": "deepseek", **_PROMPT_OVERLAY}
 
-async def useSetPromptOverlayDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSetPromptOverlayDialog`."""
-    raise NotImplementedError(
-        "context.promptOverlayContext.useSetPromptOverlayDialog still needs business-logic migration"
-    )
+
+async def usePromptOverlay(*_args: Any, **_kwargs: Any) -> Any:
+    return _PROMPT_OVERLAY.get("value")
+
+
+async def usePromptOverlayDialog(*_args: Any, **_kwargs: Any) -> Any:
+    return _PROMPT_OVERLAY.get("dialog")
+
+
+async def useSetPromptOverlay(*_args: Any, **_kwargs: Any):
+    async def setter(value: Any = None) -> dict[str, Any]:
+        _PROMPT_OVERLAY["value"] = value
+        return {"provider": "deepseek", **_PROMPT_OVERLAY}
+
+    return setter
+
+
+async def useSetPromptOverlayDialog(*_args: Any, **_kwargs: Any):
+    async def setter(value: Any = None) -> dict[str, Any]:
+        _PROMPT_OVERLAY["dialog"] = value
+        return {"provider": "deepseek", **_PROMPT_OVERLAY}
+
+    return setter
+
+
+__all__ = [
+    "PromptOverlayProvider",
+    "usePromptOverlay",
+    "usePromptOverlayDialog",
+    "useSetPromptOverlay",
+    "useSetPromptOverlayDialog",
+]

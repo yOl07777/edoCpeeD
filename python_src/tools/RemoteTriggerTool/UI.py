@@ -1,23 +1,30 @@
-"""
-Python migration draft for `src/tools/RemoteTriggerTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable RemoteTriggerTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
-    raise NotImplementedError(
-        "tools.RemoteTriggerTool.UI.renderToolResultMessage still needs business-logic migration"
-    )
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.RemoteTriggerTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    if args and isinstance(args[0], dict):
+        return {**args[0], **kwargs}
+    return dict(kwargs)
+
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "remote-trigger-use", "name": data.get("name", ""), "payload": data.get("payload", {})}
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {
+        "type": "remote-trigger-result",
+        "id": data.get("id"),
+        "name": data.get("name", ""),
+        "payload": data.get("payload", {}),
+        "createdAt": data.get("created_at") or data.get("createdAt"),
+    }
+
+
+__all__ = ["renderToolResultMessage", "renderToolUseMessage"]

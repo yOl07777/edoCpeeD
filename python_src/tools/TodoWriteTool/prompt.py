@@ -1,14 +1,8 @@
-"""
-Python migration draft for `src/tools/TodoWriteTool/prompt.ts`.
+"""Prompt text for TodoWriteTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+from python_src.tools.TodoWriteTool.constants import TODO_WRITE_TOOL_NAME
 
-from __future__ import annotations
+DESCRIPTION = "Create or replace the local todo list for the current task."
+PROMPT = f"Use {TODO_WRITE_TOOL_NAME} with a complete todo list; valid statuses are pending, in_progress, and completed."
 
-from typing import Any
-
-DESCRIPTION: Any = None
-PROMPT: Any = None
+__all__ = ["DESCRIPTION", "PROMPT"]

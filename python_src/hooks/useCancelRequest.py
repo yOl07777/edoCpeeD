@@ -1,17 +1,27 @@
-"""
-Python migration draft for `src/hooks/useCancelRequest.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def CancelRequestHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `CancelRequestHandler`."""
-    raise NotImplementedError(
-        "hooks.useCancelRequest.CancelRequestHandler still needs business-logic migration"
-    )
+
+class CancelRequestHandle:
+    def __init__(self) -> None:
+        self.cancelled = False
+        self.reason = ""
+
+    def cancel(self, reason: str = "cancelled") -> dict[str, Any]:
+        self.cancelled = True
+        self.reason = reason
+        return {"cancelled": self.cancelled, "reason": self.reason}
+
+    def state(self) -> dict[str, Any]:
+        return {"cancelled": self.cancelled, "reason": self.reason}
+
+
+async def CancelRequestHandler(*_args: Any, **kwargs: Any) -> dict[str, Any] | CancelRequestHandle:
+    handle = kwargs.get("handle") or CancelRequestHandle()
+    if kwargs.get("cancel"):
+        return handle.cancel(str(kwargs.get("reason", "cancelled")))
+    return handle
+
+
+__all__ = ["CancelRequestHandle", "CancelRequestHandler"]

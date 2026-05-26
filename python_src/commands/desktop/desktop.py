@@ -1,17 +1,39 @@
-"""
-Python migration draft for `src/commands/desktop/desktop.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local `/desktop` command shim."""
 
 from __future__ import annotations
 
+import os
+import platform
 from typing import Any
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.desktop.desktop.call still needs business-logic migration"
-    )
+
+def isSupportedPlatform() -> bool:
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    return system == "darwin" or (system == "windows" and machine in {"amd64", "x86_64"})
+
+
+def getDesktopHandoffInfo() -> dict[str, Any]:
+    product = os.getenv("DEEPCODE_DESKTOP_PRODUCT", "DeepSeek Desktop")
+    return {
+        "supported": isSupportedPlatform(),
+        "product": product,
+        "platform": platform.system(),
+        "arch": platform.machine(),
+        "message": (
+            f"Continue this session in {product}."
+            if isSupportedPlatform()
+            else f"{product} handoff is not supported on this platform."
+        ),
+    }
+
+
+async def call(onDone: Any = None, *_args: Any, **_kwargs: Any) -> dict[str, Any] | None:
+    info = getDesktopHandoffInfo()
+    if callable(onDone):
+        try:
+            onDone(info["message"], {"display": "system"})
+        except TypeError:
+            onDone(info["message"])
+        return None
+    return {"type": "desktop_handoff", **info}

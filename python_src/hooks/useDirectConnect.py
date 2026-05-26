@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/hooks/useDirectConnect.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useDirectConnect(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useDirectConnect`."""
-    raise NotImplementedError(
-        "hooks.useDirectConnect.useDirectConnect still needs business-logic migration"
-    )
+
+async def useDirectConnect(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    endpoint = str(kwargs.get("endpoint", ""))
+    enabled = bool(kwargs.get("enabled", bool(endpoint)))
+    return {"provider": "deepseek", "enabled": enabled, "endpoint": endpoint, "connected": bool(kwargs.get("connected", False))}
+
+
+__all__ = ["useDirectConnect"]

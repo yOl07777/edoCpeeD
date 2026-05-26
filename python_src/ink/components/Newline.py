@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/ink/components/Newline.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.components.Newline still needs business-logic migration"
-    )
+from ._nodes import render_node
+
+
+def Newline(*args: Any, **props: Any) -> dict[str, Any]:
+    count = props.pop("count", args[0] if args else 1)
+    try:
+        normalized_count = max(1, int(count))
+    except (TypeError, ValueError):
+        normalized_count = 1
+    return render_node("newline", count=normalized_count, text="\n" * normalized_count)
+
+
+default = Newline
+_module_migration_placeholder = Newline

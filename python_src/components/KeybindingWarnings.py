@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/KeybindingWarnings.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def KeybindingWarnings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `KeybindingWarnings`."""
-    raise NotImplementedError(
-        "components.KeybindingWarnings.KeybindingWarnings still needs business-logic migration"
-    )
+    warnings = normalize_items(option(args, kwargs, "warnings", scalar_arg(args, [])))
+    return component_payload("keybinding_warnings", warnings=warnings, count=len(warnings), hasWarnings=bool(warnings))
+
+
+__all__ = ["KeybindingWarnings"]

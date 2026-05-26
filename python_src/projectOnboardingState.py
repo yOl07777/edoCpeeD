@@ -1,37 +1,35 @@
-"""
-Python migration draft for `src/projectOnboardingState.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-shouldShowProjectOnboarding: Any = None
 
-async def getSteps(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getSteps`."""
-    raise NotImplementedError(
-        "projectOnboardingState.getSteps still needs business-logic migration"
-    )
+_state: dict[str, Any] = {"seenCount": 0, "complete": False}
 
-async def incrementProjectOnboardingSeenCount(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `incrementProjectOnboardingSeenCount`."""
-    raise NotImplementedError(
-        "projectOnboardingState.incrementProjectOnboardingSeenCount still needs business-logic migration"
-    )
 
-async def isProjectOnboardingComplete(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isProjectOnboardingComplete`."""
-    raise NotImplementedError(
-        "projectOnboardingState.isProjectOnboardingComplete still needs business-logic migration"
-    )
+def getSteps(cwd: str | None = None) -> list[dict[str, Any]]:
+    root = Path(cwd or Path.cwd())
+    return [
+        {"id": "trust", "title": "确认工作目录", "complete": root.exists()},
+        {"id": "readme", "title": "读取项目说明", "complete": (root / "README.md").exists()},
+        {"id": "deepseek", "title": "配置 DeepSeek", "complete": bool((root / ".env").exists() or (root / ".env.example").exists())},
+    ]
 
-async def maybeMarkProjectOnboardingComplete(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `maybeMarkProjectOnboardingComplete`."""
-    raise NotImplementedError(
-        "projectOnboardingState.maybeMarkProjectOnboardingComplete still needs business-logic migration"
-    )
+
+def isProjectOnboardingComplete(cwd: str | None = None) -> bool:
+    return bool(_state["complete"] or all(step["complete"] for step in getSteps(cwd)))
+
+
+def maybeMarkProjectOnboardingComplete(cwd: str | None = None) -> bool:
+    complete = isProjectOnboardingComplete(cwd)
+    _state["complete"] = complete
+    return complete
+
+
+def incrementProjectOnboardingSeenCount() -> int:
+    _state["seenCount"] += 1
+    return int(_state["seenCount"])
+
+
+def shouldShowProjectOnboarding(cwd: str | None = None) -> bool:
+    return not isProjectOnboardingComplete(cwd) and int(_state["seenCount"]) < 3

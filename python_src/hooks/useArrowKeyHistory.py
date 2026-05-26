@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/hooks/useArrowKeyHistory.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useArrowKeyHistory(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useArrowKeyHistory`."""
-    raise NotImplementedError(
-        "hooks.useArrowKeyHistory.useArrowKeyHistory still needs business-logic migration"
-    )
+
+async def useArrowKeyHistory(history: list[str] | None = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    items = list(kwargs.get("history", history or []))
+    index = int(kwargs.get("index", len(items)) or 0)
+    key = str(kwargs.get("key", "")).lower()
+    if key in {"up", "arrowup"}:
+        index = max(0, index - 1)
+    elif key in {"down", "arrowdown"}:
+        index = min(len(items), index + 1)
+    value = items[index] if 0 <= index < len(items) else ""
+    return {"provider": "deepseek", "history": items, "index": index, "value": value}
+
+
+__all__ = ["useArrowKeyHistory"]

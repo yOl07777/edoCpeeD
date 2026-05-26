@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/hooks/useSettingsChange.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def useSettingsChange(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSettingsChange`."""
-    raise NotImplementedError(
-        "hooks.useSettingsChange.useSettingsChange still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    previous = pick(options, "previous", "old", default={}) or {}
+    current = pick(options, "current", "new", default={}) or {}
+    keys = sorted(set(previous) | set(current)) if isinstance(previous, dict) and isinstance(current, dict) else []
+    changed = [key for key in keys if previous.get(key) != current.get(key)]
+    return {"provider": "deepseek", "changed": changed, "hasChanges": bool(changed), "previous": previous, "current": current}

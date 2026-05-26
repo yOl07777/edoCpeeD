@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/shell/ShellProgressMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.shell._shared import shell_payload
+
+
 async def ShellProgressMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShellProgressMessage`."""
-    raise NotImplementedError(
-        "components.shell.ShellProgressMessage.ShellProgressMessage still needs business-logic migration"
-    )
+    command = str(kwargs.get("command") or (args[0] if args else "shell"))
+    status = str(kwargs.get("status") or "running")
+    return shell_payload("shell_progress_message", command=command, status=status, text=f"{command}: {status}")
+
+
+__all__ = ["ShellProgressMessage"]

@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/migrations/migrateOpusToOpus1m.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def migrateOpusToOpus1m(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `migrateOpusToOpus1m`."""
-    raise NotImplementedError(
-        "migrations.migrateOpusToOpus1m.migrateOpusToOpus1m still needs business-logic migration"
-    )
+from ._shared import opus_1m_merge_enabled, update_user_settings, user_settings
+
+
+async def migrateOpusToOpus1m(*_args: Any, **_kwargs: Any) -> bool:
+    """Map the old Opus alias to DeepSeek Pro when merge behavior is enabled."""
+
+    if not opus_1m_merge_enabled():
+        return False
+    if (await user_settings()).get("model") != "opus":
+        return False
+    await update_user_settings({"model": "deepseek-v4-pro"})
+    return True

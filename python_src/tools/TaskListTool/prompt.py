@@ -1,19 +1,14 @@
-"""
-Python migration draft for `src/tools/TaskListTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for TaskListTool."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.tools.TaskListTool.constants import TASK_LIST_TOOL_NAME
 
-DESCRIPTION: Any = None
+DESCRIPTION = "List local in-memory tasks for the current process."
 
-async def getPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrompt`."""
-    raise NotImplementedError(
-        "tools.TaskListTool.prompt.getPrompt still needs business-logic migration"
-    )
+
+async def getPrompt(*args, **kwargs) -> str:
+    return f"Use {TASK_LIST_TOOL_NAME} to inspect local task records, optionally filtered by status."
+
+
+__all__ = ["DESCRIPTION", "getPrompt"]

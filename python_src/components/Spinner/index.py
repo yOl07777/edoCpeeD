@@ -1,16 +1,52 @@
-"""
-Python migration draft for `src/components/Spinner/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+from python_src.components.Spinner.FlashingChar import FlashingChar
+from python_src.components.Spinner.GlimmerMessage import GlimmerMessage
+from python_src.components.Spinner.ShimmerChar import ShimmerChar
+from python_src.components.Spinner.SpinnerAnimationRow import SpinnerAnimationRow
+from python_src.components.Spinner.SpinnerGlyph import SpinnerGlyph
+from python_src.components.Spinner.TeammateSpinnerLine import TeammateSpinnerLine
+from python_src.components.Spinner.TeammateSpinnerTree import TeammateSpinnerTree
+from python_src.components.Spinner.teammateSelectHint import TEAMMATE_SELECT_HINT
+from python_src.components.Spinner.useShimmerAnimation import useShimmerAnimation
+from python_src.components.Spinner.useStalledAnimation import useStalledAnimation
+from python_src.components.Spinner.utils import (
+    getDefaultCharacters,
+    hueToRgb,
+    interpolateColor,
+    parseRGB,
+    toRGBColor,
+)
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.Spinner.index still needs business-logic migration"
-    )
+default = {
+    "provider": "deepseek",
+    "components": [
+        "FlashingChar",
+        "GlimmerMessage",
+        "ShimmerChar",
+        "SpinnerAnimationRow",
+        "SpinnerGlyph",
+        "TeammateSpinnerLine",
+        "TeammateSpinnerTree",
+    ],
+}
+
+
+__all__ = [
+    "FlashingChar",
+    "GlimmerMessage",
+    "ShimmerChar",
+    "SpinnerAnimationRow",
+    "SpinnerGlyph",
+    "TEAMMATE_SELECT_HINT",
+    "TeammateSpinnerLine",
+    "TeammateSpinnerTree",
+    "default",
+    "getDefaultCharacters",
+    "hueToRgb",
+    "interpolateColor",
+    "parseRGB",
+    "toRGBColor",
+    "useShimmerAnimation",
+    "useStalledAnimation",
+]

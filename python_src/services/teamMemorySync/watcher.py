@@ -1,47 +1,66 @@
-"""
-Python migration draft for `src/services/teamMemorySync/watcher.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Dry-run team memory watcher state."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def _resetWatcherStateForTesting(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `_resetWatcherStateForTesting`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher._resetWatcherStateForTesting still needs business-logic migration"
-    )
+from .index import createSyncState, pushTeamMemory
 
-async def _startFileWatcherForTesting(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `_startFileWatcherForTesting`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher._startFileWatcherForTesting still needs business-logic migration"
-    )
+_state: dict[str, Any] = {"started": False, "pendingWrites": 0, "suppressedReason": None, "syncState": None}
 
-async def isPermanentFailure(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isPermanentFailure`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher.isPermanentFailure still needs business-logic migration"
-    )
 
-async def notifyTeamMemoryWrite(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `notifyTeamMemoryWrite`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher.notifyTeamMemoryWrite still needs business-logic migration"
-    )
+async def isPermanentFailure(*args: Any, **kwargs: Any) -> bool:
+    result = kwargs.get("result") if "result" in kwargs else (args[0] if args else {})
+    if not isinstance(result, dict):
+        return False
+    if result.get("errorType") in {"no_oauth", "no_repo"}:
+        return True
+    status = result.get("httpStatus")
+    return isinstance(status, int) and 400 <= status < 500 and status not in {409, 429}
 
-async def startTeamMemoryWatcher(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `startTeamMemoryWatcher`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher.startTeamMemoryWatcher still needs business-logic migration"
-    )
 
-async def stopTeamMemoryWatcher(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `stopTeamMemoryWatcher`."""
-    raise NotImplementedError(
-        "services.teamMemorySync.watcher.stopTeamMemoryWatcher still needs business-logic migration"
-    )
+async def _resetWatcherStateForTesting(*args: Any, **kwargs: Any) -> None:
+    _state.update({"started": False, "pendingWrites": 0, "suppressedReason": None, "syncState": None})
+
+
+async def startTeamMemoryWatcher(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    if _state["syncState"] is None:
+        _state["syncState"] = await createSyncState()
+    _state["started"] = True
+    return {"started": True, "pendingWrites": _state["pendingWrites"]}
+
+
+async def stopTeamMemoryWatcher(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    was_started = bool(_state["started"])
+    _state["started"] = False
+    return {"stopped": was_started}
+
+
+async def notifyTeamMemoryWrite(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    if _state["suppressedReason"] is not None:
+        return {"scheduled": False, "suppressedReason": _state["suppressedReason"]}
+    _state["pendingWrites"] += 1
+    if kwargs.get("pushNow"):
+        result = await pushTeamMemory(_state["syncState"] or await createSyncState())
+        if not result.get("success") and await isPermanentFailure(result):
+            _state["suppressedReason"] = result.get("errorType") or result.get("httpStatus") or "unknown"
+        else:
+            _state["pendingWrites"] = 0
+        return {"scheduled": True, "pushed": result}
+    return {"scheduled": True, "pendingWrites": _state["pendingWrites"]}
+
+
+async def _startFileWatcherForTesting(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    path = str(kwargs.get("path") or (args[0] if args else ""))
+    await startTeamMemoryWatcher()
+    return {"started": True, "path": path}
+
+
+__all__ = [
+    "_resetWatcherStateForTesting",
+    "_startFileWatcherForTesting",
+    "isPermanentFailure",
+    "notifyTeamMemoryWrite",
+    "startTeamMemoryWatcher",
+    "stopTeamMemoryWatcher",
+]

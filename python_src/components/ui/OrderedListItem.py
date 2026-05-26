@@ -1,19 +1,15 @@
-"""
-Python migration draft for `src/components/ui/OrderedListItem.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-OrderedListItemContext: Any = None
+
+OrderedListItemContext: dict[str, Any] = {"provider": "deepseek"}
+
 
 async def OrderedListItem(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `OrderedListItem`."""
-    raise NotImplementedError(
-        "components.ui.OrderedListItem.OrderedListItem still needs business-logic migration"
-    )
+    text = str(kwargs.get("text") or (args[0] if args else ""))
+    number = int(kwargs.get("number", args[1] if len(args) > 1 else 1) or 1)
+    return {"type": "ordered_list_item", "provider": "deepseek", "number": number, "text": text}
+
+
+__all__ = ["OrderedListItem", "OrderedListItemContext"]

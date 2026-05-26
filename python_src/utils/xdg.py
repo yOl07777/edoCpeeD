@@ -1,35 +1,35 @@
-"""
-Python migration draft for `src/utils/xdg.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
 
-async def getUserBinDir(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getUserBinDir`."""
-    raise NotImplementedError(
-        "utils.xdg.getUserBinDir still needs business-logic migration"
-    )
 
-async def getXDGCacheHome(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getXDGCacheHome`."""
-    raise NotImplementedError(
-        "utils.xdg.getXDGCacheHome still needs business-logic migration"
-    )
+def _resolve_options(options: dict[str, Any] | None = None) -> tuple[dict[str, str], Path]:
+    env = dict(os.environ)
+    home = Path.home()
+    if options:
+        env.update({str(k): str(v) for k, v in (options.get("env") or {}).items() if v is not None})
+        if options.get("homedir"):
+            home = Path(str(options["homedir"]))
+    return env, home
 
-async def getXDGDataHome(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getXDGDataHome`."""
-    raise NotImplementedError(
-        "utils.xdg.getXDGDataHome still needs business-logic migration"
-    )
 
-async def getXDGStateHome(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getXDGStateHome`."""
-    raise NotImplementedError(
-        "utils.xdg.getXDGStateHome still needs business-logic migration"
-    )
+def getXDGStateHome(options: dict[str, Any] | None = None) -> str:
+    env, home = _resolve_options(options)
+    return env.get("XDG_STATE_HOME") or str(home / ".local" / "state")
+
+
+def getXDGCacheHome(options: dict[str, Any] | None = None) -> str:
+    env, home = _resolve_options(options)
+    return env.get("XDG_CACHE_HOME") or str(home / ".cache")
+
+
+def getXDGDataHome(options: dict[str, Any] | None = None) -> str:
+    env, home = _resolve_options(options)
+    return env.get("XDG_DATA_HOME") or str(home / ".local" / "share")
+
+
+def getUserBinDir(options: dict[str, Any] | None = None) -> str:
+    _env, home = _resolve_options(options)
+    return str(home / ".local" / "bin")

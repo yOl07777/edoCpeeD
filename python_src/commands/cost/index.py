@@ -1,16 +1,32 @@
-"""
-Python migration draft for `src/commands/cost/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/cost`."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.cost.index still needs business-logic migration"
-    )
+from .cost import cost_command
+
+
+async def call(*_args, **_kwargs):
+    summary = await cost_command("summary")
+    return {
+        "type": "text",
+        "value": (
+            "Session cost summary:\n"
+            f"Input tokens: {summary['input_tokens']}\n"
+            f"Output tokens: {summary['output_tokens']}\n"
+            f"Total USD: ${summary['total_usd']:.6f}"
+        ),
+    }
+
+
+cost = {
+    "type": "local",
+    "name": "cost",
+    "description": "Show the total cost and duration of the current session",
+    "isHidden": lambda: os.getenv("USER_TYPE") != "ant" and os.getenv("DEEPSEEK_HIDE_COST_COMMAND") == "1",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = cost

@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/ExitFlow.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option
+
+
 async def ExitFlow(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ExitFlow`."""
-    raise NotImplementedError(
-        "components.ExitFlow.ExitFlow still needs business-logic migration"
-    )
+    pending = normalize_items(option(args, kwargs, "pending", option(args, kwargs, "tasks", [])))
+    return component_payload("exit_flow", canExit=not pending, pending=pending, message="Ready to exit" if not pending else "Pending work remains")
+
+
+__all__ = ["ExitFlow"]

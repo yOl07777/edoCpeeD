@@ -1,23 +1,33 @@
-"""
-Python migration draft for `src/services/vcr.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Small in-memory VCR helpers for deterministic tests."""
 
 from __future__ import annotations
 
-from typing import Any
+import hashlib
+import json
+from typing import Any, Callable
 
-async def withTokenCountVCR(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `withTokenCountVCR`."""
-    raise NotImplementedError(
-        "services.vcr.withTokenCountVCR still needs business-logic migration"
-    )
+_CASSETTES: dict[str, Any] = {}
 
-async def withVCR(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `withVCR`."""
-    raise NotImplementedError(
-        "services.vcr.withVCR still needs business-logic migration"
-    )
+
+def _key(name: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> str:
+    payload = json.dumps({"name": name, "args": args, "kwargs": kwargs}, sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+async def withVCR(name: str, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    key = _key(name, args, kwargs)
+    if key in _CASSETTES:
+        return _CASSETTES[key]
+    result = func(*args, **kwargs)
+    if hasattr(result, "__await__"):
+        result = await result
+    _CASSETTES[key] = result
+    return result
+
+
+async def withTokenCountVCR(name: str, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    return await withVCR(f"token-count:{name}", func, *args, **kwargs)
+
+
+async def clearVCR() -> None:
+    _CASSETTES.clear()

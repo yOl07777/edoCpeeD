@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/messages/UserImageMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload
+
+
 async def UserImageMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `UserImageMessage`."""
-    raise NotImplementedError(
-        "components.messages.UserImageMessage.UserImageMessage still needs business-logic migration"
-    )
+    image = kwargs.get("image") or (args[0] if args else {})
+    url = image.get("url") if isinstance(image, dict) else str(image)
+    return message_payload("user_image_message", imageUrl=url, detail=kwargs.get("detail", "auto"))
+
+
+__all__ = ["UserImageMessage"]

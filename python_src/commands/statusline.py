@@ -1,16 +1,38 @@
-"""
-Python migration draft for `src/commands/statusline.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt command for configuring the DeepSeek Code status line."""
 
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.statusline still needs business-logic migration"
-    )
+AGENT_TOOL_NAME = "Agent"
+ALLOWED_TOOLS = [AGENT_TOOL_NAME, "Read(~/**)", "Edit(~/.deepseek/settings.json)", "Edit(~/.claude/settings.json)"]
+
+
+async def getPromptForCommand(args: str = "", context: Any | None = None) -> list[dict[str, str]]:
+    prompt = (args or "").strip() or "Configure my DeepSeek Code statusLine from my shell PS1 configuration"
+    return [
+        {
+            "type": "text",
+            "text": (
+                f'Create an {AGENT_TOOL_NAME} with subagent_type "statusline-setup" '
+                f'and the prompt "{prompt}". Prefer writing statusLine settings to '
+                "~/.deepseek/settings.json, while preserving ~/.claude/settings.json compatibility if it already exists."
+            ),
+        }
+    ]
+
+
+statusline = {
+    "type": "prompt",
+    "name": "statusline",
+    "description": "Set up DeepSeek Code's status line UI",
+    "contentLength": 0,
+    "aliases": [],
+    "progressMessage": "setting up statusLine",
+    "allowedTools": ALLOWED_TOOLS,
+    "source": "builtin",
+    "disableNonInteractive": True,
+    "getPromptForCommand": getPromptForCommand,
+}
+
+default = statusline

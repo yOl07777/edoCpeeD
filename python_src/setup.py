@@ -1,17 +1,30 @@
-"""
-Python migration draft for `src/setup.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Setup shim for the migrated DeepSeek runtime."""
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
 
-async def setup(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setup`."""
-    raise NotImplementedError(
-        "setup.setup still needs business-logic migration"
-    )
+from deepseek_code.config import DeepSeekConfig
+
+
+async def setup(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    cwd = Path(kwargs.get("cwd") or os.getcwd()).resolve()
+    config = DeepSeekConfig.from_env()
+    settings_dir = cwd / ".deepseek"
+    if kwargs.get("createSettingsDir", True):
+        settings_dir.mkdir(exist_ok=True)
+    return {
+        "type": "setup",
+        "provider": "deepseek",
+        "cwd": str(cwd),
+        "settingsDir": str(settings_dir),
+        "hasApiKey": bool(config.api_keys),
+        "defaultModel": config.default_model,
+        "endpointCount": len(config.endpoints),
+        "createdSettingsDir": settings_dir.exists(),
+    }
+
+
+__all__ = ["setup"]

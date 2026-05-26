@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/tasks/ShellDetailDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.tasks._shared import normalize_task, task_payload
+
+
 async def ShellDetailDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShellDetailDialog`."""
-    raise NotImplementedError(
-        "components.tasks.ShellDetailDialog.ShellDetailDialog still needs business-logic migration"
-    )
+    task = normalize_task(kwargs.get("task") or (args[0] if args else None), **kwargs)
+    return task_payload("shell_detail_dialog", task=task, command=kwargs.get("command") or task["title"], output=kwargs.get("output", ""))
+
+
+__all__ = ["ShellDetailDialog"]

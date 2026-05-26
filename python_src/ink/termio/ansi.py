@@ -1,29 +1,19 @@
-"""
-Python migration draft for `src/ink/termio/ansi.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-BEL: Any = None
-C0: Any = None
-ESC: Any = None
-ESC_TYPE: Any = None
-SEP: Any = None
+BEL: str = "\x07"
+C0: range = range(0x00, 0x20)
+ESC: str = "\x1b"
+ESC_TYPE: str = "\x1b"
+SEP: str = ";"
 
 async def isC0(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isC0`."""
-    raise NotImplementedError(
-        "ink.termio.ansi.isC0 still needs business-logic migration"
-    )
+    value = args[0] if args else kwargs.get("value", "")
+    code = ord(value[0]) if isinstance(value, str) and value else int(value or 0)
+    return code in C0
 
 async def isEscFinal(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isEscFinal`."""
-    raise NotImplementedError(
-        "ink.termio.ansi.isEscFinal still needs business-logic migration"
-    )
+    value = args[0] if args else kwargs.get("value", "")
+    code = ord(value[0]) if isinstance(value, str) and value else int(value or 0)
+    return 0x30 <= code <= 0x7E

@@ -1,29 +1,27 @@
-"""
-Python migration draft for `src/tools/EnterPlanModeTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable EnterPlanModeTool payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def renderToolResultMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolResultMessage`."""
-    raise NotImplementedError(
-        "tools.EnterPlanModeTool.UI.renderToolResultMessage still needs business-logic migration"
-    )
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.EnterPlanModeTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {**(args[0] if args and isinstance(args[0], dict) else {}), **kwargs}
 
-async def renderToolUseRejectedMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseRejectedMessage`."""
-    raise NotImplementedError(
-        "tools.EnterPlanModeTool.UI.renderToolUseRejectedMessage still needs business-logic migration"
-    )
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "enter-plan-use", "goal": data.get("goal", ""), "stepCount": len(data.get("steps") or [])}
+
+
+async def renderToolResultMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "enter-plan-result", "active": data.get("active", True), "goal": data.get("goal", ""), "steps": data.get("steps", [])}
+
+
+async def renderToolUseRejectedMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "enter-plan-rejected", "reason": data.get("reason", "rejected")}
+
+
+__all__ = ["renderToolResultMessage", "renderToolUseMessage", "renderToolUseRejectedMessage"]

@@ -1,61 +1,72 @@
-"""
-Python migration draft for `src/tasks/RemoteAgentTask/RemoteAgentTask.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+import os
+import re
+from typing import Any, Callable
 
-RemoteAgentTask: Any = None
+from .._state import NOTIFICATIONS, create_task, tasks_by_kind, update_task
 
-async def checkRemoteAgentEligibility(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `checkRemoteAgentEligibility`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.checkRemoteAgentEligibility still needs business-logic migration"
-    )
+RemoteAgentTask = dict[str, Any]
+_completion_checkers: list[Callable[[dict[str, Any]], Any]] = []
 
-async def enqueueUltraplanFailureNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `enqueueUltraplanFailureNotification`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.enqueueUltraplanFailureNotification still needs business-logic migration"
-    )
 
-async def extractPlanFromLog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `extractPlanFromLog`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.extractPlanFromLog still needs business-logic migration"
-    )
+async def checkRemoteAgentEligibility(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    enabled = str(os.getenv("DEEPCODE_REMOTE_AGENTS", "true")).lower() in {"1", "true", "yes", "on"}
+    return {"eligible": enabled, "reason": None if enabled else "Remote agents disabled"}
 
-async def formatPreconditionError(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `formatPreconditionError`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.formatPreconditionError still needs business-logic migration"
-    )
 
-async def getRemoteTaskSessionUrl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getRemoteTaskSessionUrl`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.getRemoteTaskSessionUrl still needs business-logic migration"
-    )
+async def registerRemoteAgentTask(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    task = create_task("remote-agent", remoteSessionId=kwargs.get("remoteSessionId"), url=kwargs.get("url"), background=True, foreground=False)
+    return task
 
-async def registerCompletionChecker(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerCompletionChecker`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.registerCompletionChecker still needs business-logic migration"
-    )
 
-async def registerRemoteAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerRemoteAgentTask`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.registerRemoteAgentTask still needs business-logic migration"
-    )
+async def restoreRemoteAgentTasks(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    return tasks_by_kind("remote-agent")
 
-async def restoreRemoteAgentTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `restoreRemoteAgentTasks`."""
-    raise NotImplementedError(
-        "tasks.RemoteAgentTask.RemoteAgentTask.restoreRemoteAgentTasks still needs business-logic migration"
-    )
+
+async def registerCompletionChecker(*args: Any, **kwargs: Any) -> Callable[[], None]:
+    checker = kwargs.get("checker") or (args[0] if args else None)
+    if callable(checker):
+        _completion_checkers.append(checker)
+
+    def dispose() -> None:
+        if checker in _completion_checkers:
+            _completion_checkers.remove(checker)
+
+    return dispose
+
+
+async def getRemoteTaskSessionUrl(*args: Any, **kwargs: Any) -> str:
+    session_id = str(kwargs.get("sessionId") or kwargs.get("remoteSessionId") or (args[0] if args else ""))
+    base = str(kwargs.get("baseUrl") or os.getenv("DEEPCODE_REMOTE_BASE_URL") or "https://deepseek.local/remote")
+    return base.rstrip("/") + (f"/{session_id}" if session_id else "")
+
+
+async def formatPreconditionError(*args: Any, **kwargs: Any) -> str:
+    error = kwargs.get("error") or (args[0] if args else "Remote agent precondition failed")
+    return str(error)
+
+
+async def extractPlanFromLog(*args: Any, **kwargs: Any) -> str | None:
+    log = str(kwargs.get("log") or (args[0] if args else ""))
+    match = re.search(r"<plan>(.*?)</plan>", log, re.S | re.I)
+    return match.group(1).strip() if match else None
+
+
+async def enqueueUltraplanFailureNotification(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    notification = {"type": "ultraplan_failure", "message": str(kwargs.get("message") or (args[0] if args else "Ultraplan failed"))}
+    NOTIFICATIONS.append(notification)
+    return notification
+
+
+__all__ = [
+    "RemoteAgentTask",
+    "checkRemoteAgentEligibility",
+    "enqueueUltraplanFailureNotification",
+    "extractPlanFromLog",
+    "formatPreconditionError",
+    "getRemoteTaskSessionUrl",
+    "registerCompletionChecker",
+    "registerRemoteAgentTask",
+    "restoreRemoteAgentTasks",
+]

@@ -1,23 +1,18 @@
-"""
-Python migration draft for `src/components/shell/ExpandShellOutputContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.shell._shared import shell_payload
+
+
 async def ExpandShellOutputProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ExpandShellOutputProvider`."""
-    raise NotImplementedError(
-        "components.shell.ExpandShellOutputContext.ExpandShellOutputProvider still needs business-logic migration"
-    )
+    expanded = bool(kwargs.get("expanded", args[0] if args else False))
+    return shell_payload("expand_shell_output_provider", expanded=expanded, children=kwargs.get("children"))
+
 
 async def useExpandShellOutput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useExpandShellOutput`."""
-    raise NotImplementedError(
-        "components.shell.ExpandShellOutputContext.useExpandShellOutput still needs business-logic migration"
-    )
+    expanded = bool(kwargs.get("expanded", args[0] if args else False))
+    return {"provider": "deepseek", "expanded": expanded, "toggle": not expanded}
+
+
+__all__ = ["ExpandShellOutputProvider", "useExpandShellOutput"]

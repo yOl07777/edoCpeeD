@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/agents/new-agent-creation/wizard-steps/ToolsStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.agents.ToolSelector import ToolSelector
+from python_src.components.agents._shared import component_result
+
+
 async def ToolsStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ToolsStep`."""
-    raise NotImplementedError(
-        "components.agents.new-agent-creation.wizard-steps.ToolsStep.ToolsStep still needs business-logic migration"
-    )
+    tools = kwargs.get("tools") or (args[0] if args else []) or []
+    selected = kwargs.get("selected") or kwargs.get("selectedTools") or []
+    return component_result("agent_wizard_tools_step", field="tools", selector=await ToolSelector(tools, selected=selected), complete=True)
+
+
+__all__ = ["ToolsStep"]

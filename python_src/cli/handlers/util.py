@@ -1,29 +1,38 @@
-"""
-Python migration draft for `src/cli/handlers/util.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Miscellaneous CLI handlers."""
 
 from __future__ import annotations
 
+import os
+import shutil
+import sys
+from pathlib import Path
 from typing import Any
 
-async def doctorHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `doctorHandler`."""
-    raise NotImplementedError(
-        "cli.handlers.util.doctorHandler still needs business-logic migration"
-    )
 
-async def installHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `installHandler`."""
-    raise NotImplementedError(
-        "cli.handlers.util.installHandler still needs business-logic migration"
-    )
+async def setupTokenHandler(root: Any = None) -> dict[str, Any]:
+    keys = [part.strip() for part in os.getenv("DEEPSEEK_API_KEYS", "").split(",") if part.strip()]
+    return {
+        "provider": "deepseek",
+        "hasEnvApiKey": bool(os.getenv("DEEPSEEK_API_KEY") or keys),
+        "keyCount": len(keys) or (1 if os.getenv("DEEPSEEK_API_KEY") else 0),
+    }
 
-async def setupTokenHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `setupTokenHandler`."""
-    raise NotImplementedError(
-        "cli.handlers.util.setupTokenHandler still needs business-logic migration"
-    )
+
+async def doctorHandler(root: Any = None) -> dict[str, Any]:
+    checks = {
+        "python": sys.version.split()[0],
+        "cwd": str(Path.cwd()),
+        "deepseek_api_key": bool(os.getenv("DEEPSEEK_API_KEY") or os.getenv("DEEPSEEK_API_KEYS")),
+        "git": shutil.which("git") is not None,
+    }
+    return {"ok": all(value for key, value in checks.items() if key != "deepseek_api_key"), "checks": checks}
+
+
+async def installHandler(target: str | None = None, local: bool = False, **kwargs: Any) -> dict[str, Any]:
+    destination = Path(target or (Path.cwd() / ".deepcode"))
+    if local:
+        destination = Path.cwd() / destination
+    destination.mkdir(parents=True, exist_ok=True)
+    marker = destination / "installed.txt"
+    marker.write_text("DeepCode Python migration local install marker\n", encoding="utf-8")
+    return {"installed": True, "path": str(destination), "marker": str(marker)}

@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/components/Spinner/GlimmerMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def GlimmerMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `GlimmerMessage`."""
-    raise NotImplementedError(
-        "components.Spinner.GlimmerMessage.GlimmerMessage still needs business-logic migration"
-    )
+
+async def GlimmerMessage(message: str = "Thinking", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    frame = int(kwargs.get("frame", 0) or 0)
+    dots = "." * (frame % 4)
+    return {"type": "glimmer_message", "provider": "deepseek", "text": f"{message}{dots}"}
+
+
+__all__ = ["GlimmerMessage"]

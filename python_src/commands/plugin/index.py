@@ -1,16 +1,23 @@
-"""
-Python migration draft for `src/commands/plugin/index.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/plugin`."""
 
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.plugin.index still needs business-logic migration"
-    )
+from python_src.commands.plugin.plugin import local_call
+
+
+plugin: dict[str, Any] = {
+    "type": "local-jsx",
+    "name": "plugin",
+    "description": "Manage local DeepSeek plugins and marketplaces",
+    "availability": ["deepseek", "console"],
+    "source": "builtin",
+    "supportsNonInteractive": False,
+    "call": local_call,
+}
+
+call = local_call
+default = plugin
+
+__all__ = ["call", "default", "plugin"]

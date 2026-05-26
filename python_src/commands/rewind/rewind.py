@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/commands/rewind/rewind.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local `/rewind` command shim."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.rewind.rewind.call still needs business-logic migration"
-    )
+from python_src.history import removeLastFromHistory
+from python_src.session_store import SESSION_STATE
+
+
+async def call(onDone: Any = None, *_args: Any, **_kwargs: Any) -> dict[str, Any] | None:
+    removed = SESSION_STATE.messages.pop() if SESSION_STATE.messages else None
+    removeLastFromHistory()
+    message = "Rewound the last in-memory session message." if removed else "Nothing to rewind."
+    if callable(onDone):
+        try:
+            onDone(message, {"display": "system"})
+        except TypeError:
+            onDone(message)
+        return None
+    return {"type": "text", "value": message, "removed": removed}

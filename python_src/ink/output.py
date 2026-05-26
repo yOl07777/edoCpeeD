@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/ink/output.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.output still needs business-logic migration"
-    )
+
+def createOutput(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    writes: list[str] = []
+
+    def write(value: Any) -> int:
+        text = str(value)
+        writes.append(text)
+        return len(text)
+
+    return {"provider": "deepseek", "writes": writes, "write": write, "stdout": kwargs.get("stdout")}
+
+
+default = createOutput
+_module_migration_placeholder = createOutput

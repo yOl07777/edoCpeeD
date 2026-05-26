@@ -1,19 +1,20 @@
-"""
-Python migration draft for `src/hooks/useReplBridge.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-BRIDGE_FAILURE_DISMISS_MS: Any = None
+from ._basic import first_mapping, pick
+
+BRIDGE_FAILURE_DISMISS_MS: int = 8_000
+
 
 async def useReplBridge(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useReplBridge`."""
-    raise NotImplementedError(
-        "hooks.useReplBridge.useReplBridge still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    enabled = bool(pick(options, "enabled", default=False))
+    error = pick(options, "error", default=None)
+    return {
+        "provider": "deepseek",
+        "enabled": enabled,
+        "connected": bool(pick(options, "connected", default=False)) and enabled,
+        "error": str(error) if error else None,
+        "dismissAfterMs": BRIDGE_FAILURE_DISMISS_MS,
+    }

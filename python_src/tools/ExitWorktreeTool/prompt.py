@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/tools/ExitWorktreeTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt helper for ExitWorktreeTool."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def getExitWorktreeToolPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getExitWorktreeToolPrompt`."""
-    raise NotImplementedError(
-        "tools.ExitWorktreeTool.prompt.getExitWorktreeToolPrompt still needs business-logic migration"
-    )
+
+async def getExitWorktreeToolPrompt(*args: Any, **kwargs: Any) -> str:
+    return "Use exit_worktree when leaving a dry-run worktree context and returning to the main workspace context."
+
+
+__all__ = ["getExitWorktreeToolPrompt"]

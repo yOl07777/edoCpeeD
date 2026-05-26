@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/cli/ndjsonSafeStringify.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""JSON serialization safe for one-message-per-line transports."""
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
-async def ndjsonSafeStringify(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ndjsonSafeStringify`."""
-    raise NotImplementedError(
-        "cli.ndjsonSafeStringify.ndjsonSafeStringify still needs business-logic migration"
+
+def ndjsonSafeStringify(value: Any) -> str:
+    return (
+        json.dumps(value, ensure_ascii=False, separators=(",", ":"), default=str)
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
     )

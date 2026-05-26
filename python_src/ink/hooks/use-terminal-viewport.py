@@ -1,17 +1,9 @@
-"""
-Python migration draft for `src/ink/hooks/use-terminal-viewport.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
 async def useTerminalViewport(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useTerminalViewport`."""
-    raise NotImplementedError(
-        "ink.hooks.use-terminal-viewport.useTerminalViewport still needs business-logic migration"
-    )
+    rows = int(kwargs.get("rows", kwargs.get("height", 24)))
+    columns = int(kwargs.get("columns", kwargs.get("width", 80)))
+    scroll_top = int(kwargs.get("scrollTop", 0))
+    return {"provider": "deepseek", "rows": rows, "columns": columns, "scrollTop": scroll_top}

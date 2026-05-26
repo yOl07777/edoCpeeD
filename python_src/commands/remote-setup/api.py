@@ -1,42 +1,122 @@
-"""
-Python migration draft for `src/commands/remote-setup/api.ts`.
+"""Local DeepSeek-compatible helpers for the `/web-setup` command.
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
+The original TypeScript module posts a GitHub token to Claude's CCR backend and
+creates a hosted Claude environment.  The Python migration keeps the public
+shape but avoids Claude-only network calls.  It returns explicit local status
+objects that callers can render or test without leaking credentials.
 """
 
 from __future__ import annotations
 
-from typing import Any
+import os
+from dataclasses import dataclass
+from typing import Any, Literal, TypedDict
 
+
+ImportTokenErrorKind = Literal["not_signed_in", "invalid_token", "server", "network", "unsupported"]
+
+
+class ImportTokenError(TypedDict, total=False):
+    kind: ImportTokenErrorKind
+    status: int
+    message: str
+
+
+class ImportTokenResult(TypedDict):
+    github_username: str
+
+
+class ImportGithubTokenOk(TypedDict):
+    ok: Literal[True]
+    result: ImportTokenResult
+
+
+class ImportGithubTokenErr(TypedDict):
+    ok: Literal[False]
+    error: ImportTokenError
+
+
+@dataclass(frozen=True)
 class RedactedGithubToken:
-    """Migrated placeholder for TypeScript class `RedactedGithubToken`."""
+    """Wrap a GitHub token so ordinary stringification never exposes it."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+    _value: str
 
-async def createDefaultEnvironment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createDefaultEnvironment`."""
-    raise NotImplementedError(
-        "commands.remote-setup.api.createDefaultEnvironment still needs business-logic migration"
+    def reveal(self) -> str:
+        return self._value
+
+    def __str__(self) -> str:
+        return "[REDACTED:gh-token]"
+
+    def __repr__(self) -> str:
+        return "[REDACTED:gh-token]"
+
+    def toJSON(self) -> str:
+        return "[REDACTED:gh-token]"
+
+
+def _has_deepseek_credentials() -> bool:
+    return bool(
+        os.environ.get("DEEPSEEK_API_KEY")
+        or os.environ.get("DEEPSEEK_API_KEYS")
+        or os.environ.get("DEEPSEEK_ACCESS_TOKEN")
     )
 
-async def getCodeWebUrl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCodeWebUrl`."""
-    raise NotImplementedError(
-        "commands.remote-setup.api.getCodeWebUrl still needs business-logic migration"
-    )
 
-async def importGithubToken(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `importGithubToken`."""
-    raise NotImplementedError(
-        "commands.remote-setup.api.importGithubToken still needs business-logic migration"
-    )
+async def importGithubToken(
+    token: RedactedGithubToken,
+) -> ImportGithubTokenOk | ImportGithubTokenErr:
+    """Validate the call shape without uploading the token anywhere.
 
-async def isSignedIn(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isSignedIn`."""
-    raise NotImplementedError(
-        "commands.remote-setup.api.isSignedIn still needs business-logic migration"
-    )
+    DeepSeek's public API does not provide Claude's CCR GitHub-token import
+    endpoint.  Returning an explicit unsupported result is safer than silently
+    pretending that remote web setup succeeded.
+    """
+
+    raw = token.reveal().strip()
+    if not raw:
+        return {"ok": False, "error": {"kind": "invalid_token"}}
+    if not _has_deepseek_credentials():
+        return {"ok": False, "error": {"kind": "not_signed_in"}}
+    return {
+        "ok": False,
+        "error": {
+            "kind": "unsupported",
+            "message": "DeepSeek Code does not upload GitHub tokens from this local shim.",
+        },
+    }
+
+
+async def createDefaultEnvironment(*_: Any, **__: Any) -> bool:
+    """Best-effort hosted environment creation placeholder.
+
+    There is no DeepSeek equivalent of Claude's hosted code environment in this
+    migration layer, so the operation is a harmless no-op.
+    """
+
+    return False
+
+
+async def isSignedIn() -> bool:
+    """Return whether local DeepSeek credentials appear to be configured."""
+
+    return _has_deepseek_credentials()
+
+
+def getCodeWebUrl() -> str:
+    """Return the DeepSeek Code web destination used in local instructions."""
+
+    return os.environ.get("DEEPSEEK_CODE_WEB_URL", "https://chat.deepseek.com")
+
+
+__all__ = [
+    "ImportGithubTokenErr",
+    "ImportGithubTokenOk",
+    "ImportTokenError",
+    "ImportTokenResult",
+    "RedactedGithubToken",
+    "createDefaultEnvironment",
+    "getCodeWebUrl",
+    "importGithubToken",
+    "isSignedIn",
+]

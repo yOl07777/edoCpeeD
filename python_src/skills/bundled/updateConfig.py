@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/skills/bundled/updateConfig.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def registerUpdateConfigSkill(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerUpdateConfigSkill`."""
-    raise NotImplementedError(
-        "skills.bundled.updateConfig.registerUpdateConfigSkill still needs business-logic migration"
-    )
+from ._common import register_simple_skill
+
+
+async def registerUpdateConfigSkill(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return await register_simple_skill("update-config", "Update local DeepSeek Code configuration safely.", allowedTools=["Read", "Edit"])
+
+
+__all__ = ["registerUpdateConfigSkill"]

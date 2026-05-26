@@ -1,13 +1,14 @@
-"""
-Python migration draft for `src/tools/AgentTool/built-in/planAgent.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Built-in plan agent definition."""
 
 from __future__ import annotations
 
 from typing import Any
 
-PLAN_AGENT: Any = None
+PLAN_AGENT: dict[str, Any] = {
+    "agentType": "plan",
+    "name": "Plan",
+    "description": "Produces implementation plans for larger changes.",
+    "source": "built-in",
+}
+
+__all__ = ["PLAN_AGENT"]

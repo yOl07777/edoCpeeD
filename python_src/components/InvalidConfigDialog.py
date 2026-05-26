@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/InvalidConfigDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def showInvalidConfigDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `showInvalidConfigDialog`."""
-    raise NotImplementedError(
-        "components.InvalidConfigDialog.showInvalidConfigDialog still needs business-logic migration"
-    )
+    errors = normalize_items(option(args, kwargs, "errors", scalar_arg(args, [])))
+    return component_payload("invalid_config_dialog", visible=bool(errors) or bool(option(args, kwargs, "visible", True)), errors=errors, count=len(errors))
+
+
+__all__ = ["showInvalidConfigDialog"]

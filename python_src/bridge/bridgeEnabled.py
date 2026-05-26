@@ -1,59 +1,69 @@
-"""
-Python migration draft for `src/bridge/bridgeEnabled.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Feature gates for Python bridge/remote-control support."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
+import re
 
-async def checkBridgeMinVersion(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `checkBridgeMinVersion`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.checkBridgeMinVersion still needs business-logic migration"
-    )
 
-async def getBridgeDisabledReason(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeDisabledReason`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.getBridgeDisabledReason still needs business-logic migration"
-    )
+def _truthy(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
-async def getCcrAutoConnectDefault(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getCcrAutoConnectDefault`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.getCcrAutoConnectDefault still needs business-logic migration"
-    )
 
-async def isBridgeEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isBridgeEnabled`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.isBridgeEnabled still needs business-logic migration"
-    )
+def _flag(name: str, default: bool = False) -> bool:
+    return _truthy(os.getenv(name)) if os.getenv(name) is not None else default
 
-async def isBridgeEnabledBlocking(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isBridgeEnabledBlocking`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.isBridgeEnabledBlocking still needs business-logic migration"
-    )
 
-async def isCcrMirrorEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isCcrMirrorEnabled`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.isCcrMirrorEnabled still needs business-logic migration"
-    )
+def _version_tuple(version: str) -> tuple[int, ...]:
+    parts = re.findall(r"\d+", version)
+    return tuple(int(p) for p in parts[:3]) or (0,)
 
-async def isCseShimEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isCseShimEnabled`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.isCseShimEnabled still needs business-logic migration"
-    )
 
-async def isEnvLessBridgeEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isEnvLessBridgeEnabled`."""
-    raise NotImplementedError(
-        "bridge.bridgeEnabled.isEnvLessBridgeEnabled still needs business-logic migration"
-    )
+def isBridgeEnabled() -> bool:
+    """Return whether bridge mode is enabled for this Python runtime.
+
+    Anthropic OAuth entitlement checks do not apply to the DeepSeek migration,
+    so the gate is intentionally controlled by local environment/config only.
+    """
+
+    return _flag("DEEPSEEK_BRIDGE_MODE") or _flag("BRIDGE_MODE")
+
+
+async def isBridgeEnabledBlocking() -> bool:
+    return isBridgeEnabled()
+
+
+async def getBridgeDisabledReason() -> str | None:
+    if isBridgeEnabled():
+        return None
+    return "Remote Control bridge is disabled. Set DEEPSEEK_BRIDGE_MODE=1 to enable it."
+
+
+def isEnvLessBridgeEnabled() -> bool:
+    return _flag("DEEPSEEK_BRIDGE_ENVLESS", True)
+
+
+def isCseShimEnabled() -> bool:
+    return _flag("DEEPSEEK_CSE_SHIM", True)
+
+
+def checkBridgeMinVersion(
+    current_version: str | None = None,
+    min_version: str | None = None,
+) -> str | None:
+    current = current_version or os.getenv("DEEPCODE_VERSION", "0.0.0")
+    required = min_version or os.getenv("DEEPSEEK_BRIDGE_MIN_VERSION", "0.0.0")
+    if _version_tuple(current) < _version_tuple(required):
+        return (
+            f"Your version of DeepCode ({current}) is too old for Remote Control.\n"
+            f"Version {required} or higher is required."
+        )
+    return None
+
+
+def getCcrAutoConnectDefault() -> bool:
+    return _flag("DEEPSEEK_CCR_AUTO_CONNECT")
+
+
+def isCcrMirrorEnabled() -> bool:
+    return _flag("DEEPSEEK_CCR_MIRROR") or _flag("CLAUDE_CODE_CCR_MIRROR")

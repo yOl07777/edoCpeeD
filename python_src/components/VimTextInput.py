@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/components/VimTextInput.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.VimTextInput still needs business-logic migration"
-    )
+from python_src.components._shared import component_payload, option, safe_int, scalar_arg
+
+
+async def VimTextInput(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    value = str(option(args, kwargs, "value", scalar_arg(args, "")) or "")
+    mode = str(option(args, kwargs, "mode", "insert") or "insert")
+    cursor = max(0, min(safe_int(option(args, kwargs, "cursor", len(value)), len(value)), len(value)))
+    return component_payload("vim_text_input", value=value, mode=mode, cursor=cursor, normalMode=mode == "normal")
+
+
+_module_migration_placeholder = VimTextInput
+
+
+__all__ = ["VimTextInput"]

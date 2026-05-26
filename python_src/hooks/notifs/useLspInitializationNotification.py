@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/notifs/useLspInitializationNotification.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, notification, pick, truthy
+
+
 async def useLspInitializationNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useLspInitializationNotification`."""
-    raise NotImplementedError(
-        "hooks.notifs.useLspInitializationNotification.useLspInitializationNotification still needs business-logic migration"
+    options = first_mapping(*args, kwargs)
+    initializing = truthy(pick(options, "initializing", default=False))
+    language = str(pick(options, "language", default="language server"))
+    return notification(
+        visible=initializing,
+        title="LSP initializing",
+        message=f"Starting {language} support for DeepSeek Code.",
+        language=language,
     )

@@ -1,29 +1,53 @@
-"""
-Python migration draft for `src/services/api/logging.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local API logging for DeepSeek-compatible requests."""
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
-async def logAPIError(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `logAPIError`."""
-    raise NotImplementedError(
-        "services.api.logging.logAPIError still needs business-logic migration"
-    )
+from .errorUtils import formatAPIError
 
-async def logAPIQuery(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `logAPIQuery`."""
-    raise NotImplementedError(
-        "services.api.logging.logAPIQuery still needs business-logic migration"
-    )
+_API_LOG: list[dict[str, Any]] = []
 
-async def logAPISuccessAndDuration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `logAPISuccessAndDuration`."""
-    raise NotImplementedError(
-        "services.api.logging.logAPISuccessAndDuration still needs business-logic migration"
-    )
+
+async def logAPIQuery(model: str | None = None, endpoint: str | None = None, **metadata: Any) -> dict[str, Any]:
+    event = {
+        "type": "query",
+        "model": model,
+        "endpoint": endpoint,
+        "metadata": metadata,
+        "timestamp": time.time(),
+    }
+    _API_LOG.append(event)
+    return event
+
+
+async def logAPIError(error: Any, **metadata: Any) -> dict[str, Any]:
+    event = {
+        "type": "error",
+        "error": await formatAPIError(error),
+        "metadata": metadata,
+        "timestamp": time.time(),
+    }
+    _API_LOG.append(event)
+    return event
+
+
+async def logAPISuccessAndDuration(duration_ms: float | int, **metadata: Any) -> dict[str, Any]:
+    event = {
+        "type": "success",
+        "duration_ms": float(duration_ms),
+        "metadata": metadata,
+        "timestamp": time.time(),
+    }
+    _API_LOG.append(event)
+    return event
+
+
+async def getAPILog() -> list[dict[str, Any]]:
+    return list(_API_LOG)
+
+
+async def clearAPILog() -> None:
+    _API_LOG.clear()
+

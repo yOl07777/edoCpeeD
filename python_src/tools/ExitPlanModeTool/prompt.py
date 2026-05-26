@@ -8,6 +8,6 @@ Claude/Anthropic model calls should be routed through `deepseek_code`.
 
 from __future__ import annotations
 
-from typing import Any
+EXIT_PLAN_MODE_V2_TOOL_PROMPT = "Use exit_plan_mode when the plan is accepted or the session should return to implementation mode."
 
-EXIT_PLAN_MODE_V2_TOOL_PROMPT: Any = None
+__all__ = ["EXIT_PLAN_MODE_V2_TOOL_PROMPT"]

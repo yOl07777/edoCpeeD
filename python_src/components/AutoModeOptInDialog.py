@@ -1,19 +1,21 @@
-"""
-Python migration draft for `src/components/AutoModeOptInDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-AUTO_MODE_DESCRIPTION: Any = None
+from python_src.components._shared import component_payload, normalize_items, option
+
+
+AUTO_MODE_DESCRIPTION = "Let DeepSeek Code continue low-risk local steps while preserving tool approval boundaries."
+
 
 async def AutoModeOptInDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AutoModeOptInDialog`."""
-    raise NotImplementedError(
-        "components.AutoModeOptInDialog.AutoModeOptInDialog still needs business-logic migration"
+    rules = normalize_items(option(args, kwargs, "rules", ["Ask before file writes", "Ask before shell commands", "Never expose API keys"]))
+    return component_payload(
+        "auto_mode_opt_in_dialog",
+        description=AUTO_MODE_DESCRIPTION,
+        accepted=bool(option(args, kwargs, "accepted", False)),
+        rules=rules,
     )
+
+
+__all__ = ["AUTO_MODE_DESCRIPTION", "AutoModeOptInDialog"]

@@ -1,16 +1,19 @@
-"""
-Python migration draft for `src/ink/components/Spacer.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.components.Spacer still needs business-logic migration"
-    )
+from ._nodes import render_node
+
+
+def Spacer(*args: Any, **props: Any) -> dict[str, Any]:
+    size = props.pop("size", args[0] if args else 1)
+    axis = props.pop("axis", "vertical")
+    try:
+        normalized_size = max(0, int(size))
+    except (TypeError, ValueError):
+        normalized_size = 1
+    return render_node("spacer", size=normalized_size, axis=axis, style=props)
+
+
+default = Spacer
+_module_migration_placeholder = Spacer

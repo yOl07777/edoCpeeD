@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/components/permissions/BashPermissionRequest/BashPermissionRequest.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def BashPermissionRequest(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `BashPermissionRequest`."""
-    raise NotImplementedError(
-        "components.permissions.BashPermissionRequest.BashPermissionRequest.BashPermissionRequest still needs business-logic migration"
+from python_src.components.permissions._shared import permission_request
+
+
+async def BashPermissionRequest(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    request = permission_request(
+        "BashPermissionRequest",
+        *args,
+        tool_name="run_shell",
+        action="run a shell command",
+        kind="shell",
+        **kwargs,
     )
+    request["command"] = kwargs.get("command") or kwargs.get("cmd")
+    return request
+
+
+__all__ = ["BashPermissionRequest"]

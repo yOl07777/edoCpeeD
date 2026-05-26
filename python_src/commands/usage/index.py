@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/commands/usage/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/usage`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .usage import call, formatUsageSummary, getUsageSummary
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.usage.index still needs business-logic migration"
-    )
+
+usage = {
+    "type": "local-jsx",
+    "name": "usage",
+    "description": "Show DeepSeek usage for this session",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = usage
+
+__all__ = ["call", "default", "formatUsageSummary", "getUsageSummary", "usage"]

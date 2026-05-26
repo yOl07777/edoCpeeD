@@ -1,35 +1,28 @@
-"""
-Python migration draft for `src/bridge/bridgeConfig.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Bridge auth and base URL resolution for the DeepSeek Python runtime."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
 
-async def getBridgeAccessToken(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeAccessToken`."""
-    raise NotImplementedError(
-        "bridge.bridgeConfig.getBridgeAccessToken still needs business-logic migration"
+
+def getBridgeTokenOverride() -> str | None:
+    return (
+        os.getenv("DEEPSEEK_BRIDGE_OAUTH_TOKEN")
+        or os.getenv("DEEPSEEK_API_KEY")
+        or os.getenv("DEEPSEEK_API_KEYS", "").split(",", 1)[0].strip()
+        or None
     )
 
-async def getBridgeBaseUrl(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeBaseUrl`."""
-    raise NotImplementedError(
-        "bridge.bridgeConfig.getBridgeBaseUrl still needs business-logic migration"
-    )
 
-async def getBridgeBaseUrlOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeBaseUrlOverride`."""
-    raise NotImplementedError(
-        "bridge.bridgeConfig.getBridgeBaseUrlOverride still needs business-logic migration"
-    )
+def getBridgeBaseUrlOverride() -> str | None:
+    return os.getenv("DEEPSEEK_BRIDGE_BASE_URL") or os.getenv("DEEPSEEK_ENDPOINT")
 
-async def getBridgeTokenOverride(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getBridgeTokenOverride`."""
-    raise NotImplementedError(
-        "bridge.bridgeConfig.getBridgeTokenOverride still needs business-logic migration"
-    )
+
+def getBridgeAccessToken() -> str | None:
+    return getBridgeTokenOverride()
+
+
+def getBridgeBaseUrl() -> str:
+    endpoints = os.getenv("DEEPSEEK_ENDPOINTS", "")
+    first_endpoint = endpoints.split(",", 1)[0].strip() if endpoints else ""
+    return (getBridgeBaseUrlOverride() or first_endpoint or "https://api.deepseek.com/v1").rstrip("/")

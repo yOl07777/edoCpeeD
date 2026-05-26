@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/Spinner/useStalledAnimation.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useStalledAnimation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useStalledAnimation`."""
-    raise NotImplementedError(
-        "components.Spinner.useStalledAnimation.useStalledAnimation still needs business-logic migration"
-    )
+
+async def useStalledAnimation(*_args: Any, **kwargs: Any) -> dict[str, Any]:
+    elapsed_ms = int(kwargs.get("elapsedMs", kwargs.get("elapsed_ms", 0)) or 0)
+    threshold_ms = int(kwargs.get("thresholdMs", kwargs.get("threshold_ms", 30000)) or 30000)
+    stalled = elapsed_ms >= threshold_ms
+    return {
+        "type": "stalled_animation",
+        "provider": "deepseek",
+        "elapsedMs": elapsed_ms,
+        "thresholdMs": threshold_ms,
+        "stalled": stalled,
+        "message": "Still working" if stalled else "Working",
+    }
+
+
+__all__ = ["useStalledAnimation"]

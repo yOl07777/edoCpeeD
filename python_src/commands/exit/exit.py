@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/commands/exit/exit.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Implementation for `/exit` and `/quit`."""
 
 from __future__ import annotations
 
-from typing import Any
+import random
+from typing import Any, Callable
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.exit.exit.call still needs business-logic migration"
-    )
+GOODBYE_MESSAGES = ("Goodbye!", "See ya!", "Bye!", "Catch you later!")
+
+
+def getRandomGoodbyeMessage(seed: int | None = None) -> str:
+    rng = random.Random(seed) if seed is not None else random
+    return rng.choice(GOODBYE_MESSAGES)
+
+
+async def call(onDone: Callable[..., Any] | None = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    message = str(kwargs.get("message") or getRandomGoodbyeMessage(kwargs.get("seed")))
+    if onDone:
+        onDone(message)
+    return {"ok": True, "exit": True, "message": message, "code": int(kwargs.get("code", 0))}

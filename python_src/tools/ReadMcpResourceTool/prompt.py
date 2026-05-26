@@ -1,14 +1,8 @@
-"""
-Python migration draft for `src/tools/ReadMcpResourceTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for ReadMcpResourceTool."""
 
 from __future__ import annotations
 
-from typing import Any
+DESCRIPTION = "Read a locally registered MCP-style resource by URI."
+PROMPT = "Use this after listing resources, passing the exact URI returned by list_mcp_resources."
 
-DESCRIPTION: Any = None
-PROMPT: Any = None
+__all__ = ["DESCRIPTION", "PROMPT"]

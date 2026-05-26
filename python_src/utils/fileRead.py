@@ -1,35 +1,40 @@
-"""
-Python migration draft for `src/utils/fileRead.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import Literal
 
-async def detectEncodingForResolvedPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `detectEncodingForResolvedPath`."""
-    raise NotImplementedError(
-        "utils.fileRead.detectEncodingForResolvedPath still needs business-logic migration"
-    )
 
-async def detectLineEndingsForString(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `detectLineEndingsForString`."""
-    raise NotImplementedError(
-        "utils.fileRead.detectLineEndingsForString still needs business-logic migration"
-    )
+LineEndingType = Literal["CRLF", "LF"]
 
-async def readFileSync(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `readFileSync`."""
-    raise NotImplementedError(
-        "utils.fileRead.readFileSync still needs business-logic migration"
-    )
 
-async def readFileSyncWithMetadata(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `readFileSyncWithMetadata`."""
-    raise NotImplementedError(
-        "utils.fileRead.readFileSyncWithMetadata still needs business-logic migration"
-    )
+def detectEncodingForResolvedPath(resolvedPath: str) -> str:
+    try:
+        head = Path(resolvedPath).read_bytes()[:4096]
+    except FileNotFoundError:
+        return "utf-8"
+    if head.startswith(b"\xff\xfe"):
+        return "utf-16-le"
+    if head.startswith(b"\xef\xbb\xbf"):
+        return "utf-8-sig"
+    return "utf-8"
+
+
+def detectLineEndingsForString(content: str) -> LineEndingType:
+    crlf = content.count("\r\n")
+    lf = content.count("\n") - crlf
+    return "CRLF" if crlf > lf else "LF"
+
+
+def readFileSyncWithMetadata(filePath: str) -> dict[str, str]:
+    path = Path(filePath)
+    encoding = detectEncodingForResolvedPath(str(path))
+    raw = path.read_text(encoding=encoding, errors="replace")
+    return {
+        "content": raw.replace("\r\n", "\n"),
+        "encoding": encoding,
+        "lineEndings": detectLineEndingsForString(raw[:4096]),
+    }
+
+
+def readFileSync(filePath: str) -> str:
+    return readFileSyncWithMetadata(filePath)["content"]

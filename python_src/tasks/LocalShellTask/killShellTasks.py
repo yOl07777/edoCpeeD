@@ -1,23 +1,22 @@
-"""
-Python migration draft for `src/tasks/LocalShellTask/killShellTasks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def killShellTasksForAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `killShellTasksForAgent`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.killShellTasks.killShellTasksForAgent still needs business-logic migration"
-    )
+from .._state import stop_task, tasks_by_kind
 
-async def killTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `killTask`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.killShellTasks.killTask still needs business-logic migration"
-    )
+
+async def killTask(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    return stop_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None), str(kwargs.get("reason") or "killed"))
+
+
+async def killShellTasksForAgent(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    agent_id = str(kwargs.get("agentId") or (args[0] if args else ""))
+    killed = 0
+    for task in tasks_by_kind("local-shell"):
+        if not agent_id or str(task.get("agentId")) == agent_id:
+            stop_task(task, "killed")
+            killed += 1
+    return {"killed": killed, "agentId": agent_id or None}
+
+
+__all__ = ["killShellTasksForAgent", "killTask"]

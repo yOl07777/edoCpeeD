@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/hooks/useAwaySummary.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useAwaySummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useAwaySummary`."""
-    raise NotImplementedError(
-        "hooks.useAwaySummary.useAwaySummary still needs business-logic migration"
-    )
+
+async def useAwaySummary(messages: list[dict[str, Any]] | None = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    rows = list(kwargs.get("messages", messages or []))
+    since = kwargs.get("since")
+    recent = rows[int(since) :] if isinstance(since, int) else rows
+    assistant = [item for item in recent if item.get("role") == "assistant"]
+    tools = [item for item in recent if item.get("tool_calls") or item.get("toolName")]
+    return {
+        "provider": "deepseek",
+        "messageCount": len(recent),
+        "assistantCount": len(assistant),
+        "toolCount": len(tools),
+        "summary": f"{len(recent)} message(s), {len(tools)} tool event(s) while away.",
+    }
+
+
+__all__ = ["useAwaySummary"]

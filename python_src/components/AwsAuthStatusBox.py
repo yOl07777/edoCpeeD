@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/AwsAuthStatusBox.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option
+
+
 async def AwsAuthStatusBox(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AwsAuthStatusBox`."""
-    raise NotImplementedError(
-        "components.AwsAuthStatusBox.AwsAuthStatusBox still needs business-logic migration"
-    )
+    profile = str(option(args, kwargs, "profile", "default"))
+    region = str(option(args, kwargs, "region", option(args, kwargs, "awsRegion", "")))
+    authenticated = bool(option(args, kwargs, "authenticated", option(args, kwargs, "signedIn", False)))
+    return component_payload("aws_auth_status_box", profile=profile, region=region, authenticated=authenticated)
+
+
+__all__ = ["AwsAuthStatusBox"]

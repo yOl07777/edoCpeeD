@@ -1,49 +1,125 @@
-"""
-Python migration draft for `src/utils/frontmatterParser.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Frontmatter parser for markdown configuration files."""
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
-FRONTMATTER_REGEX: Any = None
+from .yaml import parseYaml
 
-async def coerceDescriptionToString(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `coerceDescriptionToString`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.coerceDescriptionToString still needs business-logic migration"
-    )
+FRONTMATTER_REGEX = re.compile(r"^---\s*\n([\s\S]*?)---\s*\n?")
+YAML_SPECIAL_CHARS = re.compile(r"[{}\[\]*&#!|>%@`]|: ")
+FRONTMATTER_SHELLS = {"bash", "powershell"}
 
-async def parseBooleanFrontmatter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `parseBooleanFrontmatter`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.parseBooleanFrontmatter still needs business-logic migration"
-    )
 
-async def parseFrontmatter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `parseFrontmatter`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.parseFrontmatter still needs business-logic migration"
-    )
+def _quote_problematic_values(frontmatter_text: str) -> str:
+    lines: list[str] = []
+    for line in frontmatter_text.splitlines():
+        match = re.match(r"^([a-zA-Z_-]+):\s+(.+)$", line)
+        if not match:
+            lines.append(line)
+            continue
+        key, value = match.groups()
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+            lines.append(line)
+        elif YAML_SPECIAL_CHARS.search(value):
+            escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+            lines.append(f'{key}: "{escaped}"')
+        else:
+            lines.append(line)
+    return "\n".join(lines)
 
-async def parsePositiveIntFromFrontmatter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `parsePositiveIntFromFrontmatter`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.parsePositiveIntFromFrontmatter still needs business-logic migration"
-    )
 
-async def parseShellFrontmatter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `parseShellFrontmatter`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.parseShellFrontmatter still needs business-logic migration"
-    )
+def parseFrontmatter(markdown: str, sourcePath: str | None = None) -> dict[str, Any]:
+    match = FRONTMATTER_REGEX.match(markdown)
+    if not match:
+        return {"frontmatter": {}, "content": markdown}
+    frontmatter_text = match.group(1) or ""
+    content = markdown[match.end() :]
+    frontmatter: dict[str, Any] = {}
+    for candidate in (frontmatter_text, _quote_problematic_values(frontmatter_text)):
+        try:
+            parsed = parseYaml(candidate)
+            if isinstance(parsed, dict):
+                frontmatter = parsed
+                break
+        except Exception:
+            continue
+    return {"frontmatter": frontmatter, "content": content}
 
-async def splitPathInFrontmatter(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `splitPathInFrontmatter`."""
-    raise NotImplementedError(
-        "utils.frontmatterParser.splitPathInFrontmatter still needs business-logic migration"
-    )
+
+def _expand_braces(pattern: str) -> list[str]:
+    match = re.match(r"^([^{]*)\{([^}]+)\}(.*)$", pattern)
+    if not match:
+        return [pattern]
+    prefix, alternatives, suffix = match.groups()
+    expanded: list[str] = []
+    for part in alternatives.split(","):
+        expanded.extend(_expand_braces(prefix + part.strip() + suffix))
+    return expanded
+
+
+def splitPathInFrontmatter(input: str | list[str] | Any) -> list[str]:
+    if isinstance(input, list):
+        result: list[str] = []
+        for item in input:
+            result.extend(splitPathInFrontmatter(item))
+        return result
+    if not isinstance(input, str):
+        return []
+    parts: list[str] = []
+    current = ""
+    brace_depth = 0
+    for char in input:
+        if char == "{":
+            brace_depth += 1
+            current += char
+        elif char == "}":
+            brace_depth -= 1
+            current += char
+        elif char == "," and brace_depth == 0:
+            if current.strip():
+                parts.append(current.strip())
+            current = ""
+        else:
+            current += char
+    if current.strip():
+        parts.append(current.strip())
+    result: list[str] = []
+    for part in parts:
+        result.extend(_expand_braces(part))
+    return [part for part in result if part]
+
+
+def parsePositiveIntFromFrontmatter(value: Any) -> int | None:
+    if value is None:
+        return None
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed > 0 else None
+
+
+def coerceDescriptionToString(value: Any, componentName: str | None = None, pluginName: str | None = None) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        stripped = value.strip()
+        return stripped or None
+    if isinstance(value, (int, float, bool)):
+        return str(value)
+    return None
+
+
+def parseBooleanFrontmatter(value: Any) -> bool:
+    return value is True or value == "true"
+
+
+def parseShellFrontmatter(value: Any, source: str = "") -> str | None:
+    if value is None:
+        return None
+    normalized = str(value).strip().lower()
+    if not normalized:
+        return None
+    return normalized if normalized in FRONTMATTER_SHELLS else None

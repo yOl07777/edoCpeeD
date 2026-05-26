@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/components/LanguagePicker.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def LanguagePicker(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `LanguagePicker`."""
-    raise NotImplementedError(
-        "components.LanguagePicker.LanguagePicker still needs business-logic migration"
-    )
+    selected = str(option(args, kwargs, "selected", option(args, kwargs, "language", scalar_arg(args, "python"))))
+    languages = normalize_items(option(args, kwargs, "languages", ["python", "typescript", "markdown", "json"]), text_key="name")
+    for language in languages:
+        language["selected"] = language["name"] == selected
+    return component_payload("language_picker", selected=selected, languages=languages)
+
+
+__all__ = ["LanguagePicker"]

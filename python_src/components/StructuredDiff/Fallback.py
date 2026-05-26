@@ -1,41 +1,73 @@
-"""
-Python migration draft for `src/components/StructuredDiff/Fallback.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import difflib
 from typing import Any
 
-async def StructuredDiffFallback(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `StructuredDiffFallback`."""
-    raise NotImplementedError(
-        "components.StructuredDiff.Fallback.StructuredDiffFallback still needs business-logic migration"
-    )
 
-async def calculateWordDiffs(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `calculateWordDiffs`."""
-    raise NotImplementedError(
-        "components.StructuredDiff.Fallback.calculateWordDiffs still needs business-logic migration"
-    )
+async def transformLinesToObjects(lines: list[str] | str, *_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+    if isinstance(lines, str):
+        lines = lines.splitlines()
+    objects: list[dict[str, Any]] = []
+    old_line = 0
+    new_line = 0
+    for line in lines:
+        kind = "context"
+        if line.startswith("+") and not line.startswith("+++"):
+            kind = "add"
+            new_line += 1
+            number = new_line
+        elif line.startswith("-") and not line.startswith("---"):
+            kind = "remove"
+            old_line += 1
+            number = old_line
+        else:
+            if not line.startswith("@@") and not line.startswith("---") and not line.startswith("+++"):
+                old_line += 1
+                new_line += 1
+            number = new_line or old_line
+        objects.append({"type": kind, "line": line, "number": number})
+    return objects
 
-async def numberDiffLines(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `numberDiffLines`."""
-    raise NotImplementedError(
-        "components.StructuredDiff.Fallback.numberDiffLines still needs business-logic migration"
-    )
 
-async def processAdjacentLines(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `processAdjacentLines`."""
-    raise NotImplementedError(
-        "components.StructuredDiff.Fallback.processAdjacentLines still needs business-logic migration"
-    )
+async def numberDiffLines(lines: list[str] | str, *_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+    return await transformLinesToObjects(lines)
 
-async def transformLinesToObjects(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `transformLinesToObjects`."""
-    raise NotImplementedError(
-        "components.StructuredDiff.Fallback.transformLinesToObjects still needs business-logic migration"
-    )
+
+async def calculateWordDiffs(old_text: str = "", new_text: str = "", *_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+    diff = list(difflib.ndiff(str(old_text).split(), str(new_text).split()))
+    return [{"op": item[:2].strip() or "=", "text": item[2:]} for item in diff if not item.startswith("? ")]
+
+
+async def processAdjacentLines(lines: list[str] | str, *_args: Any, **_kwargs: Any) -> list[str]:
+    if isinstance(lines, str):
+        return lines.splitlines()
+    return list(lines or [])
+
+
+async def StructuredDiffFallback(diff: str = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    if not diff and ("old_text" in kwargs or "new_text" in kwargs):
+        diff = "\n".join(
+            difflib.unified_diff(
+                str(kwargs.get("old_text") or "").splitlines(),
+                str(kwargs.get("new_text") or "").splitlines(),
+                fromfile=kwargs.get("fromfile", "before"),
+                tofile=kwargs.get("tofile", "after"),
+                lineterm="",
+            )
+        )
+    lines = diff.splitlines()
+    return {
+        "type": "structured_diff_fallback",
+        "provider": "deepseek",
+        "diff": diff,
+        "lines": await transformLinesToObjects(lines),
+    }
+
+
+__all__ = [
+    "StructuredDiffFallback",
+    "calculateWordDiffs",
+    "numberDiffLines",
+    "processAdjacentLines",
+    "transformLinesToObjects",
+]

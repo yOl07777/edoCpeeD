@@ -1,16 +1,13 @@
-"""
-Python migration draft for `src/commands/plan/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Plan command metadata."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.plan.index still needs business-logic migration"
-    )
+default = {
+    "type": "local-jsx",
+    "name": "plan",
+    "description": "Enable plan mode or view the current session plan",
+    "argumentHint": "[open|<description>]",
+    "load": lambda: importlib.import_module("python_src.commands.plan.plan"),
+}

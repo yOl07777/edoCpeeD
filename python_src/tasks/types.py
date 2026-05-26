@@ -1,17 +1,11 @@
-"""
-Python migration draft for `src/tasks/types.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def isBackgroundTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isBackgroundTask`."""
-    raise NotImplementedError(
-        "tasks.types.isBackgroundTask still needs business-logic migration"
-    )
+
+async def isBackgroundTask(*args: Any, **kwargs: Any) -> bool:
+    task = kwargs.get("task") or (args[0] if args else {})
+    return bool(isinstance(task, dict) and (task.get("background") or task.get("status") in {"background", "running"} and task.get("foreground") is False))
+
+
+__all__ = ["isBackgroundTask"]

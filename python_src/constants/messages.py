@@ -1,13 +1,7 @@
-"""
-Python migration draft for `src/constants/messages.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
 
-NO_CONTENT_MESSAGE: Any = None
+NO_CONTENT_MESSAGE = "(无内容)"
+
+
+__all__ = ["NO_CONTENT_MESSAGE"]

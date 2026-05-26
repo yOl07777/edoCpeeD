@@ -1,35 +1,30 @@
-"""
-Python migration draft for `src/components/messages/ShutdownMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def ShutdownRejectedDisplay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShutdownRejectedDisplay`."""
-    raise NotImplementedError(
-        "components.messages.ShutdownMessage.ShutdownRejectedDisplay still needs business-logic migration"
-    )
+from python_src.components.messages._shared import message_payload
 
-async def ShutdownRequestDisplay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ShutdownRequestDisplay`."""
-    raise NotImplementedError(
-        "components.messages.ShutdownMessage.ShutdownRequestDisplay still needs business-logic migration"
-    )
 
 async def getShutdownMessageSummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getShutdownMessageSummary`."""
-    raise NotImplementedError(
-        "components.messages.ShutdownMessage.getShutdownMessageSummary still needs business-logic migration"
-    )
+    reason = str(kwargs.get("reason") or (args[0] if args else "Session ended."))
+    accepted = bool(kwargs.get("accepted", True))
+    return f"Shutdown {'accepted' if accepted else 'rejected'}: {reason}"
+
+
+async def ShutdownRequestDisplay(*args: Any, **kwargs: Any) -> Any:
+    reason = str(kwargs.get("reason") or (args[0] if args else "Ready to exit."))
+    return message_payload("shutdown_request_display", reason=reason, actions=["accept", "reject"])
+
+
+async def ShutdownRejectedDisplay(*args: Any, **kwargs: Any) -> Any:
+    reason = str(kwargs.get("reason") or (args[0] if args else "Shutdown rejected."))
+    return message_payload("shutdown_rejected_display", reason=reason, accepted=False)
+
 
 async def tryRenderShutdownMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `tryRenderShutdownMessage`."""
-    raise NotImplementedError(
-        "components.messages.ShutdownMessage.tryRenderShutdownMessage still needs business-logic migration"
-    )
+    accepted = bool(kwargs.get("accepted", True))
+    reason = str(kwargs.get("reason") or (args[0] if args else "Session ended."))
+    return message_payload("shutdown_message", accepted=accepted, reason=reason, summary=await getShutdownMessageSummary(reason, accepted=accepted))
+
+
+__all__ = ["ShutdownRejectedDisplay", "ShutdownRequestDisplay", "getShutdownMessageSummary", "tryRenderShutdownMessage"]

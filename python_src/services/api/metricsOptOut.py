@@ -1,19 +1,44 @@
-"""
-Python migration draft for `src/services/api/metricsOptOut.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Metrics opt-out helper."""
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-_clearMetricsEnabledCacheForTesting: Any = None
+_CACHE: bool | None = None
 
-async def checkMetricsEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `checkMetricsEnabled`."""
-    raise NotImplementedError(
-        "services.api.metricsOptOut.checkMetricsEnabled still needs business-logic migration"
+
+def _truthy(value: Any) -> bool:
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+async def _clearMetricsEnabledCacheForTesting() -> None:
+    global _CACHE
+    _CACHE = None
+
+
+async def checkMetricsEnabled(config: dict[str, Any] | None = None) -> bool:
+    """Return false when metrics are disabled by env/config."""
+
+    global _CACHE
+    if config:
+        for key in ("metricsEnabled", "telemetryEnabled"):
+            if key in config:
+                return bool(config[key])
+        for key in ("metricsDisabled", "telemetryDisabled"):
+            if key in config:
+                return not bool(config[key])
+    if _CACHE is not None:
+        return _CACHE
+    disabled = any(
+        _truthy(os.getenv(name))
+        for name in (
+            "DEEPSEEK_DISABLE_METRICS",
+            "DEEPSEEK_DISABLE_ANALYTICS",
+            "DISABLE_METRICS",
+            "DO_NOT_TRACK",
+        )
     )
+    _CACHE = not disabled
+    return _CACHE
+

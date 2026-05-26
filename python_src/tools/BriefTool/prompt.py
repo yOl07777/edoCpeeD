@@ -8,10 +8,19 @@ Claude/Anthropic model calls should be routed through `deepseek_code`.
 
 from __future__ import annotations
 
-from typing import Any
+BRIEF_TOOL_NAME = "brief"
+LEGACY_BRIEF_TOOL_NAME = "task_brief"
+DESCRIPTION = "Create a local structured brief with optional workspace attachments."
+BRIEF_PROACTIVE_SECTION = "Use brief when the user wants a concise handoff summary with attached local files."
+BRIEF_TOOL_PROMPT = (
+    "Prepare a concise brief. Include title, body, and any workspace-relative attachment paths. "
+    "This Python migration stores metadata locally and does not upload files."
+)
 
-BRIEF_PROACTIVE_SECTION: Any = None
-BRIEF_TOOL_NAME: Any = None
-BRIEF_TOOL_PROMPT: Any = None
-DESCRIPTION: Any = None
-LEGACY_BRIEF_TOOL_NAME: Any = None
+__all__ = [
+    "BRIEF_PROACTIVE_SECTION",
+    "BRIEF_TOOL_NAME",
+    "BRIEF_TOOL_PROMPT",
+    "DESCRIPTION",
+    "LEGACY_BRIEF_TOOL_NAME",
+]

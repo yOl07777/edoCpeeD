@@ -1,44 +1,45 @@
-"""
-Python migration draft for `src/services/api/grove.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local Grove notice/settings compatibility layer."""
 
 from __future__ import annotations
 
 from typing import Any
 
-getGroveNoticeConfig: Any = None
-getGroveSettings: Any = None
+_SETTINGS: dict[str, Any] = {"enabled": False, "noticeViewed": False}
 
-async def calculateShouldShowGrove(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `calculateShouldShowGrove`."""
-    raise NotImplementedError(
-        "services.api.grove.calculateShouldShowGrove still needs business-logic migration"
-    )
 
-async def checkGroveForNonInteractive(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `checkGroveForNonInteractive`."""
-    raise NotImplementedError(
-        "services.api.grove.checkGroveForNonInteractive still needs business-logic migration"
-    )
+async def getGroveSettings() -> dict[str, Any]:
+    return dict(_SETTINGS)
 
-async def isQualifiedForGrove(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isQualifiedForGrove`."""
-    raise NotImplementedError(
-        "services.api.grove.isQualifiedForGrove still needs business-logic migration"
-    )
 
-async def markGroveNoticeViewed(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markGroveNoticeViewed`."""
-    raise NotImplementedError(
-        "services.api.grove.markGroveNoticeViewed still needs business-logic migration"
-    )
+async def getGroveNoticeConfig() -> dict[str, Any]:
+    return {"enabled": bool(_SETTINGS.get("enabled")), "message": _SETTINGS.get("message", "")}
 
-async def updateGroveSettings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `updateGroveSettings`."""
-    raise NotImplementedError(
-        "services.api.grove.updateGroveSettings still needs business-logic migration"
-    )
+
+async def updateGroveSettings(settings: dict[str, Any]) -> dict[str, Any]:
+    _SETTINGS.update(settings)
+    return await getGroveSettings()
+
+
+async def markGroveNoticeViewed() -> dict[str, Any]:
+    _SETTINGS["noticeViewed"] = True
+    return await getGroveSettings()
+
+
+async def isQualifiedForGrove(user: dict[str, Any] | None = None, settings: dict[str, Any] | None = None) -> bool:
+    merged = {**_SETTINGS, **(settings or {})}
+    if not merged.get("enabled"):
+        return False
+    if user and user.get("disabled"):
+        return False
+    return True
+
+
+async def calculateShouldShowGrove(user: dict[str, Any] | None = None, settings: dict[str, Any] | None = None) -> bool:
+    merged = {**_SETTINGS, **(settings or {})}
+    return await isQualifiedForGrove(user, merged) and not bool(merged.get("noticeViewed"))
+
+
+async def checkGroveForNonInteractive(user: dict[str, Any] | None = None) -> dict[str, Any]:
+    should_show = await calculateShouldShowGrove(user)
+    return {"shouldShow": should_show, "settings": await getGroveSettings()}
+

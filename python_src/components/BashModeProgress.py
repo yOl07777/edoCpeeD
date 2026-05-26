@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/BashModeProgress.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, scalar_arg
+
+
 async def BashModeProgress(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `BashModeProgress`."""
-    raise NotImplementedError(
-        "components.BashModeProgress.BashModeProgress still needs business-logic migration"
-    )
+    command = str(option(args, kwargs, "command", scalar_arg(args, "")))
+    status = str(option(args, kwargs, "status", "running"))
+    return component_payload("bash_mode_progress", command=command, status=status, active=status in {"running", "queued"})
+
+
+__all__ = ["BashModeProgress"]

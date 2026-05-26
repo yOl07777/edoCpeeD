@@ -1,23 +1,24 @@
-"""
-Python migration draft for `src/components/LogoV2/Feed.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.LogoV2._shared import logo_payload, normalize_feed_items, option
+
+
 async def Feed(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Feed`."""
-    raise NotImplementedError(
-        "components.LogoV2.Feed.Feed still needs business-logic migration"
-    )
+    items = option(args, kwargs, "items", args[0] if args else None)
+    rows = normalize_feed_items(items)
+    width = await calculateFeedWidth(rows)
+    return logo_payload("logo_feed", items=rows, count=len(rows), width=width)
+
 
 async def calculateFeedWidth(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `calculateFeedWidth`."""
-    raise NotImplementedError(
-        "components.LogoV2.Feed.calculateFeedWidth still needs business-logic migration"
-    )
+    items = args[0] if args else kwargs.get("items")
+    rows = normalize_feed_items(items)
+    minimum = int(kwargs.get("minimum", 16))
+    maximum = int(kwargs.get("maximum", 80))
+    width = max([len(row["text"]) for row in rows] + [minimum])
+    return min(width, maximum)
+
+
+__all__ = ["Feed", "calculateFeedWidth"]

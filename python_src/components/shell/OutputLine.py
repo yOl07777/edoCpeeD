@@ -1,41 +1,48 @@
-"""
-Python migration draft for `src/components/shell/OutputLine.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 
-async def OutputLine(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `OutputLine`."""
-    raise NotImplementedError(
-        "components.shell.OutputLine.OutputLine still needs business-logic migration"
-    )
+from python_src.components.shell._shared import shell_payload
 
-async def linkifyUrlsInText(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `linkifyUrlsInText`."""
-    raise NotImplementedError(
-        "components.shell.OutputLine.linkifyUrlsInText still needs business-logic migration"
-    )
 
 async def stripUnderlineAnsi(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `stripUnderlineAnsi`."""
-    raise NotImplementedError(
-        "components.shell.OutputLine.stripUnderlineAnsi still needs business-logic migration"
-    )
+    text = str(kwargs.get("text") or (args[0] if args else "") or "")
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
+
+
+async def linkifyUrlsInText(*args: Any, **kwargs: Any) -> Any:
+    text = str(kwargs.get("text") or (args[0] if args else "") or "")
+    urls = re.findall(r"https?://[^\s)]+", text)
+    return {"text": text, "urls": urls}
+
 
 async def tryFormatJson(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `tryFormatJson`."""
-    raise NotImplementedError(
-        "components.shell.OutputLine.tryFormatJson still needs business-logic migration"
-    )
+    text = str(kwargs.get("text") or (args[0] if args else "") or "")
+    try:
+        return json.dumps(json.loads(text), indent=2, ensure_ascii=False)
+    except Exception:
+        return text
+
 
 async def tryJsonFormatContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `tryJsonFormatContent`."""
-    raise NotImplementedError(
-        "components.shell.OutputLine.tryJsonFormatContent still needs business-logic migration"
-    )
+    return await tryFormatJson(*args, **kwargs)
+
+
+def _is_json(text: str) -> bool:
+    try:
+        json.loads(text)
+        return True
+    except Exception:
+        return False
+
+
+async def OutputLine(*args: Any, **kwargs: Any) -> Any:
+    text = str(kwargs.get("text") or (args[0] if args else "") or "")
+    clean = await stripUnderlineAnsi(text)
+    linked = await linkifyUrlsInText(clean)
+    return shell_payload("shell_output_line", text=clean, urls=linked["urls"], isJson=_is_json(clean))
+
+
+__all__ = ["OutputLine", "linkifyUrlsInText", "stripUnderlineAnsi", "tryFormatJson", "tryJsonFormatContent"]

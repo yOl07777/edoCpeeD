@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/components/LogoV2/WelcomeV2.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.LogoV2._shared import LOGO_TEXT, logo_payload, option, scalar_arg
+
+
 async def WelcomeV2(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `WelcomeV2`."""
-    raise NotImplementedError(
-        "components.LogoV2.WelcomeV2.WelcomeV2 still needs business-logic migration"
+    cwd = str(option(args, kwargs, "cwd", option(args, kwargs, "project", scalar_arg(args, ""))))
+    tips = option(
+        args,
+        kwargs,
+        "tips",
+        ["/help lists commands", "/status shows model and key state", "/write can create files after approval"],
     )
+    return logo_payload("welcome_v2", title=LOGO_TEXT, cwd=cwd, tips=[str(tip) for tip in tips], ready=True)
+
+
+__all__ = ["WelcomeV2"]

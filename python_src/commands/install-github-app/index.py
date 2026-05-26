@@ -1,16 +1,30 @@
-"""
-Python migration draft for `src/commands/install-github-app/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/install-github-app`."""
 
 from __future__ import annotations
 
+import os
+import importlib
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.install-github-app.index still needs business-logic migration"
-    )
+
+_impl = importlib.import_module("python_src.commands.install-github-app.install-github-app")
+call = _impl.call
+
+
+def _is_enabled() -> bool:
+    return os.environ.get("DISABLE_INSTALL_GITHUB_APP_COMMAND", "").lower() not in {"1", "true", "yes", "on"}
+
+
+installGitHubApp: dict[str, Any] = {
+    "type": "local-jsx",
+    "name": "install-github-app",
+    "description": "Generate DeepSeek GitHub Actions setup guidance for a repository",
+    "availability": ["deepseek", "console"],
+    "isEnabled": _is_enabled,
+    "source": "builtin",
+    "call": call,
+}
+
+default = installGitHubApp
+
+__all__ = ["call", "default", "installGitHubApp"]

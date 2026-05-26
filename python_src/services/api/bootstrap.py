@@ -1,17 +1,25 @@
-"""
-Python migration draft for `src/services/api/bootstrap.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Bootstrap data for the local DeepSeek Python runtime."""
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-async def fetchBootstrapData(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `fetchBootstrapData`."""
-    raise NotImplementedError(
-        "services.api.bootstrap.fetchBootstrapData still needs business-logic migration"
-    )
+
+async def fetchBootstrapData(config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
+    model = config.get("model") or os.getenv("DEFAULT_MODEL", "deepseek-chat")
+    endpoint = config.get("endpoint") or os.getenv("DEEPSEEK_ENDPOINTS", "https://api.deepseek.com").split(",", 1)[0]
+    return {
+        "provider": "deepseek",
+        "model": model,
+        "endpoint": endpoint,
+        "features": {
+            "tools": True,
+            "streaming": True,
+            "mcp": True,
+            "analytics": True,
+        },
+        "config": config,
+    }
+

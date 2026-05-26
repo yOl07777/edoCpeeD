@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/hooks/useLspPluginRecommendation.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useLspPluginRecommendation(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useLspPluginRecommendation`."""
-    raise NotImplementedError(
-        "hooks.useLspPluginRecommendation.useLspPluginRecommendation still needs business-logic migration"
-    )
+
+_LANGUAGE_PLUGINS = {"python": "pyright", "typescript": "typescript-language-server", "javascript": "typescript-language-server"}
+
+
+async def useLspPluginRecommendation(language: Any = "", *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    lang = str(kwargs.get("language", language) or "").lower()
+    plugin = kwargs.get("plugin") or _LANGUAGE_PLUGINS.get(lang, "")
+    return {"provider": "deepseek", "language": lang, "plugin": plugin, "recommended": bool(plugin)}
+
+
+__all__ = ["useLspPluginRecommendation"]

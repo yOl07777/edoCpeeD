@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/hooks/useDeferredHookMessages.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useDeferredHookMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useDeferredHookMessages`."""
-    raise NotImplementedError(
-        "hooks.useDeferredHookMessages.useDeferredHookMessages still needs business-logic migration"
-    )
+
+async def useDeferredHookMessages(messages: list[dict[str, Any]] | None = None, *_args: Any, **kwargs: Any) -> dict[str, Any]:
+    rows = list(kwargs.get("messages", messages or []))
+    ready = bool(kwargs.get("ready", True))
+    return {"provider": "deepseek", "messages": rows if ready else [], "deferred": [] if ready else rows, "ready": ready}
+
+
+__all__ = ["useDeferredHookMessages"]

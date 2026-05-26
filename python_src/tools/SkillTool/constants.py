@@ -1,13 +1,7 @@
-"""
-Python migration draft for `src/tools/SkillTool/constants.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""SkillTool constants."""
 
 from __future__ import annotations
 
-from typing import Any
+SKILL_TOOL_NAME = "skill"
 
-SKILL_TOOL_NAME: Any = None
+__all__ = ["SKILL_TOOL_NAME"]

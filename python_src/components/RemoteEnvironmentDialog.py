@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/RemoteEnvironmentDialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def RemoteEnvironmentDialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `RemoteEnvironmentDialog`."""
-    raise NotImplementedError(
-        "components.RemoteEnvironmentDialog.RemoteEnvironmentDialog still needs business-logic migration"
-    )
+    env = normalize_items(option(args, kwargs, "environment", option(args, kwargs, "env", scalar_arg(args, []))), text_key="name")
+    return component_payload("remote_environment_dialog", environment=env, count=len(env), dryRun=True)
+
+
+__all__ = ["RemoteEnvironmentDialog"]

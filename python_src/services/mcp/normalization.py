@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/services/mcp/normalization.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Name normalization helpers for MCP server and tool identifiers."""
 
 from __future__ import annotations
 
-from typing import Any
+import re
+import unicodedata
 
-async def normalizeNameForMCP(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `normalizeNameForMCP`."""
-    raise NotImplementedError(
-        "services.mcp.normalization.normalizeNameForMCP still needs business-logic migration"
-    )
+
+async def normalizeNameForMCP(name: str) -> str:
+    """Return an MCP-safe identifier made from ASCII letters, digits, and ``_``."""
+
+    normalized = unicodedata.normalize("NFKD", str(name or ""))
+    ascii_name = normalized.encode("ascii", "ignore").decode("ascii")
+    ascii_name = re.sub(r"[^A-Za-z0-9_]+", "_", ascii_name).strip("_")
+    ascii_name = re.sub(r"_+", "_", ascii_name)
+    return ascii_name or "mcp"

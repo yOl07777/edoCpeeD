@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/tools/TeamCreateTool/UI.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Renderable TeamCreateTool UI payload helpers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def renderToolUseMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `renderToolUseMessage`."""
-    raise NotImplementedError(
-        "tools.TeamCreateTool.UI.renderToolUseMessage still needs business-logic migration"
-    )
+
+def _payload(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    if args and isinstance(args[0], dict):
+        return {**args[0], **kwargs}
+    return dict(kwargs)
+
+
+async def renderToolUseMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    data = _payload(args, kwargs)
+    return {"type": "team-create-use", "name": data.get("name", ""), "agentIds": list(data.get("agent_ids") or data.get("agentIds") or [])}
+
+
+__all__ = ["renderToolUseMessage"]

@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/commands/heapdump/heapdump.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local `/heapdump` command."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.heapdump.heapdump.call still needs business-logic migration"
-    )
+from python_src.utils.heapDumpService import performHeapDump
+
+
+async def call(*_args: Any, **_kwargs: Any) -> dict[str, str]:
+    result = await performHeapDump()
+    if not result.get("success"):
+        return {"type": "text", "value": f"Failed to create heap dump: {result.get('error', 'unknown error')}"}
+    return {"type": "text", "value": f"{result.get('heapPath')}\n{result.get('diagPath')}"}

@@ -1,13 +1,11 @@
-"""
-Python migration draft for `src/components/Spinner/teammateSelectHint.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+TEAMMATE_SELECT_HINT = {
+    "provider": "deepseek",
+    "title": "Select teammate",
+    "hint": "Use arrow keys to choose a subagent, then press Enter.",
+    "fallback": "Choose the subagent that best matches the current task.",
+}
 
-TEAMMATE_SELECT_HINT: Any = None
+
+__all__ = ["TEAMMATE_SELECT_HINT"]

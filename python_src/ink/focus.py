@@ -1,30 +1,56 @@
-"""
-Python migration draft for `src/ink/focus.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-class FocusManager:
-    """Migrated placeholder for TypeScript class `FocusManager`."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+class FocusManager:
+    def __init__(self, root: Any = None, *args: Any, **kwargs: Any) -> None:
+        self.root = root
+        self.items: list[Any] = []
+        self.index = -1
+
+    def register(self, item: Any) -> Any:
+        self.items.append(item)
+        if self.index < 0:
+            self.index = 0
+        return item
+
+    def unregister(self, item: Any) -> bool:
+        if item in self.items:
+            self.items.remove(item)
+            self.index = min(self.index, len(self.items) - 1)
+            return True
+        return False
+
+    def focusNext(self) -> Any:
+        if not self.items:
+            return None
+        self.index = (self.index + 1) % len(self.items)
+        return self.items[self.index]
+
+    def focusPrevious(self) -> Any:
+        if not self.items:
+            return None
+        self.index = (self.index - 1) % len(self.items)
+        return self.items[self.index]
+
+    def focused(self) -> Any:
+        return self.items[self.index] if 0 <= self.index < len(self.items) else None
+
+
+_root_node: Any = None
+_focus_manager = FocusManager()
+
 
 async def getFocusManager(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFocusManager`."""
-    raise NotImplementedError(
-        "ink.focus.getFocusManager still needs business-logic migration"
-    )
+    global _focus_manager
+    if args or "root" in kwargs:
+        _focus_manager.root = args[0] if args else kwargs.get("root")
+    return _focus_manager
+
 
 async def getRootNode(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getRootNode`."""
-    raise NotImplementedError(
-        "ink.focus.getRootNode still needs business-logic migration"
-    )
+    global _root_node
+    if args or "root" in kwargs:
+        _root_node = args[0] if args else kwargs.get("root")
+    return _root_node

@@ -1,17 +1,18 @@
-"""
-Python migration draft for `src/commands/install-github-app/OAuthFlowStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured OAuth flow step."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def OAuthFlowStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `OAuthFlowStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.OAuthFlowStep.OAuthFlowStep still needs business-logic migration"
+from ._shared import step_payload
+
+
+async def OAuthFlowStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return step_payload(
+        "oauth-flow",
+        supported=False,
+        message="Claude OAuth token creation is not available in the DeepSeek migration shim; use a DeepSeek API key secret instead.",
     )
+
+
+__all__ = ["OAuthFlowStep"]

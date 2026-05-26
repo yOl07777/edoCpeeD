@@ -1,16 +1,21 @@
-"""
-Python migration draft for `src/commands/fast/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/fast`."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.utils.fastMode import FAST_MODE_MODEL_DISPLAY, isFastModeEnabled
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.fast.index still needs business-logic migration"
-    )
+from .fast import call
+
+fast = {
+    "type": "local-jsx",
+    "name": "fast",
+    "description": lambda: f"Toggle fast mode ({FAST_MODE_MODEL_DISPLAY} only)",
+    "availability": ["deepseek", "console"],
+    "isEnabled": isFastModeEnabled,
+    "isHidden": lambda: not isFastModeEnabled(),
+    "argumentHint": "[on|off]",
+    "immediate": True,
+    "call": call,
+}
+
+default = fast

@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/hooks/notifs/useIDEStatusIndicator.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, notification, pick, truthy
+
+
 async def useIDEStatusIndicator(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useIDEStatusIndicator`."""
-    raise NotImplementedError(
-        "hooks.notifs.useIDEStatusIndicator.useIDEStatusIndicator still needs business-logic migration"
+    options = first_mapping(*args, kwargs)
+    connected = truthy(pick(options, "connected", "ready", default=False))
+    ide = str(pick(options, "ide", "name", default="IDE"))
+    return notification(
+        visible=True,
+        level="success" if connected else "warning",
+        title="IDE connection",
+        message=f"{ide} is {'connected' if connected else 'not connected'}.",
+        connected=connected,
+        ide=ide,
     )

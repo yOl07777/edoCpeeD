@@ -1,13 +1,7 @@
-"""
-Python migration draft for `src/tools/NotebookEditTool/constants.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""NotebookEditTool constants."""
 
 from __future__ import annotations
 
-from typing import Any
+NOTEBOOK_EDIT_TOOL_NAME = "notebook_edit"
 
-NOTEBOOK_EDIT_TOOL_NAME: Any = None
+__all__ = ["NOTEBOOK_EDIT_TOOL_NAME"]

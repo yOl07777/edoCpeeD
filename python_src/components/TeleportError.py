@@ -1,23 +1,25 @@
-"""
-Python migration draft for `src/components/TeleportError.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def TeleportError(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TeleportError`."""
-    raise NotImplementedError(
-        "components.TeleportError.TeleportError still needs business-logic migration"
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
+async def getTeleportErrors(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    errors = option(args, kwargs, "errors", scalar_arg(args, []))
+    return normalize_items(errors, text_key="message")
+
+
+async def TeleportError(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    errors = await getTeleportErrors(option(args, kwargs, "errors", scalar_arg(args, [])))
+    first = errors[0] if errors else {}
+    return component_payload(
+        "teleport_error",
+        errors=errors,
+        count=len(errors),
+        message=str(option(args, kwargs, "message", first.get("message", "")) or ""),
+        retryable=bool(option(args, kwargs, "retryable", False)),
     )
 
-async def getTeleportErrors(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTeleportErrors`."""
-    raise NotImplementedError(
-        "components.TeleportError.getTeleportErrors still needs business-logic migration"
-    )
+
+__all__ = ["TeleportError", "getTeleportErrors"]

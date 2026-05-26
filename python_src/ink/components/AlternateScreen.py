@@ -1,17 +1,21 @@
-"""
-Python migration draft for `src/ink/components/AlternateScreen.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._nodes import normalize_children, render_node
+
+
 async def AlternateScreen(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AlternateScreen`."""
-    raise NotImplementedError(
-        "ink.components.AlternateScreen.AlternateScreen still needs business-logic migration"
+    prop_children = kwargs.pop("children", None)
+    enabled = bool(kwargs.pop("enabled", True))
+    return render_node(
+        "alternate_screen",
+        enabled=enabled,
+        enter="\x1b[?1049h" if enabled else "",
+        exit="\x1b[?1049l" if enabled else "",
+        children=normalize_children(prop_children, *args),
+        props=kwargs,
     )
+
+
+default = AlternateScreen

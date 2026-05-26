@@ -1,13 +1,11 @@
-"""
-Python migration draft for `src/constants/cyberRiskInstruction.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
 
-CYBER_RISK_INSTRUCTION: Any = None
+CYBER_RISK_INSTRUCTION = (
+    "For security-sensitive requests, help with defensive analysis, secure coding, "
+    "configuration review, and vulnerability explanation. Refuse instructions that "
+    "enable credential theft, persistence, evasion, malware deployment, or unauthorized access."
+)
+
+
+__all__ = ["CYBER_RISK_INSTRUCTION"]

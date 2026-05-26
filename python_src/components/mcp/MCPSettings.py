@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/mcp/MCPSettings.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.mcp._shared import mcp_payload, normalize_server
+
+
 async def MCPSettings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MCPSettings`."""
-    raise NotImplementedError(
-        "components.mcp.MCPSettings.MCPSettings still needs business-logic migration"
-    )
+    config = kwargs.get("config") or (args[0] if args else {}) or {}
+    servers = config.get("servers", []) if isinstance(config, dict) else []
+    rows = [normalize_server(server, index) for index, server in enumerate(servers)]
+    return mcp_payload("mcp_settings", servers=rows, count=len(rows), config=config)
+
+
+__all__ = ["MCPSettings"]

@@ -1,23 +1,26 @@
-"""
-Python migration draft for `src/components/permissions/rules/AddPermissionRules.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def AddPermissionRules(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `AddPermissionRules`."""
-    raise NotImplementedError(
-        "components.permissions.rules.AddPermissionRules.AddPermissionRules still needs business-logic migration"
-    )
+from python_src.components.permissions.rules._shared import normalize_rules
 
-async def optionForPermissionSaveDestination(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `optionForPermissionSaveDestination`."""
-    raise NotImplementedError(
-        "components.permissions.rules.AddPermissionRules.optionForPermissionSaveDestination still needs business-logic migration"
-    )
+
+async def AddPermissionRules(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    rules = normalize_rules(kwargs.get("rules") or (args[0] if args else []))
+    destination = kwargs.get("destination") or kwargs.get("scope") or "project"
+    return {
+        "type": "add_permission_rules",
+        "provider": "deepseek",
+        "destination": destination,
+        "rules": rules,
+        "count": len(rules),
+    }
+
+
+async def optionForPermissionSaveDestination(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    destination = str(kwargs.get("destination") or kwargs.get("scope") or (args[0] if args else "project"))
+    labels = {"project": "Project settings", "user": "User settings", "local": "Local session"}
+    return {"id": destination, "label": labels.get(destination, destination), "destination": destination}
+
+
+__all__ = ["AddPermissionRules", "optionForPermissionSaveDestination"]

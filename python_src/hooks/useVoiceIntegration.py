@@ -1,29 +1,21 @@
-"""
-Python migration draft for `src/hooks/useVoiceIntegration.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def VoiceKeybindingHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `VoiceKeybindingHandler`."""
-    raise NotImplementedError(
-        "hooks.useVoiceIntegration.VoiceKeybindingHandler still needs business-logic migration"
-    )
+    return await useVoiceKeybindingHandler(*args, **kwargs)
 
 async def useVoiceIntegration(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useVoiceIntegration`."""
-    raise NotImplementedError(
-        "hooks.useVoiceIntegration.useVoiceIntegration still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    enabled = bool(pick(options, "enabled", default=False))
+    keybinding = str(pick(options, "keybinding", default="ctrl+v"))
+    return {"provider": "deepseek", "enabled": enabled, "keybinding": keybinding, "status": "ready" if enabled else "disabled"}
 
 async def useVoiceKeybindingHandler(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useVoiceKeybindingHandler`."""
-    raise NotImplementedError(
-        "hooks.useVoiceIntegration.useVoiceKeybindingHandler still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    key = str(pick(options, "key", default=""))
+    expected = str(pick(options, "keybinding", default="ctrl+v"))
+    return {"provider": "deepseek", "handled": key == expected, "action": "toggle_voice" if key == expected else None}

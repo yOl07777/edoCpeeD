@@ -1,16 +1,16 @@
-"""
-Python migration draft for `src/ink/styles.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.styles still needs business-logic migration"
-    )
+
+def normalizeStyles(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    style = dict(args[0] if args and isinstance(args[0], dict) else kwargs.get("style", {}) or {})
+    for key in ("margin", "padding"):
+        value = style.get(key)
+        if isinstance(value, int):
+            style[key] = {"top": value, "right": value, "bottom": value, "left": value}
+    return style
+
+
+default = normalizeStyles
+_module_migration_placeholder = normalizeStyles

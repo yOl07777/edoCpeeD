@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/commands/install-github-app/CheckGitHubStep.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Structured GitHub CLI prerequisite check."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def CheckGitHubStep(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `CheckGitHubStep`."""
-    raise NotImplementedError(
-        "commands.install-github-app.CheckGitHubStep.CheckGitHubStep still needs business-logic migration"
-    )
+from ._shared import check_gh_status, step_payload
+
+
+async def CheckGitHubStep(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    status = check_gh_status()
+    return step_payload("check-gh", ok=status["ok"], warnings=status["warnings"])
+
+
+__all__ = ["CheckGitHubStep"]

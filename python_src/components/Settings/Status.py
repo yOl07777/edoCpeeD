@@ -1,23 +1,20 @@
-"""
-Python migration draft for `src/components/Settings/Status.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def Status(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Status`."""
-    raise NotImplementedError(
-        "components.Settings.Status.Status still needs business-logic migration"
-    )
+from python_src.components.Settings._shared import settings_payload
+
 
 async def buildDiagnostics(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `buildDiagnostics`."""
-    raise NotImplementedError(
-        "components.Settings.Status.buildDiagnostics still needs business-logic migration"
-    )
+    diagnostics = kwargs.get("diagnostics") or (args[0] if args else []) or []
+    rows = [item if isinstance(item, dict) else {"name": str(item), "ok": True} for item in diagnostics]
+    return {"items": rows, "ok": all(bool(item.get("ok", False)) for item in rows) if rows else True}
+
+
+async def Status(*args: Any, **kwargs: Any) -> Any:
+    diagnostics = await buildDiagnostics(kwargs.get("diagnostics", []))
+    config = kwargs.get("config") or (args[0] if args else {}) or {}
+    return settings_payload("settings_status", ok=diagnostics["ok"], diagnostics=diagnostics["items"], configured=bool(config))
+
+
+__all__ = ["Status", "buildDiagnostics"]

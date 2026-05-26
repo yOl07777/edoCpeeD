@@ -17,6 +17,7 @@ class ResponseAdapter:
                 role=message.get("role", "assistant"),
                 content=message.get("content") or "",
                 tool_calls=tool_calls_from_wire(message.get("tool_calls")),
+                reasoning_content=message.get("reasoning_content") or None,
             ),
             finish_reason=choice.get("finish_reason"),
             usage=response.get("usage"),
@@ -28,6 +29,7 @@ class ResponseAdapter:
         delta = choice.get("delta") or {}
         return InternalStreamDelta(
             content=delta.get("content") or "",
+            reasoning_content=delta.get("reasoning_content") or "",
             tool_calls=tool_calls_from_wire(delta.get("tool_calls")),
             finish_reason=choice.get("finish_reason"),
             usage=chunk.get("usage"),

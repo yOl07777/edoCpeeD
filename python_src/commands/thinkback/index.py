@@ -1,16 +1,38 @@
-"""
-Python migration draft for `src/commands/thinkback/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""DeepSeek Think Back command shim."""
 
 from __future__ import annotations
 
-from typing import Any
+import importlib.util
+from pathlib import Path
+from typing import Any, Callable
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.thinkback.index still needs business-logic migration"
-    )
+
+def _load_impl():
+    path = Path(__file__).with_name("thinkback.py")
+    spec = importlib.util.spec_from_file_location("deepseek_thinkback_impl", path)
+    if not spec or not spec.loader:
+        raise ImportError(f"Unable to load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+async def call(
+    onDone: Callable[..., Any] | None = None,
+    context: Any | None = None,
+    args: str = "",
+) -> dict[str, Any]:
+    return await _load_impl().call(onDone, context, args)
+
+
+thinkback = {
+    "type": "local",
+    "name": "think-back",
+    "aliases": ["thinkback"],
+    "description": "Prepare a DeepSeek Code year-in-review prompt",
+    "source": "builtin",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = thinkback

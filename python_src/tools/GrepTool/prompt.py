@@ -1,19 +1,19 @@
-"""
-Python migration draft for `src/tools/GrepTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for GrepTool."""
 
 from __future__ import annotations
 
 from typing import Any
 
-GREP_TOOL_NAME: Any = None
+GREP_TOOL_NAME = "grep_files"
+DESCRIPTION = (
+    "Search workspace text files with a Python regular expression. Prefer include patterns "
+    "that narrow the search to relevant source files."
+)
 
-async def getDescription(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDescription`."""
-    raise NotImplementedError(
-        "tools.GrepTool.prompt.getDescription still needs business-logic migration"
-    )
+
+async def getDescription(*args: Any, **kwargs: Any) -> str:
+    tool_name = kwargs.get("toolName") or kwargs.get("tool_name") or GREP_TOOL_NAME
+    return f"{DESCRIPTION} Tool name: {tool_name}."
+
+
+__all__ = ["DESCRIPTION", "GREP_TOOL_NAME", "getDescription"]

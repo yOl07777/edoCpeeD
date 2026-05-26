@@ -1,16 +1,18 @@
-"""
-Python migration draft for `src/services/tools/toolOrchestration.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "services.tools.toolOrchestration still needs business-logic migration"
-    )
+from python_src.services.tools.StreamingToolExecutor import StreamingToolExecutor
+
+
+async def executeToolCalls(calls: list[dict[str, Any]], *, executor: StreamingToolExecutor | None = None) -> list[dict[str, Any]]:
+    runner = executor or StreamingToolExecutor()
+    results = []
+    for call in calls:
+        results.append(await runner.execute(call))
+    return results
+
+
+async def streamToolCall(call: dict[str, Any], *, executor: StreamingToolExecutor | None = None) -> list[dict[str, Any]]:
+    runner = executor or StreamingToolExecutor()
+    return [event async for event in runner.stream(call)]

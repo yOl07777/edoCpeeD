@@ -1,37 +1,39 @@
-"""
-Python migration draft for `src/components/MessageRow.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-MessageRow: Any = None
+from python_src.components._shared import component_payload, first_options, normalize_items, option, scalar_arg
+from python_src.components.Message import Message
+
+
+async def MessageRow(*args: Any, **kwargs: Any) -> Any:
+    message = option(args, kwargs, "message", scalar_arg(args, first_options(args)))
+    return component_payload("message_row", message=await Message(message), streaming=await isMessageStreaming(message), toolsResolved=await allToolsResolved(message))
+
 
 async def allToolsResolved(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `allToolsResolved`."""
-    raise NotImplementedError(
-        "components.MessageRow.allToolsResolved still needs business-logic migration"
-    )
+    message = option(args, kwargs, "message", scalar_arg(args, first_options(args)))
+    calls = []
+    if isinstance(message, dict):
+        calls = message.get("tool_calls") or message.get("toolCalls") or []
+    return all(bool(call.get("resolved") or call.get("result") or call.get("status") in {"done", "success"}) for call in calls)
+
 
 async def areMessageRowPropsEqual(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `areMessageRowPropsEqual`."""
-    raise NotImplementedError(
-        "components.MessageRow.areMessageRowPropsEqual still needs business-logic migration"
-    )
+    left = option(args, kwargs, "left", args[0] if args else None)
+    right = option(args, kwargs, "right", args[1] if len(args) > 1 else None)
+    return left == right
+
 
 async def hasContentAfterIndex(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasContentAfterIndex`."""
-    raise NotImplementedError(
-        "components.MessageRow.hasContentAfterIndex still needs business-logic migration"
-    )
+    messages = normalize_items(option(args, kwargs, "messages", args[0] if args else []))
+    index = int(option(args, kwargs, "index", args[1] if len(args) > 1 else -1) or -1)
+    return any(str(row.get("text", row.get("content", ""))).strip() for row in messages[index + 1 :])
+
 
 async def isMessageStreaming(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isMessageStreaming`."""
-    raise NotImplementedError(
-        "components.MessageRow.isMessageStreaming still needs business-logic migration"
-    )
+    message = option(args, kwargs, "message", scalar_arg(args, first_options(args)))
+    return bool(isinstance(message, dict) and (message.get("streaming") or message.get("status") == "streaming"))
+
+
+__all__ = ["MessageRow", "allToolsResolved", "areMessageRowPropsEqual", "hasContentAfterIndex", "isMessageStreaming"]

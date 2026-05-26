@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/mcp/MCPAgentServerMenu.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.mcp._shared import mcp_payload, normalize_server
+
+
 async def MCPAgentServerMenu(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `MCPAgentServerMenu`."""
-    raise NotImplementedError(
-        "components.mcp.MCPAgentServerMenu.MCPAgentServerMenu still needs business-logic migration"
-    )
+    server = normalize_server(kwargs.get("server") or (args[0] if args else {}))
+    return mcp_payload("mcp_agent_server_menu", server=server, actions=["enable", "disable", "tools", "remove"])
+
+
+__all__ = ["MCPAgentServerMenu"]

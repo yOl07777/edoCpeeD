@@ -1,16 +1,20 @@
-"""
-Python migration draft for `src/commands/rename/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/rename`."""
 
 from __future__ import annotations
 
-from typing import Any
+from .generateSessionName import generateSessionName
+from .rename import call, getSessionName, saveSessionName
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.rename.index still needs business-logic migration"
-    )
+
+rename = {
+    "type": "local-jsx",
+    "name": "rename",
+    "description": "Rename the current session",
+    "argumentHint": "[name]",
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = rename
+
+__all__ = ["call", "default", "generateSessionName", "getSessionName", "rename", "saveSessionName"]

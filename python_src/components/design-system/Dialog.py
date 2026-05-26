@@ -1,17 +1,19 @@
-"""
-Python migration draft for `src/components/design-system/Dialog.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from importlib import import_module
+
+
 async def Dialog(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Dialog`."""
-    raise NotImplementedError(
-        "components.design-system.Dialog.Dialog still needs business-logic migration"
+    shared = import_module("python_src.components.design-system._shared")
+    return shared.ui_payload(
+        "dialog",
+        title=str(kwargs.get("title") or "DeepSeek Code"),
+        body=str(kwargs.get("body") or (args[0] if args else "")),
+        actions=kwargs.get("actions") or ["ok"],
+        open=bool(kwargs.get("open", True)),
     )
+
+
+__all__ = ["Dialog"]

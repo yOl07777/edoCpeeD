@@ -1,43 +1,65 @@
-"""
-Python migration draft for `src/services/mcp/channelPermissions.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Permission relay helpers for MCP channel requests."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
+import re
+from collections.abc import Iterable
+from typing import Any, Awaitable, Callable
 
-PERMISSION_REPLY_RE: Any = None
+PERMISSION_REPLY_RE = re.compile(r"permission[_-]?reply[:#]?(?P<id>[A-Za-z0-9_.:-]+)?", re.I)
 
-async def createChannelPermissionCallbacks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createChannelPermissionCallbacks`."""
-    raise NotImplementedError(
-        "services.mcp.channelPermissions.createChannelPermissionCallbacks still needs business-logic migration"
-    )
 
-async def filterPermissionRelayClients(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `filterPermissionRelayClients`."""
-    raise NotImplementedError(
-        "services.mcp.channelPermissions.filterPermissionRelayClients still needs business-logic migration"
-    )
+async def createChannelPermissionCallbacks(
+    allow: Callable[[dict[str, Any]], Any] | None = None,
+    deny: Callable[[dict[str, Any]], Any] | None = None,
+) -> dict[str, Callable[[dict[str, Any]], Any]]:
+    """Create simple allow/deny callbacks for channel permission flows."""
 
-async def isChannelPermissionRelayEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isChannelPermissionRelayEnabled`."""
-    raise NotImplementedError(
-        "services.mcp.channelPermissions.isChannelPermissionRelayEnabled still needs business-logic migration"
-    )
+    async def default_allow(request: dict[str, Any]) -> dict[str, Any]:
+        return {"allowed": True, "request": request}
 
-async def shortRequestId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `shortRequestId`."""
-    raise NotImplementedError(
-        "services.mcp.channelPermissions.shortRequestId still needs business-logic migration"
-    )
+    async def default_deny(request: dict[str, Any]) -> dict[str, Any]:
+        return {"allowed": False, "request": request}
 
-async def truncateForPreview(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `truncateForPreview`."""
-    raise NotImplementedError(
-        "services.mcp.channelPermissions.truncateForPreview still needs business-logic migration"
-    )
+    return {"allow": allow or default_allow, "deny": deny or default_deny}
+
+
+async def filterPermissionRelayClients(clients: Iterable[Any]) -> list[Any]:
+    """Keep clients that advertise permission relay support."""
+
+    result: list[Any] = []
+    for client in clients:
+        if isinstance(client, dict):
+            enabled = client.get("permissionRelay") or client.get("supportsPermissionRelay")
+            if enabled:
+                result.append(client)
+        elif getattr(client, "permissionRelay", False) or getattr(client, "supportsPermissionRelay", False):
+            result.append(client)
+    return result
+
+
+async def isChannelPermissionRelayEnabled(config: dict[str, Any] | None = None) -> bool:
+    """Return whether channel permission relay is enabled."""
+
+    config = config or {}
+    if "permissionRelay" in config:
+        return bool(config["permissionRelay"])
+    value = os.getenv("MCP_CHANNEL_PERMISSION_RELAY") or os.getenv("DEEPSEEK_MCP_CHANNEL_PERMISSION_RELAY")
+    return str(value).lower() in {"1", "true", "yes", "on"} if value is not None else False
+
+
+async def shortRequestId(request_id: Any, length: int = 8) -> str:
+    """Shorten a request id while keeping it deterministic."""
+
+    value = str(request_id or "")
+    return value if len(value) <= length else value[:length]
+
+
+async def truncateForPreview(value: Any, limit: int = 160) -> str:
+    """Truncate long values for readable permission prompts."""
+
+    text = str(value or "")
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 1)] + "..."

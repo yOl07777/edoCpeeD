@@ -1,53 +1,71 @@
-"""
-Python migration draft for `src/services/api/dumpPrompts.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt dump helpers for local DeepSeek request debugging."""
 
 from __future__ import annotations
 
-from typing import Any
+import json
+import os
+import time
+from pathlib import Path
+from typing import Any, Callable
 
-async def addApiRequestToCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addApiRequestToCache`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.addApiRequestToCache still needs business-logic migration"
-    )
+_REQUEST_CACHE: list[dict[str, Any]] = []
+_DUMP_ENABLED = False
+_DUMP_PATH: Path | None = None
 
-async def clearAllDumpState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearAllDumpState`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.clearAllDumpState still needs business-logic migration"
-    )
 
-async def clearApiRequestCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearApiRequestCache`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.clearApiRequestCache still needs business-logic migration"
-    )
+async def getDumpPromptsPath(path: str | Path | None = None) -> Path:
+    if path is not None:
+        return Path(path).expanduser().resolve()
+    env_path = os.getenv("DEEPSEEK_DUMP_PROMPTS_PATH")
+    if env_path:
+        return Path(env_path).expanduser().resolve()
+    return (Path.cwd() / ".deepseek_prompt_dumps.jsonl").resolve()
 
-async def clearDumpState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearDumpState`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.clearDumpState still needs business-logic migration"
-    )
 
-async def createDumpPromptsFetch(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createDumpPromptsFetch`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.createDumpPromptsFetch still needs business-logic migration"
-    )
+async def addApiRequestToCache(request: dict[str, Any], max_entries: int = 20) -> dict[str, Any]:
+    entry = {"timestamp": time.time(), "request": request}
+    _REQUEST_CACHE.append(entry)
+    del _REQUEST_CACHE[:-max_entries]
+    if _DUMP_ENABLED:
+        path = _DUMP_PATH or await getDumpPromptsPath()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+    return entry
 
-async def getDumpPromptsPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDumpPromptsPath`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.getDumpPromptsPath still needs business-logic migration"
-    )
 
-async def getLastApiRequests(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getLastApiRequests`."""
-    raise NotImplementedError(
-        "services.api.dumpPrompts.getLastApiRequests still needs business-logic migration"
-    )
+async def getLastApiRequests(limit: int = 20) -> list[dict[str, Any]]:
+    return list(_REQUEST_CACHE[-int(limit) :])
+
+
+async def clearApiRequestCache() -> None:
+    _REQUEST_CACHE.clear()
+
+
+async def clearDumpState() -> None:
+    global _DUMP_ENABLED, _DUMP_PATH
+    _DUMP_ENABLED = False
+    _DUMP_PATH = None
+
+
+async def clearAllDumpState() -> None:
+    await clearApiRequestCache()
+    await clearDumpState()
+
+
+async def createDumpPromptsFetch(fetch: Callable[..., Any], path: str | Path | None = None) -> Callable[..., Any]:
+    """Wrap an async/sync fetch callable and dump request arguments."""
+
+    global _DUMP_ENABLED, _DUMP_PATH
+    _DUMP_ENABLED = True
+    _DUMP_PATH = await getDumpPromptsPath(path)
+
+    async def wrapped(*args: Any, **kwargs: Any) -> Any:
+        await addApiRequestToCache({"args": args, "kwargs": kwargs})
+        result = fetch(*args, **kwargs)
+        if hasattr(result, "__await__"):
+            return await result
+        return result
+
+    return wrapped
+

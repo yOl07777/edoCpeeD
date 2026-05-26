@@ -1,23 +1,25 @@
-"""
-Python migration draft for `src/cli/exit.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""CLI exit helpers for subcommand handlers."""
 
 from __future__ import annotations
 
-from typing import Any
+import sys
 
-async def cliError(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `cliError`."""
-    raise NotImplementedError(
-        "cli.exit.cliError still needs business-logic migration"
-    )
 
-async def cliOk(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `cliOk`."""
-    raise NotImplementedError(
-        "cli.exit.cliOk still needs business-logic migration"
-    )
+class CLIExit(SystemExit):
+    """SystemExit carrying the user-facing message written by the helper."""
+
+    def __init__(self, code: int, message: str | None = None) -> None:
+        super().__init__(code)
+        self.message = message
+
+
+def cliError(msg: str | None = None) -> None:
+    if msg:
+        print(msg, file=sys.stderr)
+    raise CLIExit(1, msg)
+
+
+def cliOk(msg: str | None = None) -> None:
+    if msg:
+        sys.stdout.write(msg + "\n")
+    raise CLIExit(0, msg)

@@ -1,14 +1,13 @@
-"""
-Python migration draft for `src/tools/NotebookEditTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for NotebookEditTool."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.tools.NotebookEditTool.constants import NOTEBOOK_EDIT_TOOL_NAME
 
-DESCRIPTION: Any = None
-PROMPT: Any = None
+DESCRIPTION = "Create or replace a cell in a Jupyter .ipynb file."
+PROMPT = (
+    f"Use {NOTEBOOK_EDIT_TOOL_NAME} to update one notebook cell at a time. "
+    "Provide the target path, zero-based cell_index, full source text, and optional cell_type."
+)
+
+__all__ = ["DESCRIPTION", "PROMPT"]

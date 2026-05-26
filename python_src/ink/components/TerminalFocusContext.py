@@ -1,17 +1,22 @@
-"""
-Python migration draft for `src/ink/components/TerminalFocusContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._nodes import normalize_children, render_node
+
+
+TerminalFocusContext: dict[str, Any] = {"isFocused": True, "provider": "deepseek"}
+
+
 async def TerminalFocusProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `TerminalFocusProvider`."""
-    raise NotImplementedError(
-        "ink.components.TerminalFocusContext.TerminalFocusProvider still needs business-logic migration"
+    prop_children = kwargs.pop("children", None)
+    focused = bool(kwargs.pop("focused", kwargs.pop("isFocused", True)))
+    return render_node(
+        "terminal_focus_provider",
+        context={"provider": "deepseek", "isFocused": focused},
+        children=normalize_children(prop_children, *args),
+        props=kwargs,
     )
+
+
+default = TerminalFocusProvider

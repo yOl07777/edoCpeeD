@@ -1,17 +1,30 @@
-"""
-Python migration draft for `src/keybindings/useShortcutDisplay.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Shortcut display hook shim for Python callers."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def useShortcutDisplay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useShortcutDisplay`."""
-    raise NotImplementedError(
-        "keybindings.useShortcutDisplay.useShortcutDisplay still needs business-logic migration"
+from .KeybindingContext import useOptionalKeybindingContext
+
+FALLBACK_EVENTS: list[dict[str, Any]] = []
+
+
+def useShortcutDisplay(action: str, context: str, fallback: str) -> str:
+    keybindingContext = useOptionalKeybindingContext()
+    resolved = keybindingContext.getDisplayText(action, context) if keybindingContext else None
+    if resolved is not None:
+        return resolved
+    FALLBACK_EVENTS.append(
+        {
+            "event": "tengu_keybinding_fallback_used",
+            "action": action,
+            "context": context,
+            "fallback": fallback,
+            "reason": "action_not_found" if keybindingContext else "no_context",
+        }
     )
+    return fallback
+
+
+def resetShortcutDisplayEventsForTesting() -> None:
+    FALLBACK_EVENTS.clear()

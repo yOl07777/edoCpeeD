@@ -1,17 +1,12 @@
-"""
-Python migration draft for `src/skills/bundled/skillify.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def registerSkillifySkill(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerSkillifySkill`."""
-    raise NotImplementedError(
-        "skills.bundled.skillify.registerSkillifySkill still needs business-logic migration"
-    )
+from ._common import register_simple_skill
+
+
+async def registerSkillifySkill(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return await register_simple_skill("skillify", "Turn repeated workflows into a local SKILL.md skill.", allowedTools=["Read", "Edit"])
+
+
+__all__ = ["registerSkillifySkill"]

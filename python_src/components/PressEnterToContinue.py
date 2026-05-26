@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/PressEnterToContinue.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, scalar_arg
+
+
 async def PressEnterToContinue(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PressEnterToContinue`."""
-    raise NotImplementedError(
-        "components.PressEnterToContinue.PressEnterToContinue still needs business-logic migration"
-    )
+    message = str(option(args, kwargs, "message", scalar_arg(args, "Press Enter to continue")))
+    return component_payload("press_enter_to_continue", message=message, key="enter", waiting=bool(option(args, kwargs, "waiting", True)))
+
+
+__all__ = ["PressEnterToContinue"]

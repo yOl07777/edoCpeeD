@@ -1,62 +1,76 @@
-"""
-Python migration draft for `src/tasks/LocalShellTask/LocalShellTask.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import re
 from typing import Any
 
-BACKGROUND_BASH_SUMMARY_PREFIX: Any = None
-LocalShellTask: Any = None
+from .._state import FOREGROUND, create_task, get_task, stop_task, tasks_by_kind, update_task
 
-async def backgroundAll(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `backgroundAll`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.backgroundAll still needs business-logic migration"
-    )
+BACKGROUND_BASH_SUMMARY_PREFIX = "[background]"
+LocalShellTask = dict[str, Any]
 
-async def backgroundExistingForegroundTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `backgroundExistingForegroundTask`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.backgroundExistingForegroundTask still needs business-logic migration"
-    )
 
-async def hasForegroundTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `hasForegroundTasks`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.hasForegroundTasks still needs business-logic migration"
-    )
+async def spawnShellTask(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    command = str(kwargs.get("command") or (args[0] if args else ""))
+    task = create_task("local-shell", command=command, output=kwargs.get("output", ""), foreground=True, background=False)
+    FOREGROUND.add(task["id"])
+    return task
 
-async def looksLikePrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `looksLikePrompt`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.looksLikePrompt still needs business-logic migration"
-    )
 
-async def markTaskNotified(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markTaskNotified`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.markTaskNotified still needs business-logic migration"
-    )
+async def registerForeground(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if task:
+        update_task(task, foreground=True, background=False)
+        FOREGROUND.add(task["id"])
+    return task
 
-async def registerForeground(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerForeground`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.registerForeground still needs business-logic migration"
-    )
 
-async def spawnShellTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `spawnShellTask`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.spawnShellTask still needs business-logic migration"
-    )
+async def unregisterForeground(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if task:
+        update_task(task, foreground=False, background=True)
+        FOREGROUND.discard(task["id"])
+    return task
 
-async def unregisterForeground(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `unregisterForeground`."""
-    raise NotImplementedError(
-        "tasks.LocalShellTask.LocalShellTask.unregisterForeground still needs business-logic migration"
-    )
+
+async def backgroundExistingForegroundTask(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task_id = next(iter(FOREGROUND), None)
+    return await unregisterForeground(task_id) if task_id else None
+
+
+async def backgroundAll(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    count = 0
+    for task_id in list(FOREGROUND):
+        task = get_task(task_id)
+        if task:
+            update_task(task, foreground=False, background=True)
+            count += 1
+    FOREGROUND.clear()
+    return {"backgrounded": count}
+
+
+async def hasForegroundTasks(*args: Any, **kwargs: Any) -> bool:
+    return bool(FOREGROUND)
+
+
+async def looksLikePrompt(*args: Any, **kwargs: Any) -> bool:
+    text = str(kwargs.get("text") or (args[0] if args else ""))
+    return bool(re.search(r"(^|\n).*[>$#]\s*$", text))
+
+
+async def markTaskNotified(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    return update_task(task, notified=True) if task else None
+
+
+__all__ = [
+    "BACKGROUND_BASH_SUMMARY_PREFIX",
+    "LocalShellTask",
+    "backgroundAll",
+    "backgroundExistingForegroundTask",
+    "hasForegroundTasks",
+    "looksLikePrompt",
+    "markTaskNotified",
+    "registerForeground",
+    "spawnShellTask",
+    "unregisterForeground",
+]

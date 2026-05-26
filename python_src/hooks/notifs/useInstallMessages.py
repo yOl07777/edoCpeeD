@@ -1,17 +1,17 @@
-"""
-Python migration draft for `src/hooks/notifs/useInstallMessages.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._notification import first_mapping, pick
+
+
 async def useInstallMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useInstallMessages`."""
-    raise NotImplementedError(
-        "hooks.notifs.useInstallMessages.useInstallMessages still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    installed = pick(options, "installed", "packages", default=[]) or []
+    failed = pick(options, "failed", "errors", default=[]) or []
+    messages = []
+    for name in installed:
+        messages.append({"level": "success", "message": f"Installed {name}."})
+    for name in failed:
+        messages.append({"level": "error", "message": f"Failed to install {name}."})
+    return {"provider": "deepseek", "visible": bool(messages), "messages": messages}

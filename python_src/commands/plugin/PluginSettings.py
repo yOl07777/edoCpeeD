@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/commands/plugin/PluginSettings.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def PluginSettings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `PluginSettings`."""
-    raise NotImplementedError(
-        "commands.plugin.PluginSettings.PluginSettings still needs business-logic migration"
-    )
+from python_src.commands.plugin.plugin import local_call
+
+
+async def PluginSettings(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    on_complete = kwargs.get("onComplete")
+    command_args = kwargs.get("args") or (args[0] if args and isinstance(args[0], str) else "")
+    return await local_call(on_complete, kwargs.get("context"), command_args)
+
+
+__all__ = ["PluginSettings"]

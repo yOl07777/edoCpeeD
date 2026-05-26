@@ -1,17 +1,13 @@
-"""
-Python migration draft for `src/components/CustomSelect/select-option.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.CustomSelect._shared import normalize_option, select_payload
+
+
 async def SelectOption(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `SelectOption`."""
-    raise NotImplementedError(
-        "components.CustomSelect.select-option.SelectOption still needs business-logic migration"
-    )
+    option = normalize_option(kwargs.get("option") or (args[0] if args else ""), int(kwargs.get("index", 0) or 0), bool(kwargs.get("selected", False)))
+    return select_payload("select_option", option=option, marker=">" if kwargs.get("active", False) else " ")
+
+
+__all__ = ["SelectOption"]

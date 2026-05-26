@@ -1,16 +1,53 @@
-"""
-Python migration draft for `src/commands/oauth-refresh/index.js`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local auth refresh shim for DeepSeek API-key based auth."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.oauth-refresh.index still needs business-logic migration"
+from python_src.utils.auth import (
+    clearApiKeyHelperCache,
+    clearOAuthTokenCache,
+    getAnthropicApiKeyWithSource,
+    prefetchApiKeyFromApiKeyHelperIfSafe,
+)
+
+
+async def refreshAuthState() -> dict[str, Any]:
+    await clearOAuthTokenCache()
+    await clearApiKeyHelperCache()
+    helper_key = await prefetchApiKeyFromApiKeyHelperIfSafe()
+    current = await getAnthropicApiKeyWithSource()
+    return {
+        "provider": "deepseek",
+        "source": "helper" if helper_key else current.get("source"),
+        "hasKey": bool(helper_key or current.get("key")),
+    }
+
+
+async def call(
+    onDone: Callable[[str], Any] | None = None,
+    context: Any | None = None,
+    args: str = "",
+) -> dict[str, Any]:
+    state = await refreshAuthState()
+    value = (
+        f"DeepSeek auth cache refreshed. API key available from {state['source']}."
+        if state["hasKey"]
+        else "DeepSeek auth cache refreshed. No API key is currently configured."
     )
+    if onDone:
+        onDone(value)
+    return {"type": "oauth_refresh", "value": value, "state": state}
+
+
+oauth_refresh = {
+    "type": "local",
+    "name": "oauth-refresh",
+    "description": "Refresh local DeepSeek auth caches",
+    "source": "builtin",
+    "isHidden": True,
+    "supportsNonInteractive": True,
+    "call": call,
+}
+
+default = oauth_refresh

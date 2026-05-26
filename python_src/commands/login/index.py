@@ -1,16 +1,26 @@
-"""
-Python migration draft for `src/commands/login/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Login command metadata."""
 
 from __future__ import annotations
 
+import importlib
+import os
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.login.index still needs business-logic migration"
-    )
+
+def _truthy(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+async def _description() -> str:
+    from python_src.utils.auth import hasAnthropicApiKeyAuth
+
+    return "Switch DeepSeek accounts" if await hasAnthropicApiKeyAuth() else "Sign in with your DeepSeek API key"
+
+
+default = {
+    "type": "local-jsx",
+    "name": "login",
+    "description": _description,
+    "isEnabled": lambda: not _truthy(os.getenv("DISABLE_LOGIN_COMMAND")),
+    "load": lambda: importlib.import_module("python_src.commands.login.login"),
+}

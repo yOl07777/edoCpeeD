@@ -1,146 +1,148 @@
-"""
-Python migration draft for `src/utils/file.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
+import re
+from pathlib import Path
 from typing import Any
 
-FILE_NOT_FOUND_CWD_NOTE: Any = None
-MAX_OUTPUT_SIZE: Any = None
+from python_src.utils.fileRead import detectEncodingForResolvedPath, detectLineEndingsForString
+from python_src.utils.fileReadCache import fileReadCache
+from python_src.utils.path import expandPath
 
-async def addLineNumbers(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `addLineNumbers`."""
-    raise NotImplementedError(
-        "utils.file.addLineNumbers still needs business-logic migration"
-    )
 
-async def convertLeadingTabsToSpaces(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `convertLeadingTabsToSpaces`."""
-    raise NotImplementedError(
-        "utils.file.convertLeadingTabsToSpaces still needs business-logic migration"
-    )
+MAX_OUTPUT_SIZE = int(0.25 * 1024 * 1024)
+FILE_NOT_FOUND_CWD_NOTE = "Note: your current working directory is"
 
-async def detectFileEncoding(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `detectFileEncoding`."""
-    raise NotImplementedError(
-        "utils.file.detectFileEncoding still needs business-logic migration"
-    )
 
-async def detectLineEndings(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `detectLineEndings`."""
-    raise NotImplementedError(
-        "utils.file.detectLineEndings still needs business-logic migration"
-    )
+def pathExists(path: str) -> bool:
+    return Path(path).exists()
 
-async def findSimilarFile(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `findSimilarFile`."""
-    raise NotImplementedError(
-        "utils.file.findSimilarFile still needs business-logic migration"
-    )
 
-async def getAbsoluteAndRelativePaths(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getAbsoluteAndRelativePaths`."""
-    raise NotImplementedError(
-        "utils.file.getAbsoluteAndRelativePaths still needs business-logic migration"
-    )
+def readFileSafe(filepath: str) -> str | None:
+    try:
+        return Path(filepath).read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return None
 
-async def getDesktopPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDesktopPath`."""
-    raise NotImplementedError(
-        "utils.file.getDesktopPath still needs business-logic migration"
-    )
 
-async def getDisplayPath(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDisplayPath`."""
-    raise NotImplementedError(
-        "utils.file.getDisplayPath still needs business-logic migration"
-    )
+def getFileModificationTime(filePath: str) -> int:
+    return int(Path(filePath).stat().st_mtime * 1000)
 
-async def getFileModificationTime(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFileModificationTime`."""
-    raise NotImplementedError(
-        "utils.file.getFileModificationTime still needs business-logic migration"
-    )
 
-async def getFileModificationTimeAsync(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFileModificationTimeAsync`."""
-    raise NotImplementedError(
-        "utils.file.getFileModificationTimeAsync still needs business-logic migration"
-    )
+async def getFileModificationTimeAsync(filePath: str) -> int:
+    return getFileModificationTime(filePath)
 
-async def isCompactLinePrefixEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isCompactLinePrefixEnabled`."""
-    raise NotImplementedError(
-        "utils.file.isCompactLinePrefixEnabled still needs business-logic migration"
-    )
 
-async def isDirEmpty(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isDirEmpty`."""
-    raise NotImplementedError(
-        "utils.file.isDirEmpty still needs business-logic migration"
-    )
+def writeFileSyncAndFlush_DEPRECATED(filePath: str, content: str, options: dict[str, Any] | None = None) -> None:
+    path = Path(filePath)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    encoding = (options or {}).get("encoding", "utf-8")
+    path.write_text(content, encoding=encoding)
 
-async def isFileWithinReadSizeLimit(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isFileWithinReadSizeLimit`."""
-    raise NotImplementedError(
-        "utils.file.isFileWithinReadSizeLimit still needs business-logic migration"
-    )
 
-async def normalizePathForComparison(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `normalizePathForComparison`."""
-    raise NotImplementedError(
-        "utils.file.normalizePathForComparison still needs business-logic migration"
-    )
+def writeTextContent(filePath: str, content: str, encoding: str = "utf-8", endings: str = "LF") -> None:
+    to_write = content.replace("\r\n", "\n")
+    if endings == "CRLF":
+        to_write = to_write.replace("\n", "\r\n")
+    writeFileSyncAndFlush_DEPRECATED(filePath, to_write, {"encoding": encoding})
 
-async def pathExists(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `pathExists`."""
-    raise NotImplementedError(
-        "utils.file.pathExists still needs business-logic migration"
-    )
 
-async def pathsEqual(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `pathsEqual`."""
-    raise NotImplementedError(
-        "utils.file.pathsEqual still needs business-logic migration"
-    )
+def detectFileEncoding(filePath: str) -> str:
+    return detectEncodingForResolvedPath(filePath)
 
-async def readFileSafe(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `readFileSafe`."""
-    raise NotImplementedError(
-        "utils.file.readFileSafe still needs business-logic migration"
-    )
 
-async def readFileSyncCached(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `readFileSyncCached`."""
-    raise NotImplementedError(
-        "utils.file.readFileSyncCached still needs business-logic migration"
-    )
+def detectLineEndings(filePath: str, encoding: str = "utf-8") -> str:
+    try:
+        head = Path(filePath).read_text(encoding=encoding, errors="replace")[:4096]
+    except Exception:
+        return "LF"
+    return detectLineEndingsForString(head)
 
-async def stripLineNumberPrefix(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `stripLineNumberPrefix`."""
-    raise NotImplementedError(
-        "utils.file.stripLineNumberPrefix still needs business-logic migration"
-    )
 
-async def suggestPathUnderCwd(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `suggestPathUnderCwd`."""
-    raise NotImplementedError(
-        "utils.file.suggestPathUnderCwd still needs business-logic migration"
-    )
+def convertLeadingTabsToSpaces(content: str) -> str:
+    return re.sub(r"^\t+", lambda m: "  " * len(m.group(0)), content, flags=re.MULTILINE)
 
-async def writeFileSyncAndFlush_DEPRECATED(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `writeFileSyncAndFlush_DEPRECATED`."""
-    raise NotImplementedError(
-        "utils.file.writeFileSyncAndFlush_DEPRECATED still needs business-logic migration"
-    )
 
-async def writeTextContent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `writeTextContent`."""
-    raise NotImplementedError(
-        "utils.file.writeTextContent still needs business-logic migration"
-    )
+def getAbsoluteAndRelativePaths(path: str | None) -> dict[str, str | None]:
+    absolute = expandPath(path) if path else None
+    try:
+        relative = os.path.relpath(absolute, os.getcwd()) if absolute else None
+    except ValueError:
+        relative = absolute
+    return {"absolutePath": absolute, "relativePath": relative}
+
+
+def getDisplayPath(filePath: str) -> str:
+    paths = getAbsoluteAndRelativePaths(filePath)
+    relative = paths["relativePath"]
+    if relative and not relative.startswith(".."):
+        return relative
+    home = str(Path.home())
+    absolute = str(filePath)
+    if absolute.startswith(home + os.sep):
+        return "~" + absolute[len(home) :]
+    return absolute
+
+
+def findSimilarFile(filePath: str) -> str | None:
+    path = Path(filePath)
+    try:
+        for child in path.parent.iterdir():
+            if child != path and child.stem == path.stem:
+                return child.name
+    except Exception:
+        return None
+    return None
+
+
+async def suggestPathUnderCwd(requestedPath: str) -> str | None:
+    cwd = Path.cwd().resolve()
+    requested = Path(requestedPath).resolve(strict=False)
+    try:
+        rel = requested.relative_to(cwd.parent)
+    except ValueError:
+        return None
+    corrected = cwd / rel
+    if corrected.exists() and cwd in corrected.parents:
+        return str(corrected)
+    return None
+
+
+def normalizePathForComparison(path: str) -> str:
+    normalized = os.path.normcase(os.path.normpath(path))
+    return normalized.replace("\\", "/")
+
+
+def pathsEqual(a: str, b: str) -> bool:
+    return normalizePathForComparison(a) == normalizePathForComparison(b)
+
+
+def isDirEmpty(path: str) -> bool:
+    return not any(Path(path).iterdir())
+
+
+def isFileWithinReadSizeLimit(path: str, maxSizeBytes: int = MAX_OUTPUT_SIZE) -> bool:
+    try:
+        return Path(path).stat().st_size <= maxSizeBytes
+    except FileNotFoundError:
+        return False
+
+
+def addLineNumbers(content: str, startLine: int = 1) -> str:
+    return "\n".join(f"{index:>6}\t{line}" for index, line in enumerate(content.splitlines(), start=startLine))
+
+
+def stripLineNumberPrefix(content: str) -> str:
+    return "\n".join(re.sub(r"^\s*\d+\t", "", line) for line in content.splitlines())
+
+
+def isCompactLinePrefixEnabled(*_args: Any, **_kwargs: Any) -> bool:
+    return True
+
+
+def readFileSyncCached(filePath: str) -> str:
+    return fileReadCache.readFile(filePath)["content"]
+
+
+def getDesktopPath() -> str:
+    return str(Path.home() / "Desktop")

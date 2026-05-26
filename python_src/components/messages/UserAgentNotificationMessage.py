@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/messages/UserAgentNotificationMessage.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components.messages._shared import message_payload, text_from
+
+
 async def UserAgentNotificationMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `UserAgentNotificationMessage`."""
-    raise NotImplementedError(
-        "components.messages.UserAgentNotificationMessage.UserAgentNotificationMessage still needs business-logic migration"
-    )
+    text = text_from(args[0] if args else None, **kwargs)
+    agent = str(kwargs.get("agent") or kwargs.get("agentName") or "agent")
+    return message_payload("user_agent_notification_message", agent=agent, text=text)
+
+
+__all__ = ["UserAgentNotificationMessage"]

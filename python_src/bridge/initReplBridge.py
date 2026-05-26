@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/bridge/initReplBridge.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Entry point for creating a Python REPL bridge handle."""
 
 from __future__ import annotations
 
 from typing import Any
 
-async def initReplBridge(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `initReplBridge`."""
-    raise NotImplementedError(
-        "bridge.initReplBridge.initReplBridge still needs business-logic migration"
-    )
+from .bridgeEnabled import isEnvLessBridgeEnabled
+from .remoteBridgeCore import initEnvLessBridgeCore
+from .replBridge import initBridgeCore
+
+
+async def initReplBridge(options: dict[str, Any] | None = None, **kwargs: Any) -> Any:
+    opts = {**(options or {}), **kwargs}
+    if opts.get("envless") is True or (opts.get("envless") is None and isEnvLessBridgeEnabled()):
+        return await initEnvLessBridgeCore(opts)
+    return await initBridgeCore(opts)

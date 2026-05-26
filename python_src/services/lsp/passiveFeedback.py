@@ -1,23 +1,29 @@
-"""
-Python migration draft for `src/services/lsp/passiveFeedback.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Passive feedback helpers for LSP diagnostics."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
-async def formatDiagnosticsForAttachment(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `formatDiagnosticsForAttachment`."""
-    raise NotImplementedError(
-        "services.lsp.passiveFeedback.formatDiagnosticsForAttachment still needs business-logic migration"
-    )
+from .LSPDiagnosticRegistry import registerPendingLSPDiagnostic
 
-async def registerLSPNotificationHandlers(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerLSPNotificationHandlers`."""
-    raise NotImplementedError(
-        "services.lsp.passiveFeedback.registerLSPNotificationHandlers still needs business-logic migration"
-    )
+
+async def formatDiagnosticsForAttachment(diagnostics: list[dict[str, Any]]) -> str:
+    if not diagnostics:
+        return "No LSP diagnostics."
+    lines: list[str] = []
+    for diag in diagnostics:
+        location = f"{diag.get('path', '<unknown>')}:{diag.get('line', 1)}"
+        lines.append(f"{location}: {diag.get('severity', 'warning')}: {diag.get('message', '')}")
+    return "\n".join(lines)
+
+
+async def registerLSPNotificationHandlers(handler: Callable[[dict[str, Any]], Any] | None = None) -> dict[str, Any]:
+    async def publish(path: str, diagnostic: dict[str, Any] | str) -> dict[str, Any]:
+        entry = await registerPendingLSPDiagnostic(path, diagnostic)
+        if handler:
+            result = handler(entry)
+            if hasattr(result, "__await__"):
+                await result
+        return entry
+
+    return {"publishDiagnostics": publish}

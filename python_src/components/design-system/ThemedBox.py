@@ -1,16 +1,20 @@
-"""
-Python migration draft for `src/components/design-system/ThemedBox.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "components.design-system.ThemedBox still needs business-logic migration"
+from importlib import import_module
+
+
+async def ThemedBox(*args: Any, **kwargs: Any) -> Any:
+    shared = import_module("python_src.components.design-system._shared")
+    theme_name = kwargs.get("theme", "dark")
+    return shared.ui_payload(
+        "themed_box",
+        theme=theme_name,
+        tokens=shared.theme(theme_name),
+        content=kwargs.get("content") or (args[0] if args else None),
+        padding=int(kwargs.get("padding", 0) or 0),
     )
+
+
+__all__ = ["ThemedBox"]

@@ -1,107 +1,116 @@
-"""
-Python migration draft for `src/utils/fastMode.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Fast mode state helpers for the DeepSeek migration."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
+import time
+from typing import Any, Callable
 
-FAST_MODE_MODEL_DISPLAY: Any = None
-onCooldownExpired: Any = None
-onCooldownTriggered: Any = None
-onFastModeOverageRejection: Any = None
-onOrgFastModeChanged: Any = None
+from deepseek_code.config import DeepSeekConfig
+from python_src.utils.model.aliases import resolve_model_alias
 
-async def clearFastModeCooldown(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `clearFastModeCooldown`."""
-    raise NotImplementedError(
-        "utils.fastMode.clearFastModeCooldown still needs business-logic migration"
-    )
+FAST_MODE_MODEL_DISPLAY = "deepseek-chat"
 
-async def getFastModeModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFastModeModel`."""
-    raise NotImplementedError(
-        "utils.fastMode.getFastModeModel still needs business-logic migration"
-    )
+onCooldownExpired: Callable[[dict[str, Any]], Any] | None = None
+onCooldownTriggered: Callable[[dict[str, Any]], Any] | None = None
+onFastModeOverageRejection: Callable[[dict[str, Any]], Any] | None = None
+onOrgFastModeChanged: Callable[[dict[str, Any]], Any] | None = None
 
-async def getFastModeRuntimeState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFastModeRuntimeState`."""
-    raise NotImplementedError(
-        "utils.fastMode.getFastModeRuntimeState still needs business-logic migration"
-    )
+_RUNTIME_STATE: dict[str, Any] = {"status": "available", "reason": None, "resetAt": None}
+_ORG_ENABLED = True
 
-async def getFastModeState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFastModeState`."""
-    raise NotImplementedError(
-        "utils.fastMode.getFastModeState still needs business-logic migration"
-    )
 
-async def getFastModeUnavailableReason(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getFastModeUnavailableReason`."""
-    raise NotImplementedError(
-        "utils.fastMode.getFastModeUnavailableReason still needs business-logic migration"
-    )
+def _truthy(value: Any) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y", "on"}
 
-async def getInitialFastModeSetting(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getInitialFastModeSetting`."""
-    raise NotImplementedError(
-        "utils.fastMode.getInitialFastModeSetting still needs business-logic migration"
-    )
 
-async def handleFastModeOverageRejection(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `handleFastModeOverageRejection`."""
-    raise NotImplementedError(
-        "utils.fastMode.handleFastModeOverageRejection still needs business-logic migration"
-    )
+def _notify(callback: Callable[[dict[str, Any]], Any] | None, payload: dict[str, Any]) -> None:
+    if callback is not None:
+        callback(payload)
 
-async def handleFastModeRejectedByAPI(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `handleFastModeRejectedByAPI`."""
-    raise NotImplementedError(
-        "utils.fastMode.handleFastModeRejectedByAPI still needs business-logic migration"
-    )
 
-async def isFastModeAvailable(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isFastModeAvailable`."""
-    raise NotImplementedError(
-        "utils.fastMode.isFastModeAvailable still needs business-logic migration"
-    )
+def getFastModeModel() -> str:
+    return os.getenv("DEEPSEEK_FAST_MODE_MODEL") or "deepseek-chat"
 
-async def isFastModeCooldown(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isFastModeCooldown`."""
-    raise NotImplementedError(
-        "utils.fastMode.isFastModeCooldown still needs business-logic migration"
-    )
 
-async def isFastModeEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isFastModeEnabled`."""
-    raise NotImplementedError(
-        "utils.fastMode.isFastModeEnabled still needs business-logic migration"
-    )
+def getFastModeRuntimeState() -> dict[str, Any]:
+    if _RUNTIME_STATE.get("status") == "cooldown":
+        reset_at = _RUNTIME_STATE.get("resetAt")
+        if reset_at is not None and float(reset_at) <= time.time() * 1000:
+            clearFastModeCooldown()
+    return dict(_RUNTIME_STATE)
 
-async def isFastModeSupportedByModel(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isFastModeSupportedByModel`."""
-    raise NotImplementedError(
-        "utils.fastMode.isFastModeSupportedByModel still needs business-logic migration"
-    )
 
-async def prefetchFastModeStatus(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `prefetchFastModeStatus`."""
-    raise NotImplementedError(
-        "utils.fastMode.prefetchFastModeStatus still needs business-logic migration"
-    )
+def getFastModeState() -> dict[str, Any]:
+    return {"enabled": isFastModeEnabled(), "runtime": getFastModeRuntimeState(), "model": getFastModeModel()}
 
-async def resolveFastModeStatusFromCache(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `resolveFastModeStatusFromCache`."""
-    raise NotImplementedError(
-        "utils.fastMode.resolveFastModeStatusFromCache still needs business-logic migration"
-    )
 
-async def triggerFastModeCooldown(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `triggerFastModeCooldown`."""
-    raise NotImplementedError(
-        "utils.fastMode.triggerFastModeCooldown still needs business-logic migration"
-    )
+def clearFastModeCooldown() -> dict[str, Any]:
+    _RUNTIME_STATE.update({"status": "available", "reason": None, "resetAt": None})
+    _notify(onCooldownExpired, dict(_RUNTIME_STATE))
+    return dict(_RUNTIME_STATE)
+
+
+def triggerFastModeCooldown(reason: str = "rate_limit", resetAt: int | float | None = None, resetInMs: int | None = None) -> dict[str, Any]:
+    reset_at = resetAt if resetAt is not None else time.time() * 1000 + int(resetInMs or 60_000)
+    _RUNTIME_STATE.update({"status": "cooldown", "reason": reason, "resetAt": reset_at})
+    _notify(onCooldownTriggered, dict(_RUNTIME_STATE))
+    return dict(_RUNTIME_STATE)
+
+
+def handleFastModeOverageRejection(reason: str = "overage", resetInMs: int | None = None) -> dict[str, Any]:
+    state = triggerFastModeCooldown(reason, resetInMs=resetInMs)
+    _notify(onFastModeOverageRejection, state)
+    return state
+
+
+def handleFastModeRejectedByAPI(error: Any = None) -> dict[str, Any]:
+    text = str(error or "").lower()
+    reason = "overloaded" if "overload" in text or "503" in text else "rate_limit"
+    return triggerFastModeCooldown(reason)
+
+
+def isFastModeCooldown() -> bool:
+    return getFastModeRuntimeState().get("status") == "cooldown"
+
+
+def isFastModeAvailable() -> bool:
+    return _ORG_ENABLED and not isFastModeCooldown()
+
+
+def getFastModeUnavailableReason() -> str | None:
+    if not _ORG_ENABLED:
+        return "Fast mode is disabled for this environment."
+    state = getFastModeRuntimeState()
+    if state.get("status") == "cooldown":
+        return "Fast mode is temporarily unavailable."
+    return None
+
+
+def isFastModeEnabled() -> bool:
+    if os.getenv("DEEPSEEK_FAST_MODE_ENABLED") is not None:
+        return _truthy(os.getenv("DEEPSEEK_FAST_MODE_ENABLED"))
+    return getFastModeModel() in set(DeepSeekConfig.from_env().models) | {"deepseek-chat", "deepseek-coder", "deepseek-reasoner"}
+
+
+def isFastModeSupportedByModel(model: str | None) -> bool:
+    canonical = resolve_model_alias(model or "").lower()
+    return canonical == getFastModeModel().lower()
+
+
+def getInitialFastModeSetting(settings: dict[str, Any] | None = None) -> bool:
+    if os.getenv("DEEPSEEK_FAST_MODE_DEFAULT") is not None:
+        return _truthy(os.getenv("DEEPSEEK_FAST_MODE_DEFAULT"))
+    return bool((settings or {}).get("fastMode", False))
+
+
+def resolveFastModeStatusFromCache(status: dict[str, Any] | None = None) -> dict[str, Any]:
+    global _ORG_ENABLED
+    if status and "enabled" in status:
+        _ORG_ENABLED = bool(status["enabled"])
+        _notify(onOrgFastModeChanged, {"enabled": _ORG_ENABLED})
+    return {"enabled": _ORG_ENABLED, "runtime": getFastModeRuntimeState()}
+
+
+async def prefetchFastModeStatus(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+    return resolveFastModeStatusFromCache()

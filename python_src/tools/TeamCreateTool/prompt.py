@@ -1,17 +1,10 @@
-"""
-Python migration draft for `src/tools/TeamCreateTool/prompt.ts`.
+"""Prompt text for TeamCreateTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+from python_src.tools.TeamCreateTool.constants import TEAM_CREATE_TOOL_NAME
 
-from __future__ import annotations
 
-from typing import Any
+async def getPrompt(*args, **kwargs) -> str:
+    return f"Use {TEAM_CREATE_TOOL_NAME} to create a local in-process team from existing agent ids."
 
-async def getPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrompt`."""
-    raise NotImplementedError(
-        "tools.TeamCreateTool.prompt.getPrompt still needs business-logic migration"
-    )
+
+__all__ = ["getPrompt"]

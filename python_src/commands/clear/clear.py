@@ -1,13 +1,41 @@
-"""
-Python migration draft for `src/commands/clear/clear.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Implementation for `/clear`, `/reset`, and `/new`."""
 
 from __future__ import annotations
 
-from typing import Any
+from inspect import isawaitable
+from typing import Any, Awaitable, Callable
 
-call: Any = None
+from .caches import clearSessionCaches
+from .conversation import clearConversation
+
+DoneCallback = Callable[[Any], Any | Awaitable[Any]]
+
+
+async def _notify(onDone: DoneCallback | None, payload: Any) -> None:
+    if onDone is None:
+        return
+    result = onDone(payload)
+    if isawaitable(result):
+        await result
+
+
+async def call(
+    onDone: DoneCallback | None = None,
+    context: dict[str, Any] | None = None,
+    args: str | None = None,
+) -> dict[str, Any]:
+    """Clear the migrated conversation state and transient caches."""
+
+    preserved = []
+    if isinstance(context, dict):
+        preserved = list(context.get("preservedAgentIds") or [])
+    conversation = clearConversation()
+    caches = await clearSessionCaches(preserved)
+    result = {
+        "ok": True,
+        "message": "Conversation history cleared.",
+        "conversation": conversation,
+        "caches": caches,
+    }
+    await _notify(onDone, result["message"])
+    return result

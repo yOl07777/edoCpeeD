@@ -1,25 +1,27 @@
-"""
-Python migration draft for `src/ink/components/ClockContext.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
-ClockContext: Any = None
+from ._nodes import normalize_children, render_node
+
+
+ClockContext: dict[str, Any] = {"provider": "deepseek", "now": None, "timezone": "UTC"}
+
 
 async def ClockProvider(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `ClockProvider`."""
-    raise NotImplementedError(
-        "ink.components.ClockContext.ClockProvider still needs business-logic migration"
-    )
+    prop_children = kwargs.pop("children", None)
+    clock = await createClock(**kwargs)
+    return render_node("clock_provider", context=clock, children=normalize_children(prop_children, *args))
+
 
 async def createClock(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createClock`."""
-    raise NotImplementedError(
-        "ink.components.ClockContext.createClock still needs business-logic migration"
-    )
+    now = kwargs.pop("now", None)
+    if now is None:
+        now = datetime.now(timezone.utc).isoformat()
+    elif hasattr(now, "isoformat"):
+        now = now.isoformat()
+    return {"provider": "deepseek", "now": str(now), "timezone": kwargs.pop("timezone", "UTC"), **kwargs}
+
+
+default = ClockProvider

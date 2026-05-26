@@ -1,17 +1,16 @@
-"""
-Python migration draft for `src/hooks/useSessionBackgrounding.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def useSessionBackgrounding(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useSessionBackgrounding`."""
-    raise NotImplementedError(
-        "hooks.useSessionBackgrounding.useSessionBackgrounding still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    backgrounded = bool(pick(options, "backgrounded", "enabled", default=False))
+    return {
+        "provider": "deepseek",
+        "backgrounded": backgrounded,
+        "sessionId": pick(options, "sessionId", default=None),
+        "message": "Session is running in the background." if backgrounded else "Session remains in the foreground.",
+    }

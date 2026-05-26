@@ -1,51 +1,76 @@
-"""
-Python migration draft for `src/services/api/withRetry.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Retry helpers for DeepSeek/OpenAI compatible API calls."""
 
 from __future__ import annotations
 
+import random
+import re
 from typing import Any
 
-BASE_DELAY_MS: Any = None
+BASE_DELAY_MS = 500
 
-class CannotRetryError:
-    """Migrated placeholder for TypeScript class `CannotRetryError`."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+class CannotRetryError(Exception):
+    """Raised when an API error should not be retried."""
 
-class FallbackTriggeredError:
-    """Migrated placeholder for TypeScript class `FallbackTriggeredError`."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.args = args
-        self.kwargs = kwargs
+class FallbackTriggeredError(Exception):
+    """Raised when a request should be retried through a fallback target."""
 
-async def getDefaultMaxRetries(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getDefaultMaxRetries`."""
-    raise NotImplementedError(
-        "services.api.withRetry.getDefaultMaxRetries still needs business-logic migration"
-    )
 
-async def getRetryDelay(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getRetryDelay`."""
-    raise NotImplementedError(
-        "services.api.withRetry.getRetryDelay still needs business-logic migration"
-    )
+def _status_code(error: Any) -> int | None:
+    for attr in ("status_code", "status", "code"):
+        value = getattr(error, attr, None)
+        if isinstance(value, int):
+            return value
+        if isinstance(error, dict) and isinstance(error.get(attr), int):
+            return error[attr]
+    response = getattr(error, "response", None)
+    value = getattr(response, "status_code", None)
+    return value if isinstance(value, int) else None
 
-async def is529Error(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `is529Error`."""
-    raise NotImplementedError(
-        "services.api.withRetry.is529Error still needs business-logic migration"
-    )
 
-async def parseMaxTokensContextOverflowError(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `parseMaxTokensContextOverflowError`."""
-    raise NotImplementedError(
-        "services.api.withRetry.parseMaxTokensContextOverflowError still needs business-logic migration"
-    )
+async def getDefaultMaxRetries(config: dict[str, Any] | None = None) -> int:
+    if config and "max_retries" in config:
+        return int(config["max_retries"])
+    if config and "maxRetries" in config:
+        return int(config["maxRetries"])
+    return 3
+
+
+async def getRetryDelay(
+    attempt: int,
+    retry_after: float | int | None = None,
+    base_delay_ms: int = BASE_DELAY_MS,
+    jitter: bool = True,
+) -> float:
+    """Return retry delay in seconds using exponential backoff."""
+
+    if retry_after is not None:
+        return max(0.0, float(retry_after))
+    delay_ms = base_delay_ms * (2 ** max(0, int(attempt)))
+    if jitter:
+        delay_ms *= 0.75 + random.random() * 0.5
+    return delay_ms / 1000.0
+
+
+async def is529Error(error: Any) -> bool:
+    code = _status_code(error)
+    message = str(error if not isinstance(error, dict) else error.get("message", "")).lower()
+    return code == 529 or "overloaded" in message or "temporarily unavailable" in message
+
+
+async def parseMaxTokensContextOverflowError(error: Any) -> dict[str, int] | None:
+    """Parse context length/max token overflow details from provider messages."""
+
+    message = str(error if not isinstance(error, dict) else error.get("message", ""))
+    patterns = [
+        r"context(?:\s+length)?\D+(?P<context>\d+)\D+maximum\D+(?P<maximum>\d+)",
+        r"requested\s+(?P<context>\d+)\s+tokens\D+maximum\D+(?P<maximum>\d+)",
+        r"(?P<context>\d+)\s+tokens.*?(?P<maximum>\d+)\s+tokens",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, message, re.I)
+        if match:
+            return {key: int(value) for key, value in match.groupdict().items()}
+    return None
+

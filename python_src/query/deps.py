@@ -1,17 +1,30 @@
-"""
-Python migration draft for `src/query/deps.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Production dependency factory for query orchestration."""
 
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
-async def productionDeps(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `productionDeps`."""
-    raise NotImplementedError(
-        "query.deps.productionDeps still needs business-logic migration"
-    )
+from python_src.services.api.claude import query_model_streaming
+
+
+async def _microcompact_messages(messages: Any = None, *_args: Any, **_kwargs: Any) -> Any:
+    return messages
+
+
+async def _auto_compact_if_needed(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+    return {"compacted": False, "provider": "deepseek"}
+
+
+def productionDeps(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+    """Return concrete DeepSeek-safe dependencies for the Python query loop."""
+
+    return {
+        "callModel": query_model_streaming,
+        "microcompact": _microcompact_messages,
+        "autocompact": _auto_compact_if_needed,
+        "uuid": lambda: str(uuid.uuid4()),
+    }
+
+
+__all__ = ["productionDeps"]

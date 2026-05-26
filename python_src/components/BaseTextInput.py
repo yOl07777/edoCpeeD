@@ -1,17 +1,15 @@
-"""
-Python migration draft for `src/components/BaseTextInput.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, option, safe_int, scalar_arg
+
+
 async def BaseTextInput(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `BaseTextInput`."""
-    raise NotImplementedError(
-        "components.BaseTextInput.BaseTextInput still needs business-logic migration"
-    )
+    value = str(option(args, kwargs, "value", scalar_arg(args, "")))
+    cursor = safe_int(option(args, kwargs, "cursor", len(value)), len(value))
+    placeholder = str(option(args, kwargs, "placeholder", ""))
+    return component_payload("base_text_input", value=value, cursor=max(0, min(cursor, len(value))), placeholder=placeholder, empty=not value)
+
+
+__all__ = ["BaseTextInput"]

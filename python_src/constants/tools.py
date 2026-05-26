@@ -1,17 +1,47 @@
-"""
-Python migration draft for `src/constants/tools.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
 
-ALL_AGENT_DISALLOWED_TOOLS: Any = None
-ASYNC_AGENT_ALLOWED_TOOLS: Any = None
-COORDINATOR_MODE_ALLOWED_TOOLS: Any = None
-CUSTOM_AGENT_DISALLOWED_TOOLS: Any = None
-IN_PROCESS_TEAMMATE_ALLOWED_TOOLS: Any = None
+ASYNC_AGENT_ALLOWED_TOOLS = [
+    "Read",
+    "Glob",
+    "Grep",
+    "LS",
+    "WebSearch",
+    "WebFetch",
+    "TodoWrite",
+]
+IN_PROCESS_TEAMMATE_ALLOWED_TOOLS = [
+    "Read",
+    "Write",
+    "Edit",
+    "MultiEdit",
+    "Bash",
+    "PowerShell",
+    "Glob",
+    "Grep",
+    "TodoWrite",
+]
+COORDINATOR_MODE_ALLOWED_TOOLS = [
+    "Task",
+    "TaskCreate",
+    "TaskGet",
+    "TaskList",
+    "TaskUpdate",
+    "TaskStop",
+    "TodoWrite",
+]
+CUSTOM_AGENT_DISALLOWED_TOOLS = [
+    "ScheduleCron",
+    "RemoteTrigger",
+    "Monitor",
+]
+ALL_AGENT_DISALLOWED_TOOLS = sorted(set(CUSTOM_AGENT_DISALLOWED_TOOLS))
+
+
+__all__ = [
+    "ALL_AGENT_DISALLOWED_TOOLS",
+    "ASYNC_AGENT_ALLOWED_TOOLS",
+    "COORDINATOR_MODE_ALLOWED_TOOLS",
+    "CUSTOM_AGENT_DISALLOWED_TOOLS",
+    "IN_PROCESS_TEAMMATE_ALLOWED_TOOLS",
+]

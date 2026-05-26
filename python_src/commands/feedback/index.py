@@ -1,16 +1,38 @@
-"""
-Python migration draft for `src/commands/feedback/index.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Command metadata for `/feedback`."""
 
 from __future__ import annotations
 
-from typing import Any
+import os
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "commands.feedback.index still needs business-logic migration"
+from .feedback import call
+
+
+def _truthy(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def isEnabled() -> bool:
+    disabled = any(
+        _truthy(os.getenv(name))
+        for name in (
+            "CLAUDE_CODE_USE_BEDROCK",
+            "CLAUDE_CODE_USE_VERTEX",
+            "CLAUDE_CODE_USE_FOUNDRY",
+            "DISABLE_FEEDBACK_COMMAND",
+            "DISABLE_BUG_COMMAND",
+        )
     )
+    return not disabled and os.getenv("USER_TYPE") != "ant"
+
+
+feedback = {
+    "aliases": ["bug"],
+    "type": "local-jsx",
+    "name": "feedback",
+    "description": "Submit feedback about DeepSeek Code",
+    "argumentHint": "[report]",
+    "isEnabled": isEnabled,
+    "call": call,
+}
+
+default = feedback

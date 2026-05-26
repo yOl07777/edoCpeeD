@@ -1,16 +1,14 @@
-"""
-Python migration draft for `src/ink/wrapAnsi.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import importlib
 from typing import Any
 
-def _module_migration_placeholder(*args: Any, **kwargs: Any) -> Any:
-    raise NotImplementedError(
-        "ink.wrapAnsi still needs business-logic migration"
-    )
+wrapText = importlib.import_module("python_src.ink.wrap-text").wrapText
+
+
+def wrapAnsi(*args: Any, **kwargs: Any) -> str:
+    return wrapText(*args, **kwargs)
+
+
+default = wrapAnsi
+_module_migration_placeholder = wrapAnsi

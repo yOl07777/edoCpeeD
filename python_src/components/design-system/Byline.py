@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/design-system/Byline.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from importlib import import_module
+
+
 async def Byline(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `Byline`."""
-    raise NotImplementedError(
-        "components.design-system.Byline.Byline still needs business-logic migration"
-    )
+    shared = import_module("python_src.components.design-system._shared")
+    items = kwargs.get("items") or list(args) or []
+    return shared.ui_payload("byline", items=[str(item) for item in items], text=" · ".join(str(item) for item in items))
+
+
+__all__ = ["Byline"]

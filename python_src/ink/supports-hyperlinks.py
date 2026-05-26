@@ -1,19 +1,13 @@
-"""
-Python migration draft for `src/ink/supports-hyperlinks.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import os
 from typing import Any
 
-ADDITIONAL_HYPERLINK_TERMINALS: Any = None
+ADDITIONAL_HYPERLINK_TERMINALS = {"vscode", "cursor", "windsurf", "iterm.app", "wezterm", "kitty"}
+
 
 async def supportsHyperlinks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `supportsHyperlinks`."""
-    raise NotImplementedError(
-        "ink.supports-hyperlinks.supportsHyperlinks still needs business-logic migration"
-    )
+    env = kwargs.get("env") or os.environ
+    term_program = str(kwargs.get("termProgram", env.get("TERM_PROGRAM", ""))).lower()
+    term = str(kwargs.get("term", env.get("TERM", ""))).lower()
+    return term_program in ADDITIONAL_HYPERLINK_TERMINALS or "xterm" in term or "kitty" in term

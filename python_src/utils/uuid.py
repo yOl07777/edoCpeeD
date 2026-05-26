@@ -1,23 +1,17 @@
-"""
-Python migration draft for `src/utils/uuid.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import re
+import secrets
 from typing import Any
 
-async def createAgentId(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createAgentId`."""
-    raise NotImplementedError(
-        "utils.uuid.createAgentId still needs business-logic migration"
-    )
 
-async def validateUuid(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `validateUuid`."""
-    raise NotImplementedError(
-        "utils.uuid.validateUuid still needs business-logic migration"
-    )
+UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
+
+
+def validateUuid(maybeUuid: Any) -> str | None:
+    return maybeUuid if isinstance(maybeUuid, str) and UUID_RE.match(maybeUuid) else None
+
+
+def createAgentId(label: str | None = None) -> str:
+    suffix = secrets.token_hex(8)
+    return f"a{label}-{suffix}" if label else f"a{suffix}"

@@ -1,17 +1,20 @@
-"""
-Python migration draft for `src/components/permissions/AskUserQuestionPermissionRequest/use-multiple-choice-state.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-async def useMultipleChoiceState(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useMultipleChoiceState`."""
-    raise NotImplementedError(
-        "components.permissions.AskUserQuestionPermissionRequest.use-multiple-choice-state.useMultipleChoiceState still needs business-logic migration"
-    )
+from python_src.components.permissions.AskUserQuestionPermissionRequest._shared import normalize_questions
+
+
+async def useMultipleChoiceState(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    questions = normalize_questions(*args, **kwargs)
+    selected = kwargs.get("selected") or {}
+    return {
+        "type": "multiple_choice_state",
+        "provider": "deepseek",
+        "questions": questions,
+        "selected": selected,
+        "complete": len(selected) >= len(questions) if isinstance(selected, dict) else bool(selected),
+    }
+
+
+__all__ = ["useMultipleChoiceState"]

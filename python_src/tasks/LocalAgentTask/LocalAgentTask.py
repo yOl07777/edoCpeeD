@@ -1,145 +1,154 @@
-"""
-Python migration draft for `src/tasks/LocalAgentTask/LocalAgentTask.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
-LocalAgentTask: Any = None
+from .._state import FOREGROUND, NOTIFICATIONS, append_message, create_task, get_task, stop_task, tasks_by_kind, update_task
 
-async def appendMessageToLocalAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `appendMessageToLocalAgent`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.appendMessageToLocalAgent still needs business-logic migration"
-    )
+LocalAgentTask = dict[str, Any]
 
-async def backgroundAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `backgroundAgentTask`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.backgroundAgentTask still needs business-logic migration"
-    )
 
-async def completeAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `completeAgentTask`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.completeAgentTask still needs business-logic migration"
-    )
+async def registerAsyncAgent(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    agent_id = str(kwargs.get("agentId") or kwargs.get("agentName") or (args[0] if args else "agent"))
+    return create_task("local-agent", agentId=agent_id, agentName=kwargs.get("agentName", agent_id), background=True, foreground=False)
 
-async def createActivityDescriptionResolver(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createActivityDescriptionResolver`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.createActivityDescriptionResolver still needs business-logic migration"
-    )
 
-async def createProgressTracker(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `createProgressTracker`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.createProgressTracker still needs business-logic migration"
-    )
+async def registerAgentForeground(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if task:
+        update_task(task, foreground=True, background=False)
+        FOREGROUND.add(task["id"])
+    return task
 
-async def drainPendingMessages(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `drainPendingMessages`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.drainPendingMessages still needs business-logic migration"
-    )
 
-async def enqueueAgentNotification(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `enqueueAgentNotification`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.enqueueAgentNotification still needs business-logic migration"
-    )
+async def unregisterAgentForeground(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if task:
+        update_task(task, foreground=False, background=True)
+        FOREGROUND.discard(task["id"])
+    return task
 
-async def failAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `failAgentTask`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.failAgentTask still needs business-logic migration"
-    )
 
-async def getProgressUpdate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getProgressUpdate`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.getProgressUpdate still needs business-logic migration"
-    )
+async def backgroundAgentTask(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    return await unregisterAgentForeground(*args, **kwargs)
 
-async def getTokenCountFromTracker(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getTokenCountFromTracker`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.getTokenCountFromTracker still needs business-logic migration"
-    )
 
-async def isLocalAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isLocalAgentTask`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.isLocalAgentTask still needs business-logic migration"
-    )
+async def completeAgentTask(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if task:
+        update_task(task, status="completed", result=kwargs.get("result"))
+        FOREGROUND.discard(task["id"])
+    return task
 
-async def isPanelAgentTask(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isPanelAgentTask`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.isPanelAgentTask still needs business-logic migration"
-    )
 
-async def killAllRunningAgentTasks(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `killAllRunningAgentTasks`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.killAllRunningAgentTasks still needs business-logic migration"
-    )
+async def failAgentTask(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    error = kwargs.get("error") or (args[1] if len(args) > 1 else "failed")
+    if task:
+        update_task(task, status="failed", error=str(error))
+        FOREGROUND.discard(task["id"])
+    return task
 
-async def killAsyncAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `killAsyncAgent`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.killAsyncAgent still needs business-logic migration"
-    )
 
-async def markAgentsNotified(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `markAgentsNotified`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.markAgentsNotified still needs business-logic migration"
-    )
+async def killAsyncAgent(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    return stop_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None), str(kwargs.get("reason") or "killed"))
 
-async def queuePendingMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `queuePendingMessage`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.queuePendingMessage still needs business-logic migration"
-    )
 
-async def registerAgentForeground(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerAgentForeground`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.registerAgentForeground still needs business-logic migration"
-    )
+async def killAllRunningAgentTasks(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    killed = 0
+    for task in tasks_by_kind("local-agent"):
+        if task.get("status") == "running":
+            stop_task(task, "killed")
+            killed += 1
+    return {"killed": killed}
 
-async def registerAsyncAgent(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `registerAsyncAgent`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.registerAsyncAgent still needs business-logic migration"
-    )
 
-async def unregisterAgentForeground(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `unregisterAgentForeground`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.unregisterAgentForeground still needs business-logic migration"
-    )
+async def isLocalAgentTask(*args: Any, **kwargs: Any) -> bool:
+    task = kwargs.get("task") or (args[0] if args else {})
+    return bool(isinstance(task, dict) and task.get("kind") == "local-agent")
 
-async def updateAgentProgress(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `updateAgentProgress`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.updateAgentProgress still needs business-logic migration"
-    )
 
-async def updateAgentSummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `updateAgentSummary`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.updateAgentSummary still needs business-logic migration"
-    )
+async def isPanelAgentTask(*args: Any, **kwargs: Any) -> bool:
+    task = kwargs.get("task") or (args[0] if args else {})
+    return bool(isinstance(task, dict) and task.get("panel") is True)
 
-async def updateProgressFromMessage(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `updateProgressFromMessage`."""
-    raise NotImplementedError(
-        "tasks.LocalAgentTask.LocalAgentTask.updateProgressFromMessage still needs business-logic migration"
-    )
+
+async def appendMessageToLocalAgent(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    return append_message(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None), kwargs.get("message") if "message" in kwargs else (args[1] if len(args) > 1 else None))
+
+
+async def queuePendingMessage(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    message = kwargs.get("message") if "message" in kwargs else (args[1] if len(args) > 1 else None)
+    if task:
+        task.setdefault("pendingMessages", []).append(message)
+    return task
+
+
+async def drainPendingMessages(*args: Any, **kwargs: Any) -> list[Any]:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    if not task:
+        return []
+    pending = list(task.get("pendingMessages") or [])
+    task["pendingMessages"] = []
+    return pending
+
+
+async def enqueueAgentNotification(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    notification = {"taskId": kwargs.get("taskId") or (args[0] if args else None), "message": kwargs.get("message") or (args[1] if len(args) > 1 else "")}
+    NOTIFICATIONS.append(notification)
+    return notification
+
+
+async def markAgentsNotified(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    count = 0
+    for task in tasks_by_kind("local-agent"):
+        task["notified"] = True
+        count += 1
+    return {"count": count}
+
+
+async def updateAgentProgress(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    progress = kwargs.get("progress") if "progress" in kwargs else (args[1] if len(args) > 1 else {})
+    if task:
+        task["progress"] = {**dict(task.get("progress") or {}), **(progress if isinstance(progress, dict) else {"message": str(progress)})}
+    return task
+
+
+async def getProgressUpdate(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    return dict(task.get("progress") or {}) if task else {}
+
+
+async def getTokenCountFromTracker(*args: Any, **kwargs: Any) -> int:
+    tracker = kwargs.get("tracker") or (args[0] if args else {})
+    if isinstance(tracker, dict):
+        return int(tracker.get("tokens") or tracker.get("tokenCount") or 0)
+    return 0
+
+
+async def createProgressTracker(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    return {"tokens": 0, "messages": 0, "startedAt": kwargs.get("startedAt")}
+
+
+async def updateProgressFromMessage(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    tracker = kwargs.get("tracker") or (args[0] if args else {})
+    message = kwargs.get("message") if "message" in kwargs else (args[1] if len(args) > 1 else "")
+    if isinstance(tracker, dict):
+        tracker["messages"] = int(tracker.get("messages") or 0) + 1
+        tracker["tokens"] = int(tracker.get("tokens") or 0) + max(1, len(str(message)) // 4)
+    return tracker
+
+
+async def createActivityDescriptionResolver(*args: Any, **kwargs: Any) -> Callable[[Any], str]:
+    prefix = str(kwargs.get("prefix") or (args[0] if args else "Working"))
+    return lambda activity=None: f"{prefix}: {activity or 'running'}"
+
+
+async def updateAgentSummary(*args: Any, **kwargs: Any) -> dict[str, Any] | None:
+    task = get_task(kwargs.get("task") or kwargs.get("taskId") or (args[0] if args else None))
+    summary = kwargs.get("summary") if "summary" in kwargs else (args[1] if len(args) > 1 else "")
+    return update_task(task, summary=summary) if task else None
+
+
+__all__ = [name for name in globals() if not name.startswith("_")]

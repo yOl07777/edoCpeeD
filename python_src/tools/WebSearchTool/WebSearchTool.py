@@ -17,9 +17,34 @@ async def web_search(
     timeout_seconds: int = 20,
 ) -> dict[str, Any]:
     url = f"https://duckduckgo.com/html/?q={quote_plus(query)}"
-    async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=True) as client:
-        response = await client.get(url, headers={"User-Agent": "deepseek-code/0.1"})
-        response.raise_for_status()
+    try:
+        async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=True) as client:
+            response = await client.get(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (compatible; DeepSeek-Code/0.1; +https://api-docs.deepseek.com)",
+                    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.7",
+                },
+            )
+            response.raise_for_status()
+    except httpx.HTTPStatusError as error:
+        return {
+            "query": query,
+            "results": [],
+            "ok": False,
+            "status_code": error.response.status_code,
+            "error": f"HTTP {error.response.status_code} while searching",
+            "suggestion": "搜索引擎拒绝了自动请求。请换一个查询词、提供网页内容，或稍后重试。",
+        }
+    except httpx.RequestError as error:
+        return {
+            "query": query,
+            "results": [],
+            "ok": False,
+            "status_code": None,
+            "error": str(error),
+            "suggestion": "搜索请求失败。请稍后重试，或提供可访问的信息来源。",
+        }
     html = response.text
     results: list[dict[str, str]] = []
     for match in re.finditer(
@@ -33,6 +58,7 @@ async def web_search(
             break
     return {
         "query": query,
+        "ok": True,
         "results": results,
     }
 

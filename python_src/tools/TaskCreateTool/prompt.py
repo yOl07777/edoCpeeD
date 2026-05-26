@@ -1,19 +1,14 @@
-"""
-Python migration draft for `src/tools/TaskCreateTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for TaskCreateTool."""
 
 from __future__ import annotations
 
-from typing import Any
+from python_src.tools.TaskCreateTool.constants import TASK_CREATE_TOOL_NAME
 
-DESCRIPTION: Any = None
+DESCRIPTION = "Create an in-memory task for the current process."
 
-async def getPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrompt`."""
-    raise NotImplementedError(
-        "tools.TaskCreateTool.prompt.getPrompt still needs business-logic migration"
-    )
+
+async def getPrompt(*args, **kwargs) -> str:
+    return f"Use {TASK_CREATE_TOOL_NAME} to create a local task record with title, optional description, and status."
+
+
+__all__ = ["DESCRIPTION", "getPrompt"]

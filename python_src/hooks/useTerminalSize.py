@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/hooks/useTerminalSize.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
+import shutil
 from typing import Any
 
+from ._basic import first_mapping, pick
+
+
 async def useTerminalSize(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `useTerminalSize`."""
-    raise NotImplementedError(
-        "hooks.useTerminalSize.useTerminalSize still needs business-logic migration"
-    )
+    options = first_mapping(*args, kwargs)
+    fallback = shutil.get_terminal_size((80, 24))
+    columns = int(pick(options, "columns", "width", default=fallback.columns))
+    rows = int(pick(options, "rows", "height", default=fallback.lines))
+    return {"provider": "deepseek", "columns": columns, "rows": rows, "isNarrow": columns < 80}

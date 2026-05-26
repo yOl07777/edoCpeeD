@@ -1,17 +1,10 @@
-"""
-Python migration draft for `src/tools/TeamDeleteTool/prompt.ts`.
+"""Prompt text for TeamDeleteTool."""
 
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+from python_src.tools.TeamDeleteTool.constants import TEAM_DELETE_TOOL_NAME
 
-from __future__ import annotations
 
-from typing import Any
+async def getPrompt(*args, **kwargs) -> str:
+    return f"Use {TEAM_DELETE_TOOL_NAME} with the exact team_id returned by team_create."
 
-async def getPrompt(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getPrompt`."""
-    raise NotImplementedError(
-        "tools.TeamDeleteTool.prompt.getPrompt still needs business-logic migration"
-    )
+
+__all__ = ["getPrompt"]

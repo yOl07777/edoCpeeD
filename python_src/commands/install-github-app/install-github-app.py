@@ -1,17 +1,43 @@
-"""
-Python migration draft for `src/commands/install-github-app/install-github-app.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Local command shim for `/install-github-app`."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
-async def call(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `call`."""
-    raise NotImplementedError(
-        "commands.install-github-app.install-github-app.call still needs business-logic migration"
+from ._shared import DEFAULT_SECRET_NAME, check_gh_status, detect_current_repo, normalize_repo, workflow_plan
+
+
+def _parse_args(args: str | None, context: dict[str, Any] | None = None) -> str:
+    raw = (args or "").strip()
+    if raw:
+        return normalize_repo(raw.split()[0])
+    return detect_current_repo((context or {}).get("cwd"))
+
+
+async def call(
+    onDone: Callable[[str], Any] | None = None,
+    context: dict[str, Any] | None = None,
+    args: str = "",
+) -> dict[str, Any]:
+    repo = _parse_args(args, context)
+    gh_status = check_gh_status()
+    plan = workflow_plan(repo, DEFAULT_SECRET_NAME)
+    value = (
+        "Generated DeepSeek GitHub Actions setup guidance. "
+        "No branch, secret, workflow, browser, or pull request was modified."
     )
+    if onDone:
+        onDone(value)
+    return {
+        "type": "github_app_setup",
+        "provider": "deepseek",
+        "value": value,
+        "repo": repo,
+        "gh": gh_status,
+        "plan": plan,
+        "args": args or "",
+        "context": context or {},
+    }
+
+
+__all__ = ["call"]

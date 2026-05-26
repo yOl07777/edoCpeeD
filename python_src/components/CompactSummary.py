@@ -1,17 +1,14 @@
-"""
-Python migration draft for `src/components/CompactSummary.tsx`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
+from python_src.components._shared import component_payload, normalize_items, option, scalar_arg
+
+
 async def CompactSummary(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `CompactSummary`."""
-    raise NotImplementedError(
-        "components.CompactSummary.CompactSummary still needs business-logic migration"
-    )
+    summary = str(option(args, kwargs, "summary", scalar_arg(args, "")))
+    messages = normalize_items(option(args, kwargs, "messages", []))
+    return component_payload("compact_summary", summary=summary, messages=messages, messageCount=len(messages), compacted=bool(summary or messages))
+
+
+__all__ = ["CompactSummary"]

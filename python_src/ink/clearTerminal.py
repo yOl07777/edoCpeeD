@@ -1,19 +1,8 @@
-"""
-Python migration draft for `src/ink/clearTerminal.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
-clearTerminal: Any = None
 
-async def getClearTerminalSequence(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `getClearTerminalSequence`."""
-    raise NotImplementedError(
-        "ink.clearTerminal.getClearTerminalSequence still needs business-logic migration"
-    )
+async def clearTerminal(*args: Any, **kwargs: Any) -> Any:
+    include_scrollback = bool(kwargs.get("scrollback", kwargs.get("includeScrollback", False)))
+    return "\x1b[3J\x1b[2J\x1b[H" if include_scrollback else "\x1b[2J\x1b[H"

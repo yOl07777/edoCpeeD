@@ -1,17 +1,34 @@
-"""
-Python migration draft for `src/keybindings/template.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Generate a keybindings.json template for the Python runtime."""
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
-async def generateKeybindingsTemplate(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `generateKeybindingsTemplate`."""
-    raise NotImplementedError(
-        "keybindings.template.generateKeybindingsTemplate still needs business-logic migration"
-    )
+
+DEFAULT_TEMPLATE_BINDINGS: list[dict[str, Any]] = [
+    {
+        "context": "Global",
+        "bindings": {
+            "ctrl+o": "app:toggleTranscript",
+            "ctrl+t": "app:toggleTodos",
+        },
+    },
+    {
+        "context": "Chat",
+        "bindings": {
+            "escape": "chat:cancel",
+            "enter": "chat:submit",
+            "ctrl+r": "history:search",
+        },
+    },
+]
+
+
+def generateKeybindingsTemplate() -> str:
+    config = {
+        "$schema": "https://www.schemastore.org/claude-code-keybindings.json",
+        "$docs": "https://code.claude.com/docs/en/keybindings",
+        "bindings": DEFAULT_TEMPLATE_BINDINGS,
+    }
+    return json.dumps(config, ensure_ascii=False, indent=2) + "\n"

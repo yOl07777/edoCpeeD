@@ -1,14 +1,11 @@
-"""
-Python migration draft for `src/tools/MCPTool/prompt.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""Prompt text for MCPTool."""
 
 from __future__ import annotations
 
-from typing import Any
+DESCRIPTION = "Call a tool exposed by a configured MCP server."
+PROMPT = (
+    "Use MCP tools only when a configured server exposes the required capability. "
+    "This Python migration shim records the intended server/tool/arguments without starting a server."
+)
 
-DESCRIPTION: Any = None
-PROMPT: Any = None
+__all__ = ["DESCRIPTION", "PROMPT"]

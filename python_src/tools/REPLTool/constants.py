@@ -1,20 +1,19 @@
-"""
-Python migration draft for `src/tools/REPLTool/constants.ts`.
-
-This file was generated from the TypeScript source to preserve the
-module boundary while the runtime implementation is migrated.
-Claude/Anthropic model calls should be routed through `deepseek_code`.
-"""
+"""REPLTool constants and feature flag."""
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-REPL_ONLY_TOOLS: Any = None
-REPL_TOOL_NAME: Any = None
+REPL_TOOL_NAME = "repl"
+REPL_ONLY_TOOLS = {"synthetic_output", "testing_permission"}
 
-async def isReplModeEnabled(*args: Any, **kwargs: Any) -> Any:
-    """Migrated placeholder for TypeScript function `isReplModeEnabled`."""
-    raise NotImplementedError(
-        "tools.REPLTool.constants.isReplModeEnabled still needs business-logic migration"
-    )
+
+async def isReplModeEnabled(*args: Any, **kwargs: Any) -> bool:
+    value = kwargs.get("enabled")
+    if value is not None:
+        return bool(value)
+    return os.getenv("DEEPCODE_REPL_MODE", "").lower() in {"1", "true", "yes", "on"}
+
+
+__all__ = ["REPL_ONLY_TOOLS", "REPL_TOOL_NAME", "isReplModeEnabled"]
